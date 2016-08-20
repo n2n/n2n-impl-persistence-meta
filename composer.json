@@ -2,7 +2,7 @@
     "name": "n2n/n2n-impl-persistence-meta",
     "type": "library",
     "description": "impl for n2n persistence meta api",
-    "keywords": ["n2n","persistence meta api"],
+    "keywords": ["n2n","persistence","db meta ap"],
     "homepage": "http://n2n.rocks/",
     "license": "GNU LGPL",
     "authors": [
