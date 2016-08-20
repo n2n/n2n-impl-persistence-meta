@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\mysql;
+namespace n2n\impl\persistence\meta\mysql;
 
 use n2n\persistence\meta\structure\common\TableAdapter;
 
@@ -32,7 +32,7 @@ class MysqlTable extends TableAdapter {
 	const ATTRS_ENGINE = 'ENGINE';
 	
 	/**
-	 * @var n2n\persistence\meta\impl\mysql\MysqlColumnFactory
+	 * @var n2n\impl\persistence\meta\mysql\MysqlColumnFactory
 	 */
 	private $columnFactory;
 	
@@ -49,7 +49,7 @@ class MysqlTable extends TableAdapter {
 	
 	/**
 	 * 
-	 * @return n2n\persistence\meta\impl\mysql\MysqlColumnFactory
+	 * @return n2n\impl\persistence\meta\mysql\MysqlColumnFactory
 	 */
 	public function createColumnFactory() {
 		if (!($this->columnFactory)) {

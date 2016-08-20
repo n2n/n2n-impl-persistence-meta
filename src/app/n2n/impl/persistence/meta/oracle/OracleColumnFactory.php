@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\oracle;
+namespace n2n\impl\persistence\meta\oracle;
 
 use n2n\core\SysTextUtils;
 
@@ -40,7 +40,7 @@ use n2n\persistence\meta\structure\ColumnFactory;
 class OracleColumnFactory implements ColumnFactory {
 	
 	/**
-	 * @var n2n\persistence\meta\impl\oracle\OracleTable
+	 * @var n2n\impl\persistence\meta\oracle\OracleTable
 	 */
 	private $table;
 	

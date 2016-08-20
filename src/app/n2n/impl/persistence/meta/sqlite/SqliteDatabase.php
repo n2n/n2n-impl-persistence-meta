@@ -19,13 +19,13 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\sqlite;
+namespace n2n\impl\persistence\meta\sqlite;
 
-use n2n\persistence\meta\impl\sqlite\management\SqliteDropMetaEntityRequest;
+use n2n\impl\persistence\meta\sqlite\management\SqliteDropMetaEntityRequest;
 
-use n2n\persistence\meta\impl\sqlite\management\SqliteCreateMetaEntityRequest;
+use n2n\impl\persistence\meta\sqlite\management\SqliteCreateMetaEntityRequest;
 
-use n2n\persistence\meta\impl\sqlite\management\SqliteAlterMetaEntityRequest;
+use n2n\impl\persistence\meta\sqlite\management\SqliteAlterMetaEntityRequest;
 
 use n2n\persistence\meta\structure\common\DatabaseAdapter;
 

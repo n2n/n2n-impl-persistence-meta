@@ -19,16 +19,16 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\mssql\management;
+namespace n2n\impl\persistence\meta\mssql\management;
 
-use n2n\persistence\meta\impl\mssql\MssqlIntegerColumn;
-use n2n\persistence\meta\impl\mssql\MssqlIndexStatementStringBuilder;
-use n2n\persistence\meta\impl\mssql\MssqlColumnStatementStringBuilder;
+use n2n\impl\persistence\meta\mssql\MssqlIntegerColumn;
+use n2n\impl\persistence\meta\mssql\MssqlIndexStatementStringBuilder;
+use n2n\impl\persistence\meta\mssql\MssqlColumnStatementStringBuilder;
 use n2n\persistence\meta\structure\common\AlterMetaEntityRequest;
 use n2n\persistence\meta\structure\Table;
 use n2n\persistence\meta\structure\View;
 use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
-use n2n\persistence\meta\impl\mssql\MssqlMetaEntityBuilder;
+use n2n\impl\persistence\meta\mssql\MssqlMetaEntityBuilder;
 use n2n\persistence\meta\structure\InvalidColumnAttributesException;
 use n2n\persistence\Pdo;
 

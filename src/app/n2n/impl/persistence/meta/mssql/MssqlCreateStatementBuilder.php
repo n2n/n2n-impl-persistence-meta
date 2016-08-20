@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\mssql;
+namespace n2n\impl\persistence\meta\mssql;
 
 use n2n\persistence\meta\structure\MetaEntity;
 
@@ -42,7 +42,7 @@ class MssqlCreateStatementBuilder {
 	private $dbh;
 	
 	/**
-	 * @var n2n\persistence\meta\impl\mssql\MetaEntity
+	 * @var n2n\impl\persistence\meta\mssql\MetaEntity
 	 */
 	private $metaEntity;
 	

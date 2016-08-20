@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\oracle;
+namespace n2n\impl\persistence\meta\oracle;
 
 use n2n\persistence\meta\structure\common\TableAdapter;
 
@@ -42,7 +42,7 @@ class OracleTable extends TableAdapter {
 	
 	/**
 	 *
-	 * @return n2n\persistence\meta\impl\oracle\OracleColumnFactory
+	 * @return n2n\impl\persistence\meta\oracle\OracleColumnFactory
 	 */
 	public function createColumnFactory() {
 		if (!($this->columnFactory)) {

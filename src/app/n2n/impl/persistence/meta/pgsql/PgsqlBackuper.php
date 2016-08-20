@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\pgsql;
+namespace n2n\impl\persistence\meta\pgsql;
 
 use n2n\persistence\meta\data\QueryConstant;
 use n2n\persistence\meta\data\QueryColumn;
@@ -27,7 +27,7 @@ use n2n\persistence\Pdo;
 use n2n\persistence\meta\data\QueryTable;
 use n2n\persistence\meta\structure\common\BackuperAdapter;
 use n2n\util\ex\IllegalStateException;
-use n2n\persistence\meta\impl\pgsql\PgsqlCreateStatementBuilder;
+use n2n\impl\persistence\meta\pgsql\PgsqlCreateStatementBuilder;
 use n2n\core\SysTextUtils;
 
 class PgsqlBackuper extends BackuperAdapter {

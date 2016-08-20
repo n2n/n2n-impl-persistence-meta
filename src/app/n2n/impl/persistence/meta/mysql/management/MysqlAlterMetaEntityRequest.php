@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\mysql\management;
+namespace n2n\impl\persistence\meta\mysql\management;
 
 use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
 
@@ -29,11 +29,11 @@ use n2n\persistence\meta\structure\common\AlterMetaEntityRequest;
 
 use n2n\persistence\meta\structure\View;
 
-use n2n\persistence\meta\impl\mysql\MysqlIndexStatementStringBuilder;
+use n2n\impl\persistence\meta\mysql\MysqlIndexStatementStringBuilder;
 
-use n2n\persistence\meta\impl\mysql\MysqlColumnStatementStringBuilder;
+use n2n\impl\persistence\meta\mysql\MysqlColumnStatementStringBuilder;
 
-use n2n\persistence\meta\impl\mysql\MysqlMetaEntityBuilder;
+use n2n\impl\persistence\meta\mysql\MysqlMetaEntityBuilder;
 
 use n2n\persistence\Pdo;
 

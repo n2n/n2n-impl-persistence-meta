@@ -19,13 +19,13 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\mysql;
+namespace n2n\impl\persistence\meta\mysql;
 
-use n2n\persistence\meta\impl\mysql\management\MysqlDropMetaEntityRequest;
+use n2n\impl\persistence\meta\mysql\management\MysqlDropMetaEntityRequest;
 
-use n2n\persistence\meta\impl\mysql\management\MysqlCreateMetaEntityRequest;
+use n2n\impl\persistence\meta\mysql\management\MysqlCreateMetaEntityRequest;
 
-use n2n\persistence\meta\impl\mysql\management\MysqlAlterMetaEntityRequest;
+use n2n\impl\persistence\meta\mysql\management\MysqlAlterMetaEntityRequest;
 
 use n2n\persistence\meta\structure\MetaEntity;
 
@@ -33,17 +33,17 @@ use n2n\persistence\meta\structure\common\DatabaseAdapter;
 
 use n2n\persistence\Pdo;
 
-use n2n\persistence\meta\impl\mysql\MysqlMetaEntityBuilder;
+use n2n\impl\persistence\meta\mysql\MysqlMetaEntityBuilder;
 
 class MysqlDatabase extends DatabaseAdapter {
 	
 	/**
-	 * @var n2n\persistence\meta\impl\mysql\MetaEntityFactory
+	 * @var n2n\impl\persistence\meta\mysql\MetaEntityFactory
 	 */
 	private $metaEntityFactory;
 	
 	/**
-	 * @var n2n\persistence\meta\impl\mysql\MysqlMetaEntityBuilder
+	 * @var n2n\impl\persistence\meta\mysql\MysqlMetaEntityBuilder
 	 */
 	private $metaEntityBuilder;
 	
@@ -90,7 +90,7 @@ class MysqlDatabase extends DatabaseAdapter {
 	}
 
 	/**
-	 * @return n2n\persistence\meta\impl\mysql\MysqlMetaEntityFactory
+	 * @return n2n\impl\persistence\meta\mysql\MysqlMetaEntityFactory
 	 */
 	public function createMetaEntityFactory() {
 		if (!(isset($this->metaEntityFactory))) {
@@ -113,7 +113,7 @@ class MysqlDatabase extends DatabaseAdapter {
 	
 	
 	/**
-	* @return n2n\persistence\meta\impl\mysql\Backuper
+	* @return n2n\impl\persistence\meta\mysql\Backuper
 	*/
 	
 	public function createBackuper(array $metaEnities = null) {

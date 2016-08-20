@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\mysql;
+namespace n2n\impl\persistence\meta\mysql;
 
 use n2n\persistence\meta\structure\Size;
 
@@ -56,7 +56,7 @@ class MysqlMetaEntityBuilder {
 	private $dbh;
 	
 	/**
-	 * @var n2n\persistence\meta\impl\mysql\MysqlDatabase
+	 * @var n2n\impl\persistence\meta\mysql\MysqlDatabase
 	 */
 	private $database;
 	

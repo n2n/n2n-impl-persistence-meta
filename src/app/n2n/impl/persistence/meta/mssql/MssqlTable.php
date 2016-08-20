@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\mssql;
+namespace n2n\impl\persistence\meta\mssql;
 
 use n2n\persistence\meta\structure\common\TableAdapter;
 
@@ -27,7 +27,7 @@ class MssqlTable extends TableAdapter {
 	const PREFIX_PRIMARY_KEY = 'PK_';
 	
 	/**
-	 * @var n2n\persistence\meta\impl\mssql\MssqlColumnFactory
+	 * @var n2n\impl\persistence\meta\mssql\MssqlColumnFactory
 	 */
 	private $columnFactory;
 	
@@ -43,7 +43,7 @@ class MssqlTable extends TableAdapter {
 	}
 	
 	/** 
-	 * @return n2n\persistence\meta\impl\mssql\MssqlColumnFactory
+	 * @return n2n\impl\persistence\meta\mssql\MssqlColumnFactory
 	 */
 	public function createColumnFactory() {
 		if (!($this->columnFactory)) {

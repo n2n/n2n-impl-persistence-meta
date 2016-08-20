@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\pgsql;
+namespace n2n\impl\persistence\meta\pgsql;
 
 use n2n\persistence\meta\structure\DateTimeColumn;
 
@@ -93,7 +93,7 @@ class PgsqlDateTimeColumn extends PgsqlColumn implements DateTimeColumn, PgsqlMa
 
 	/**
 	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta\impl\pgsql.PgsqlManagedColumn::getTypeForCurrentState()
+	 * @see n2n\impl\persistence\meta\pgsql.PgsqlManagedColumn::getTypeForCurrentState()
 	 */
 	public function getTypeForCurrentState() {
 		switch (true) {

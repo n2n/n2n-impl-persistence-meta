@@ -19,13 +19,13 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\sqlite\management;
+namespace n2n\impl\persistence\meta\sqlite\management;
 
 use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
 
 use n2n\persistence\meta\structure\common\CreateMetaEntityRequest;
 
-use n2n\persistence\meta\impl\sqlite\SqliteCreateStatementBuilder;
+use n2n\impl\persistence\meta\sqlite\SqliteCreateStatementBuilder;
 
 use n2n\persistence\Pdo;
 

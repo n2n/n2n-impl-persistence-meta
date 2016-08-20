@@ -19,17 +19,17 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\mssql;
+namespace n2n\impl\persistence\meta\mssql;
 
 use n2n\persistence\meta\structure\common\DatabaseAdapter;
 
 use n2n\persistence\meta\structure\MetaEntity;
 
-use n2n\persistence\meta\impl\mssql\management\MssqlDropMetaEntityRequest;
+use n2n\impl\persistence\meta\mssql\management\MssqlDropMetaEntityRequest;
 
-use n2n\persistence\meta\impl\mssql\management\MssqlCreateMetaEntityRequest;
+use n2n\impl\persistence\meta\mssql\management\MssqlCreateMetaEntityRequest;
 
-use n2n\persistence\meta\impl\mssql\management\MssqlAlterMetaEntityRequest;
+use n2n\impl\persistence\meta\mssql\management\MssqlAlterMetaEntityRequest;
 
 use n2n\persistence\Pdo;
 
@@ -40,12 +40,12 @@ class MssqlDatabase extends DatabaseAdapter {
 	private $attrs;
 	
 	/**
-	 * @var  n2n\persistence\meta\impl\mssql\MssqlMetaEntityFactory
+	 * @var  n2n\impl\persistence\meta\mssql\MssqlMetaEntityFactory
 	 */
 	private $metaEntityFactory;
 	
 	/**
-	 * @var  n2n\persistence\meta\impl\mssql\MssqlMetaEntityBuilder
+	 * @var  n2n\impl\persistence\meta\mssql\MssqlMetaEntityBuilder
 	 */
 	private $metaEntityBuilder;
 	

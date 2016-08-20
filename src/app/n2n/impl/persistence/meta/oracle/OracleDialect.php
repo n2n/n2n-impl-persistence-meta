@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\oracle;
+namespace n2n\impl\persistence\meta\oracle;
 
 use n2n\io\InputStream;
 use n2n\core\SysTextUtils;
@@ -30,7 +30,7 @@ use n2n\persistence\meta\data\common\CommonUpdateStatementBuilder;
 use n2n\persistence\meta\data\common\CommonSelectStatementBuilder;
 use n2n\persistence\meta\structure\Column;
 use n2n\persistence\Pdo;
-use n2n\persistence\meta\impl\DialectAdapter;
+use n2n\impl\persistence\meta\DialectAdapter;
 use n2n\persistence\PersistenceUnitConfig;
 
 class OracleDialect extends DialectAdapter {

@@ -19,13 +19,13 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\mssql\management;
+namespace n2n\impl\persistence\meta\mssql\management;
 
 use n2n\persistence\meta\structure\common\CreateMetaEntityRequest;
 
 use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
 
-use n2n\persistence\meta\impl\mssql\MssqlCreateStatementBuilder;
+use n2n\impl\persistence\meta\mssql\MssqlCreateStatementBuilder;
 
 use n2n\persistence\Pdo;
 

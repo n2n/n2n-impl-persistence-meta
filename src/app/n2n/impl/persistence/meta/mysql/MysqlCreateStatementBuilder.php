@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\mysql;
+namespace n2n\impl\persistence\meta\mysql;
 
 use n2n\persistence\meta\structure\MetaEntity;
 
@@ -41,7 +41,7 @@ class MysqlCreateStatementBuilder {
 	private $dbh;
 	
 	/**
-	 * @var n2n\persistence\meta\impl\mysql\MysqlMetaEntity
+	 * @var n2n\impl\persistence\meta\mysql\MysqlMetaEntity
 	 */
 	private $metaEntity;
 	

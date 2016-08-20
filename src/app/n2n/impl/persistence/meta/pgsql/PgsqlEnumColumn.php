@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\pgsql;
+namespace n2n\impl\persistence\meta\pgsql;
 
 use n2n\persistence\meta\structure\EnumColumn;
 
@@ -56,7 +56,7 @@ class PgsqlEnumColumn extends PgsqlColumn implements EnumColumn, PgsqlManagedCol
 
 	/**
 	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta\impl\pgsql.PgsqlManagedColumn::getTypeForCurrentState()
+	 * @see n2n\impl\persistence\meta\pgsql.PgsqlManagedColumn::getTypeForCurrentState()
 	 * @return String
 	 */
 	public function getTypeForCurrentState() {

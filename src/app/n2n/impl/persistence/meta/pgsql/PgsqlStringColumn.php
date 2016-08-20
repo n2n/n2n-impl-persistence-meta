@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\pgsql;
+namespace n2n\impl\persistence\meta\pgsql;
 
 use n2n\persistence\meta\structure\StringColumn;
 
@@ -72,7 +72,7 @@ class PgsqlStringColumn extends PgsqlColumn implements StringColumn, PgsqlManage
 
 	/**
 	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta\impl\pgsql.PgsqlManagedColumn::getTypeForCurrentState()
+	 * @see n2n\impl\persistence\meta\pgsql.PgsqlManagedColumn::getTypeForCurrentState()
 	 */
 	public function getTypeForCurrentState() {
 		if ($this->getLength() <= 1) {

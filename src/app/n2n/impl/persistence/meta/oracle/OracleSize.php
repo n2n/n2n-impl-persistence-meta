@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\oracle;
+namespace n2n\impl\persistence\meta\oracle;
 
 class OracleSize {
 	//Max Storage of 4000 Bytes = 4000 * 8

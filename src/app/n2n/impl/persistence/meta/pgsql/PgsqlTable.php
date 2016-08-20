@@ -19,13 +19,13 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\pgsql;
+namespace n2n\impl\persistence\meta\pgsql;
 
 use n2n\persistence\meta\structure\Column;
 use n2n\persistence\meta\structure\ColumnFactory;
-use n2n\persistence\meta\impl\pgsql\PgsqlColumnFactory;
+use n2n\impl\persistence\meta\pgsql\PgsqlColumnFactory;
 use n2n\persistence\meta\structure\IndexType;
-use n2n\persistence\meta\impl\pgsql\PgsqlColumn;
+use n2n\impl\persistence\meta\pgsql\PgsqlColumn;
 use n2n\persistence\meta\structure\UnknownColumnException;
 use n2n\persistence\meta\structure\common\ColumnChangeListener;
 use n2n\persistence\meta\structure\Table;

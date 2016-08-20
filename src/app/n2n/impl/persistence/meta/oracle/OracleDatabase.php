@@ -19,13 +19,13 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\oracle;
+namespace n2n\impl\persistence\meta\oracle;
 
-use n2n\persistence\meta\impl\oracle\management\OracleDropMetaEntityRequest;
+use n2n\impl\persistence\meta\oracle\management\OracleDropMetaEntityRequest;
 
-use n2n\persistence\meta\impl\oracle\management\OracleCreateMetaEntityRequest;
+use n2n\impl\persistence\meta\oracle\management\OracleCreateMetaEntityRequest;
 
-use n2n\persistence\meta\impl\oracle\management\OracleAlterMetaEntityRequest;
+use n2n\impl\persistence\meta\oracle\management\OracleAlterMetaEntityRequest;
 
 use n2n\persistence\meta\structure\MetaEntity;
 
@@ -36,7 +36,7 @@ use n2n\persistence\meta\structure\common\DatabaseAdapter;
 class OracleDatabase extends DatabaseAdapter {
 	
 	/**
-	 * @var n2n\persistence\meta\impl\oracle\OracleMetaEntityFactory
+	 * @var n2n\impl\persistence\meta\oracle\OracleMetaEntityFactory
 	 */
 	private $metaEntityFactory;
 	
@@ -83,7 +83,7 @@ class OracleDatabase extends DatabaseAdapter {
 	}
 
 	/**
-	 * @return n2n\persistence\meta\impl\oracle\OracleMetaEntityFactory
+	 * @return n2n\impl\persistence\meta\oracle\OracleMetaEntityFactory
 	 */
 	public function createMetaEntityFactory() {
 		if (!(isset($this->metaEntityFactory))) {
@@ -106,7 +106,7 @@ class OracleDatabase extends DatabaseAdapter {
 	
 	
 	/**
-	* @return n2n\persistence\meta\impl\oracle\Backuper
+	* @return n2n\impl\persistence\meta\oracle\Backuper
 	*/
 	
 	public function createBackuper(array $metaEnities = null) {

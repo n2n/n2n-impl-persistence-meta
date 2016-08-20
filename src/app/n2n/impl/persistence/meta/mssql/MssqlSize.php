@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\mssql;
+namespace n2n\impl\persistence\meta\mssql;
 
 class MssqlSize {
 	// @see http://msdn.microsoft.com/en-us/library/ms186939.aspx

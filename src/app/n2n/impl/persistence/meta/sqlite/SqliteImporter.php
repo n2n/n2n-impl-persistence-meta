@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\sqlite;
+namespace n2n\impl\persistence\meta\sqlite;
 
 use n2n\core\SysTextUtils;
 

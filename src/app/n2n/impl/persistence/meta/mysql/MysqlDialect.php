@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\mysql;
+namespace n2n\impl\persistence\meta\mysql;
 
 use n2n\io\InputStream;
 use n2n\persistence\meta\data\common\CommonInsertStatementBuilder;
@@ -31,7 +31,7 @@ use n2n\persistence\meta\structure\IntegerColumn;
 use n2n\persistence\meta\structure\Column;
 use n2n\core\N2N;
 use n2n\persistence\Pdo;
-use n2n\persistence\meta\impl\DialectAdapter;
+use n2n\impl\persistence\meta\DialectAdapter;
 use n2n\core\SysTextUtils;
 use n2n\persistence\PersistenceUnitConfig;
 

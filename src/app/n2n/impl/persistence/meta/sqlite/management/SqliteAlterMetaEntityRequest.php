@@ -19,11 +19,11 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\sqlite\management;
+namespace n2n\impl\persistence\meta\sqlite\management;
 
 use n2n\persistence\meta\structure\IndexType;
 
-use n2n\persistence\meta\impl\sqlite\SqliteCreateStatementBuilder;
+use n2n\impl\persistence\meta\sqlite\SqliteCreateStatementBuilder;
 
 use n2n\persistence\meta\structure\Table;
 
@@ -31,13 +31,13 @@ use n2n\persistence\meta\structure\View;
 
 use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
 
-use n2n\persistence\meta\impl\sqlite\SqliteIndexStatementStringBuilder;
+use n2n\impl\persistence\meta\sqlite\SqliteIndexStatementStringBuilder;
 
-use n2n\persistence\meta\impl\sqlite\SqliteColumnStatementStringBuilder;
+use n2n\impl\persistence\meta\sqlite\SqliteColumnStatementStringBuilder;
 
 use n2n\persistence\meta\structure\common\AlterMetaEntityRequest;
 
-use n2n\persistence\meta\impl\sqlite\SqliteMetaEntityBuilder;
+use n2n\impl\persistence\meta\sqlite\SqliteMetaEntityBuilder;
 
 use n2n\persistence\Pdo;
 

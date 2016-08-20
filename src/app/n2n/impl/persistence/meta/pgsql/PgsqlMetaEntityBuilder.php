@@ -19,22 +19,22 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\pgsql;
+namespace n2n\impl\persistence\meta\pgsql;
 
 use n2n\persistence\Pdo;
-use n2n\persistence\meta\impl\pgsql\PgsqlDatabase;
-use n2n\persistence\meta\impl\pgsql\PgsqlView;
-use n2n\persistence\meta\impl\pgsql\PgsqlTable;
+use n2n\impl\persistence\meta\pgsql\PgsqlDatabase;
+use n2n\impl\persistence\meta\pgsql\PgsqlView;
+use n2n\impl\persistence\meta\pgsql\PgsqlTable;
 
-use n2n\persistence\meta\impl\pgsql\PgsqlBinaryColumn;
-use n2n\persistence\meta\impl\pgsql\PgsqlDateTimeColumn;
-use n2n\persistence\meta\impl\pgsql\PgsqlEnumColumn;
-use n2n\persistence\meta\impl\pgsql\PgsqlFixedPointColumn;
-use n2n\persistence\meta\impl\pgsql\PgsqlFloatingPointColumn;
-use n2n\persistence\meta\impl\pgsql\PgsqlIntegerColumn;
-use n2n\persistence\meta\impl\pgsql\PgsqlStringColumn;
-use n2n\persistence\meta\impl\pgsql\PgsqlTextColumn;
-use n2n\persistence\meta\impl\pgsql\PgsqlColumn;
+use n2n\impl\persistence\meta\pgsql\PgsqlBinaryColumn;
+use n2n\impl\persistence\meta\pgsql\PgsqlDateTimeColumn;
+use n2n\impl\persistence\meta\pgsql\PgsqlEnumColumn;
+use n2n\impl\persistence\meta\pgsql\PgsqlFixedPointColumn;
+use n2n\impl\persistence\meta\pgsql\PgsqlFloatingPointColumn;
+use n2n\impl\persistence\meta\pgsql\PgsqlIntegerColumn;
+use n2n\impl\persistence\meta\pgsql\PgsqlStringColumn;
+use n2n\impl\persistence\meta\pgsql\PgsqlTextColumn;
+use n2n\impl\persistence\meta\pgsql\PgsqlColumn;
 
 class PgsqlMetaEntityBuilder {
 	const TABLE_TYPE_BASE_TABLE = 'BASE TABLE';

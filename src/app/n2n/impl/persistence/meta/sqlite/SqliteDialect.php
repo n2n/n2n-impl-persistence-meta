@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\sqlite;
+namespace n2n\impl\persistence\meta\sqlite;
 
 use n2n\io\InputStream;
 
@@ -38,7 +38,7 @@ use n2n\persistence\meta\structure\InvalidColumnAttributesException;
 use n2n\persistence\meta\structure\Column;
 use n2n\persistence\PersistenceUnitConfig;
 use n2n\persistence\Pdo;
-use n2n\persistence\meta\impl\DialectAdapter;
+use n2n\impl\persistence\meta\DialectAdapter;
 
 class SqliteDialect extends DialectAdapter {
 	public function __construct() {
@@ -101,7 +101,7 @@ class SqliteDialect extends DialectAdapter {
 		
 		if (!($column instanceof SqliteIntegerColumn)) {
 			throw new InvalidColumnAttributesException(SysTextUtils::get('n2n_error_persistance_invalid_generated_identifier',
-							array('required_column_type' => 'n2n\persistence\meta\impl\sqlite\SqliteIntegerColumn', 'given_column_type' => get_class($column))));
+							array('required_column_type' => 'n2n\impl\persistence\meta\sqlite\SqliteIntegerColumn', 'given_column_type' => get_class($column))));
 		}
 		//the Value automatically gets Generated Identifier if the column type is Integer
 		//this triggers a changerequest -> type will be changed to INTEGER

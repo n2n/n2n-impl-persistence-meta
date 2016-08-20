@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\persistence\meta\impl\oracle;
+namespace n2n\impl\persistence\meta\oracle;
 
 use n2n\persistence\meta\structure\Size;
 
@@ -55,7 +55,7 @@ class OracleMetaEntityBuilder {
 	private $dbh;
 	
 	/**
-	 * @var n2n\persistence\meta\impl\oracle\OracleDatabase
+	 * @var n2n\impl\persistence\meta\oracle\OracleDatabase
 	 */
 	private $database;
 	
