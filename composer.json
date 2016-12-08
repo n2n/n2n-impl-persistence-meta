@@ -1,27 +1,31 @@
 {
-    "name": "n2n/n2n-impl-persistence-meta",
-    "type": "library",
-    "description": "n2n persistence meta api implenation",
-    "keywords": ["n2n","persistence","database meta api"],
-    "homepage": "http://n2n.rocks/",
-    "license": "GNU LGPL",
     "authors": [
         {
-            "name": "Thomas Günther",
-            "email": "guenther@hnm.ch"
+            "email": "guenther@hnm.ch",
+            "name": "Thomas G\u00fcnther"
         }
     ],
-    "require": {
-        "php": ">=7.0",
-        "n2n/n2n-io": "7.1.x-dev",
-        "n2n/n2n-l10n": "7.1.x-dev",
-        "n2n/n2n-persistence": "7.1.x-dev",
-        "n2n/n2n-reflection": "7.1.x-dev",
-        "n2n/n2n-util": "7.1.x-dev"
-    },
     "autoload": {
         "psr-4": {
             "n2n\\impl\\persistence\\meta\\": "src/app/n2n/impl/persistence/meta"
         }
-    }
+    },
+    "description": "n2n persistence meta api implenation",
+    "homepage": "http://n2n.rocks/",
+    "keywords": [
+        "n2n",
+        "persistence",
+        "database meta api"
+    ],
+    "license": "GNU LGPL",
+    "name": "n2n/n2n-impl-persistence-meta",
+    "require": {
+        "n2n/n2n-io": "^7.1.10",
+        "n2n/n2n-l10n": "^7.1.10",
+        "n2n/n2n-persistence": "^7.1.10",
+        "n2n/n2n-reflection": "^7.1.10",
+        "n2n/n2n-util": "^7.1.10",
+        "php": ">=7.0"
+    },
+    "type": "library"
 }
