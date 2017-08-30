@@ -28,68 +28,66 @@ use n2n\persistence\meta\data\QueryTable;
 use n2n\persistence\meta\structure\common\BackuperAdapter;
 use n2n\util\ex\IllegalStateException;
 use n2n\impl\persistence\meta\pgsql\PgsqlCreateStatementBuilder;
-use n2n\core\SysTextUtils;
 
 class PgsqlBackuper extends BackuperAdapter {
 	const NUM_INSERT_STATEMENTS = 1000;
 
 	public function start() {
 		if (!(($this->getOutputStream()) || !($this->getOutputStream()->isOpen()) )) {
-			throw new IllegalStateException(SysTextUtils::get('n2n_error_persistence_meta_mysql_backuper_outputstream_not_set'));
+			throw new IllegalStateException('No outputstream set for pgsql backuper');
 		}
 
 		$this->getOutputStream()->write($this->getHeader());
 
 		$metaEntities = $this->getMetaEntities();
-		if (!sizeof($metaEntities)) {
+		if (count($metaEntities) === 0) {
 			$metaEntities = $this->database->getMetaEntities();
 		}
 		$createStatementBuilder = new PgsqlCreateStatementBuilder($this->dbh);
 
 		foreach ($metaEntities as $metaEntity) {
-			if (!is_object($metaEntity)) {
-				$metaEntity = $this->database->getMetaEntityByName($metaEntity->getName());
+			if (is_scalar($metaEntity)) {
+				$metaEntity = $this->database->getMetaEntityByName($metaEntity);
 			}
 
-			$createStatementBuilder->setMetaEntity($metaEntity);
 			if ($this->isBackupStructureEnabled()) {
+				$createStatementBuilder->setMetaEntity($metaEntity);
 				$this->getOutputStream()->write($createStatementBuilder->toSqlString());
 			}
 
-			if ($metaEntity instanceof PgsqlTable) {
-				if ($this->isBackupDataEnabled()) {
-					$selectStatementBuilder = $this->dialect->createSelectStatementBuilder($this->dbh);
-					$selectStatementBuilder->addFrom(new QueryTable($metaEntity->getName()), null);
-					$stmt = $this->dbh->prepare($selectStatementBuilder->toSqlString());
-					$stmt->execute();
-					$result = $stmt->fetchAll(Pdo::FETCH_ASSOC);
+			if ($metaEntity instanceof PgsqlTable && $this->isBackupDataEnabled()) {
+				$selectStatementBuilder = $this->dialect->createSelectStatementBuilder($this->dbh);
+				$selectStatementBuilder->addFrom(new QueryTable($metaEntity->getName()), null);
+				$stmt = $this->dbh->prepare($selectStatementBuilder->toSqlString());
+				$stmt->execute();
+				$result = $stmt->fetchAll(Pdo::FETCH_ASSOC);
 
-					if (sizeof($result) == 1) {
-						foreach ($result as $row) {
-							$insertStatementBuilder = $this->dialect->createInsertStatementBuilder($this->dbh);
-							$insertStatementBuilder->setTable($metaEntity->getName());
-							foreach ($row as $key => $value) {
-								$insertStatementBuilder->addColumn(new QueryColumn($key), new QueryConstant($value));
-							}
-							$this->getOutputStream()->write($insertStatementBuilder->toSqlString());
-						}
-					} else {
+				if (count($result) === 1) {
+					foreach ($result as $row) {
 						$insertStatementBuilder = $this->dialect->createInsertStatementBuilder($this->dbh);
 						$insertStatementBuilder->setTable($metaEntity->getName());
 	
-						foreach ($result as $index => $row) {
-							if ($index % self::NUM_INSERT_STATEMENTS == 0) {
-								$this->getOutputStream()->write($insertStatementBuilder->toSqlString());
-								$insertStatementBuilder = $this->dialect->createInsertStatementBuilder($this->dbh);
-								$insertStatementBuilder->setTable($metaEntity->getName());
-							}
-							$valueGroup = $insertStatementBuilder->createAdditionalValueGroup();
-							foreach ($row as $key => $value) {
-								$valueGroup->addValue(new QueryConstant($value));
-							}
+						foreach ($row as $key => $value) {
+							$insertStatementBuilder->addColumn(new QueryColumn($key), new QueryConstant($value));
 						}
 						$this->getOutputStream()->write($insertStatementBuilder->toSqlString());
 					}
+				} else {
+					$insertStatementBuilder = $this->dialect->createInsertStatementBuilder($this->dbh);
+					$insertStatementBuilder->setTable($metaEntity->getName());
+					foreach ($result as $index => $row) {
+						if ($index % self::NUM_INSERT_STATEMENTS == 0) {
+							$this->getOutputStream()->write($insertStatementBuilder->toSqlString());
+							$insertStatementBuilder = $this->dialect->createInsertStatementBuilder($this->dbh);
+							$insertStatementBuilder->setTable($metaEntity->getName());
+						}
+							
+						$valueGroup = $insertStatementBuilder->createAdditionalValueGroup();
+						foreach ($row as $key => $value) {
+							$valueGroup->addValue(new QueryConstant($value));
+						}
+						}
+						$this->getOutputStream()->write($insertStatementBuilder->toSqlString());
 				}
 			}
 		}
