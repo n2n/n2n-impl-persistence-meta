@@ -31,7 +31,12 @@ class SqliteOrmDialectConfig implements OrmDialectConfig {
 	*/
 	public function parseDateTime($rawValue) {
 		if (null === $rawValue) return null;
-		return DateUtils::createDateTimeFromFormat(SqliteDateTimeColumn::FORMAT_DATE_TIME, $rawValue);
+		
+		try {
+			return DateUtils::createDateTimeFromFormat(SqliteDateTimeColumn::FORMAT_DATE_TIME, $rawValue);
+		} catch (\n2n\util\DateParseException $e) {
+			throw new \InvalidArgumentException($e->getMessage(), 0, $e);
+		}
 	}
 	/* (non-PHPdoc)
 	 * @see n2n\persistence\meta.OrmDialectConfig::buildDateTimeRawValue()
