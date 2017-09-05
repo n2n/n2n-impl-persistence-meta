@@ -32,7 +32,12 @@ class PgsqlOrmDialectConfig implements OrmDialectConfig {
 	 */
 	public function parseDateTime($rawValue) {
 		if (null === $rawValue) return null;
-		return DateUtils::createDateTimeFromFormat(\DateTime::ISO8601, $rawValue);
+		
+		try {
+			return DateUtils::createDateTimeFromFormat(\DateTime::ISO8601, $rawValue);
+		} catch (\n2n\util\DateParseException $e) {
+			throw new \InvalidArgumentException($e->getMessage(), 0, $e);
+		}
 	}
 	/**
 	 * @param DateTime $dateTime

@@ -23,6 +23,7 @@ namespace n2n\impl\persistence\meta\mysql;
 
 use n2n\persistence\meta\OrmDialectConfig;
 use n2n\util\DateUtils;
+use n2n\util\DateParseException;
 
 class MysqlOrmDialectConfig implements OrmDialectConfig {
 	/* (non-PHPdoc)
@@ -32,7 +33,16 @@ class MysqlOrmDialectConfig implements OrmDialectConfig {
 		if (null === $rawValue) {
 			return null;
 		}
-		return DateUtils::createDateTimeFromFormat(MysqlDateTimeColumn::FORMAT_DATE_TIME, $rawValue);
+		
+		try {
+			$dateTime = DateUtils::createDateTimeFromFormat(MysqlDateTimeColumn::FORMAT_DATE_TIME, $rawValue);
+			if ($dateTime->getTimestamp() === false) {
+				throw new DateParseException('Invalid datetime raw value: ' . $rawValue);
+			}
+			return $dateTime;
+		} catch (\n2n\util\DateParseException $e) {
+			throw new \InvalidArgumentException($e->getMessage(), 0, $e);
+		}
 	}
 	/* (non-PHPdoc)
 	 * @see n2n\persistence\meta.OrmDialectConfig::buildRawValue()
@@ -40,7 +50,8 @@ class MysqlOrmDialectConfig implements OrmDialectConfig {
 	public function buildDateTimeRawValue(\DateTime $dateTime = null) {
 		if (null === $dateTime) {
 			return null;
-		}	
+		}
+		
 		return DateUtils::formatDateTime($dateTime, MysqlDateTimeColumn::FORMAT_DATE_TIME);
 	}
 	/* (non-PHPdoc)

@@ -33,8 +33,13 @@ class OracleOrmDialectConfig implements OrmDialectConfig {
 	*/
 	public function parseDateTime($rawValue) {
 		if (null === $rawValue) return null;
-		return DateUtils::createDateTimeFromFormat(OracleDateTimeColumn::generateFormatBuildRawValue(
-				OracleDateTimeColumn::FORMAT_BUILD_TYPE_PARSE, true, true), $rawValue);
+		
+		try {
+			return DateUtils::createDateTimeFromFormat(OracleDateTimeColumn::generateFormatBuildRawValue(
+					OracleDateTimeColumn::FORMAT_BUILD_TYPE_PARSE, true, true), $rawValue);
+		} catch (\n2n\util\DateParseException $e) {
+			throw new \InvalidArgumentException($e->getMessage(), 0, $e);
+		}
 	}
 	
 	/* (non-PHPdoc)

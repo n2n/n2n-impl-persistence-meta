@@ -34,9 +34,14 @@ class MssqlOrmDialectConfig implements OrmDialectConfig {
 	 */
 	public function parseDateTime($rawValue) {
 		if (null === $rawValue) return null;
-		return DateUtils::createDateTimeFromFormat(MssqlDateTimeColumn::generateFormatBuildRawValue(
-						MssqlDateTimeColumn::FORMAT_BUILD_TYPE_PARSE, true, true, self::COLUMN_TYPE_PRECISION, false),
-				$rawValue);
+		
+		try {
+			return DateUtils::createDateTimeFromFormat(MssqlDateTimeColumn::generateFormatBuildRawValue(
+							MssqlDateTimeColumn::FORMAT_BUILD_TYPE_PARSE, true, true, self::COLUMN_TYPE_PRECISION, false),
+					$rawValue);
+		} catch (\n2n\util\DateParseException $e) {
+			throw new \InvalidArgumentException($e->getMessage(), 0, $e);
+		}
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\meta\OrmDialectConfig::buildDateTimeRawValue()
