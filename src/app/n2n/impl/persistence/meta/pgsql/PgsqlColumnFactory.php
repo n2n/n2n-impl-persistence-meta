@@ -56,7 +56,7 @@ class PgsqlColumnFactory implements ColumnFactory {
 	 * @see n2n\persistence\meta.ColumnFactory::createBinaryColumn()
 	 */
 	public function createBinaryColumn($name, $size) {
-		$binaryColumn = new PgsqlBinaryColumn($name, $size);
+		$binaryColumn = new CommonBinaryColumn($name, $size);
 		$this->table->addColumn($binaryColumn);
 		return $binaryColumn;
 	}
@@ -76,7 +76,7 @@ class PgsqlColumnFactory implements ColumnFactory {
 	 * @see n2n\persistence\meta.ColumnFactory::createFixedPointColumn()
 	 */
 	public function createFixedPointColumn($name, $numIntegerDigits, $numDecimalDigits) {
-		$fixedPointColumn = new PgsqlFixedPointColumn($name, $numIntegerDigits, $numDecimalDigits);
+		$fixedPointColumn = new CommonFixedPointColumn($name, $numIntegerDigits, $numDecimalDigits);
 		$this->table->addColumn($fixedPointColumn);
 		return $fixedPointColumn;
 	}
@@ -86,7 +86,7 @@ class PgsqlColumnFactory implements ColumnFactory {
 	 * @see n2n\persistence\meta.ColumnFactory::createFloatingPointColumn()
 	 */
 	public function createFloatingPointColumn($name, $size) {
-		$floatingPointColumn = new PgsqlFloatingPointColumn($name, $size);
+		$floatingPointColumn = new CommonFloatingPointColumn($name, $size);
 		$this->table->addColumn($floatingPointColumn);
 		return $floatingPointColumn;
 	}
@@ -106,7 +106,7 @@ class PgsqlColumnFactory implements ColumnFactory {
 	 * @see n2n\persistence\meta.ColumnFactory::createEnumColumn()
 	 */
 	public function createEnumColumn($name, array $values) {
-		$enumColumn = new PgsqlEnumColumn($name, $values);
+		$enumColumn = new CommonEnumColumn($name, $values);
 		$this->table->addColumn($enumColumn);
 		return $enumColumn;
 	}
@@ -116,7 +116,7 @@ class PgsqlColumnFactory implements ColumnFactory {
 	 * @see n2n\persistence\meta.ColumnFactory::createStringColumn()
 	 */
 	public function createStringColumn($name, $length, $charset = null) {
-		$stringColumn = new PgsqlStringColumn($name, $length, $charset);
+		$stringColumn = new CommonStringColumn($name, $length, $charset);
 		$this->table->addColumn($stringColumn);
 		return $stringColumn;
 	}
@@ -126,7 +126,7 @@ class PgsqlColumnFactory implements ColumnFactory {
 	 * @see n2n\persistence\meta.ColumnFactory::createTextColumn()
 	 */
 	public function createTextColumn($name, $size, $charset = null) {
-		$textColumn = new PgsqlTextColumn($name, $size, $charset);
+		$textColumn = new CommonTextColumn($name, $size, $charset);
 		$this->table->addColumn($textColumn);
 		return $textColumn;
 	}

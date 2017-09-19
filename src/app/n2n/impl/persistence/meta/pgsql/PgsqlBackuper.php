@@ -26,7 +26,6 @@ use n2n\persistence\meta\data\QueryColumn;
 use n2n\persistence\Pdo;
 use n2n\persistence\meta\data\QueryTable;
 use n2n\persistence\meta\structure\common\BackuperAdapter;
-use n2n\util\ex\IllegalStateException;
 use n2n\impl\persistence\meta\pgsql\PgsqlCreateStatementBuilder;
 
 class PgsqlBackuper extends BackuperAdapter {
@@ -43,6 +42,7 @@ class PgsqlBackuper extends BackuperAdapter {
 		if (count($metaEntities) === 0) {
 			$metaEntities = $this->database->getMetaEntities();
 		}
+
 		$createStatementBuilder = new PgsqlCreateStatementBuilder($this->dbh);
 
 		foreach ($metaEntities as $metaEntity) {
@@ -66,7 +66,6 @@ class PgsqlBackuper extends BackuperAdapter {
 					foreach ($result as $row) {
 						$insertStatementBuilder = $this->dialect->createInsertStatementBuilder($this->dbh);
 						$insertStatementBuilder->setTable($metaEntity->getName());
-	
 						foreach ($row as $key => $value) {
 							$insertStatementBuilder->addColumn(new QueryColumn($key), new QueryConstant($value));
 						}
@@ -75,22 +74,24 @@ class PgsqlBackuper extends BackuperAdapter {
 				} else {
 					$insertStatementBuilder = $this->dialect->createInsertStatementBuilder($this->dbh);
 					$insertStatementBuilder->setTable($metaEntity->getName());
+
 					foreach ($result as $index => $row) {
 						if ($index % self::NUM_INSERT_STATEMENTS == 0) {
 							$this->getOutputStream()->write($insertStatementBuilder->toSqlString());
 							$insertStatementBuilder = $this->dialect->createInsertStatementBuilder($this->dbh);
 							$insertStatementBuilder->setTable($metaEntity->getName());
 						}
-							
+
 						$valueGroup = $insertStatementBuilder->createAdditionalValueGroup();
 						foreach ($row as $key => $value) {
 							$valueGroup->addValue(new QueryConstant($value));
 						}
-						}
-						$this->getOutputStream()->write($insertStatementBuilder->toSqlString());
+					}
+					$this->getOutputStream()->write($insertStatementBuilder->toSqlString());
 				}
 			}
 		}
+
 		$this->getOutputStream()->flush();
 	}
 }

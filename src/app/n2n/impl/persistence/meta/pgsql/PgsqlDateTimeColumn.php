@@ -23,117 +23,41 @@ namespace n2n\impl\persistence\meta\pgsql;
 
 use n2n\persistence\meta\structure\DateTimeColumn;
 
-class PgsqlDateTimeColumn extends PgsqlColumn implements DateTimeColumn, PgsqlManagedColumn {
+class PgsqlDateTimeColumn extends DateTimeColumnAdapter {
 	const FORMAT_DATE = 'Y-m-d';
 	const FORMAT_DATE_TIME = 'Y-m-d H:i:s';
 	const FORMAT_TIME = 'H:i:s';
 
-	private $dateAvailable;
-	private $timeAvailable;
-
-	/**
-	 * @param Strign $name
-	 * @param Boolean $dateAvailable
-	 * @param Boolean $timeAvailable
-	 */
-	public function __construct($name, $dateAvailable, $timeAvailable) {
-		parent::__construct($name);
-		$this->setDateAvailable($dateAvailable);
-		$this->setTimeAvailable($timeAvailable);
-	}
-
-	/**
-	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta.DateTimeColumn::parseDateTime()
-	 */
-	public function parseDateTime($rawValue) {
-		return \DateTime::createFromFormat($this->getFormat(), $rawValue);
-	}
-
-	/**
-	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta.DateTimeColumn::buildRawValue()
-	 */
-	public function buildRawValue(\DateTime $dateTime = null) {
-		if (is_null($dateTime)) {
-			$dateTime = new \DateTime();
-		}
-		return $dateTime->format($this->getFormat());
-	}
-
-	/**
-	 * @param Boolean $dateAvailable
-	 */
-	private function setDateAvailable($dateAvailable) {
-		$this->dateAvailable = (bool) $dateAvailable;
-	}
-
-	/**
-	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta.DateTimeColumn::isDateAvailable()
-	 */
-	public function isDateAvailable() {
-		return $this->dateAvailable;
-	}
-
-	/**
-	 * @param Boolean $timeAvailable
-	 */
-	private function setTimeAvailable($timeAvailable) {
-		$this->timeAvailable = (bool) $timeAvailable;
-	}
-
-	/**
-	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta.DateTimeColumn::isTimeAvailable()
-	 */
-	public function isTimeAvailable() {
-		return $this->timeAvailable;
-	}
-
-	/**
-	 * (non-PHPdoc)
-	 * @see n2n\impl\persistence\meta\pgsql.PgsqlManagedColumn::getTypeForCurrentState()
-	 */
-	public function getTypeForCurrentState() {
-		switch (true) {
-			case ($this->isDateAvailable() && $this->isTimeAvailable()):
-			default:
-				return 'TIMESTAMP WITHOUT TIME ZONE';
-			case ($this->isDateAvailable()):
-				return 'DATE';
-			case ($this->isTimeAvailable()):
-				return 'TIME WITHOUT TIME ZONE';
-		}
-	}
-
-	/**
-	 * @return String
-	 */
-	private function getFormat() {
-		switch (true) {
-			case ($this->isDateAvailable() && $this->isTimeAvailable()):
-			default:
-				return self::FORMAT_DATE_TIME;
-			case ($this->isDateAvailable()):
-				return self::FORMAT_DATE;
-			case ($this->isTimeAvailable()):
-				return self::FORMAT_TIME;
-		}
-	}
-
-	/**
-	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta.Column::copy()
-	 */
 	public function copy($newColumnName = null) {
-		if (is_null($newColumnName)) $newColumnName = $this->getName();
-		$newDateTimeColumn = new PgsqlDateTimeColumn($newColumnName, $this->isDateAvailable(), $this->isTimeAvailable());
-		$newDateTimeColumn->setAttrs($this->getAttrs());
-		$newDateTimeColumn->setDefaultValue($this->getDefaultValue());
-		$newDateTimeColumn->setNullAllowed($this->isNullAllowed());
-		$newDateTimeColumn->setValueGenerated($this->isValueGenerated());
+		if (null === $newColumnName) {
+			$newColumnName = $this->getName();
+		}
+		$newColumn = new PgsqlDateTimeColumn($newColumnName, $this->isDateAvailable(), $this->isTimeAvailable());
+		$newColumn->applyCommonAttributes($this);
+		return $newColumn;
+	}
 
-		return $newDateTimeColumn;
+	protected function getParseFormat() {
+		return $this->getFormat();
+	}
+
+	protected function getBuildFormat() {
+		return $this->getFormat();
+	}
+
+	private function getFormat() {
+		if ($this->dateAvailable && $this->timeAvailable) {
+			return self::FORMAT_DATE_TIME;
+		}
+
+		if ($this->dateAvailable) {
+			return self::FORMAT_DATE;
+		}
+
+		if ($this->timeAvailable) {
+			return self::FORMAT_DATE_TIME;
+		}
+
+		throw new IllegalStateException('No date or time available.');
 	}
 }
