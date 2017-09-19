@@ -21,22 +21,24 @@
  */
 namespace n2n\impl\persistence\meta\pgsql;
 
-use n2n\persistence\meta\structure\IndexType;
 use n2n\persistence\Pdo;
+use n2n\persistence\meta\structure\MetaEntity;
+use n2n\persistence\meta\structure\View;
+use n2n\util\ex\IllegalStateException;
+use n2n\persistence\meta\structure\EnumColumn;
 
 class PgsqlCreateStatementBuilder {
-	private $dbh;
+	private $pdo;
 	private $metaEntity;
-	private $sequenceNeeded;
-	private $enumCreateTypeSqlStatements = array();
-	private $newTypeNames = array();
+
+	private $sqlStatements = array();
+	private $enumTypeSqlStatements = array();
 
 	public function __construct(Pdo $dbh) {
-		$this->dbh = $dbh;
-		$this->sequenceNeeded = true;
+		$this->pdo = $dbh;
 	}
 
-	public function setMetaEntity(PgsqlMetaEntity $metaEntity) {
+	public function setMetaEntity(MetaEntity $metaEntity) {
 		$this->metaEntity = $metaEntity;
 	}
 
@@ -44,177 +46,90 @@ class PgsqlCreateStatementBuilder {
 		return $this->metaEntity;
 	}
 
-	public function setSequenceNeeded($sequenceNeeded) {
-		$this->sequenceNeeded = (bool) $sequenceNeeded;
-	}
+	public function toSqlString($replace = false, $formatted = false) {
+		$sqlString = '';
+		foreach ($this->createSqlStatements($replace, $formatted) as $sql) {
+			$sqlString .= $sql;
 
-	public function isSequenceNeeded() {
-		return (bool) $this->sequenceNeeded;
-	}
+			if ($formatted) {
+				$sqlString .= PHP_EOL;
+			}
 
-	private function addNewTypeName($typeName) {
-		$this->newTypeNames[] = $typeName;
-	}
-
-	private function getNewTypeNames() {
-		return $this->newTypeNames;
-	}
-
-	public function toSqlString() {
-		$sqlString = null;
-		foreach ($this->generateSqlStatements() as $sql) {
-			$sqlString .= $sql . "\n";
 		}
 		return $sqlString;
 	}
 
 	public function executeSqlStatements() {
-		foreach ($this->generateSqlStatements() as $sqlStatement) {
-			if ($sqlStatement != "\n") $this->dbh->exec($sqlStatement);
+		foreach ($this->createSqlStatements() as $sqlStatement) {
+			$this->pdo->exec($sqlStatement);
 		}
 	}
 
-	public function generateSqlStatements() {
-		$sqlStatements = array();
+	public function createSqlStatements($replace = false, $formatted = false) {
+		$this->sqlStatements = array();
+		$this->enumTypeSqlStatements = array();
 
-		if ($this->getMetaEntity() instanceof PgsqlTable) {
-			if ($this->sequenceNeeded) {
-				foreach ($this->generateSequenceSql() as $sequenceValue) {
-					$sqlStatements[] = $sequenceValue;
-				}
-				$this->sequenceNeeded = false;
+		$metaEntity = $this->getMetaEntity();
+		$quotedMetaEntityName = $this->pdo->quoteField($metaEntity->getName());
+
+		if ($this->getMetaEntity() instanceof View) {
+			if ($replace) {
+				$this->sqlStatements[] = 'DROP VIEW IF EXISTS ' . $quotedMetaEntityName . '; ';
 			}
-			$sqlStatements[] = ' DROP TABLE IF EXISTS ' . $this->dbh->quoteField($this->getMetaEntity()->getName()) . '; ';
-			$sql = ' CREATE TABLE ' . $this->dbh->quoteField($this->getMetaEntity()->getName()) . ' (';
-			$sql .= implode(', ', $this->getTableColumnsSql($this->dbh)) . '); ';
-			$sqlStatements[] = $sql;
-			$sqlStatements = array_merge($sqlStatements, $this->getTableIndexesSql($this->dbh));
-		} elseif ($this->getMetaEntity() instanceof PgsqlView) {
-			$sqlStatements[] = ' DROP VIEW IF EXISTS ' . $this->dbh->quoteField($this->getMetaEntity()->getName()) . '; ';
-			$sqlStatements[] = ' CREATE OR REPLACE VIEW ' . $this->dbh->quoteField($this->getMetaEntity()->getName())
-					. ' AS ' . $this->getMetaEntity()->getQuery()
-					. (substr($this->getMetaEntity()->getQuery(), -1) == ';' ? '' : ';');
+				
+			$this->sqlStatements[] = 'CREATE VIEW ' . $quotedMetaEntityName . ' AS '
+					. $this->pdo->quote($this->getMetaEntity()->getQuery());
+						
+					return $this->sqlStatements;
 		}
-		$returnArray = array_merge(array("\n"), $this->getEnumCreateTypeSqlStatements(), $sqlStatements);
-		$this->enumCreateTypeSqlStatements = array();
-		return $returnArray;
+
+		if ($metaEntity instanceof PgsqlTable) {
+			if ($replace) {
+				$this->sqlStatements[] = 'DROP TABLE IF EXISTS ' . $quotedMetaEntityName . '; ';
+			}
+				
+			$this->sqlStatements[] = 'CREATE TABLE ' . $quotedMetaEntityName . ' ('
+					. implode(', ', $this->buildColumnSqlFragments($formatted)) . ');';
+						
+					$this->buildIndexesSql($replace, $formatted);
+						
+					return array_merge($this->enumTypeSqlStatements, $this->sqlStatements);
+		}
+
+		throw new IllegalStateException('Inavlid meta entity given. Given type is "' . get_class($this->metaEntity));
 	}
 
-	private function generateSequenceSql() {
-		$stmt = $this->dbh->prepare('SELECT * FROM INFORMATION_SCHEMA.sequences WHERE sequence_catalog = ?');
-		$stmt->execute(array($this->metaEntity->getDatabase()->getName()));
-		$result = $stmt->fetchAll(Pdo::FETCH_ASSOC);
-
-		$sequenceSqlArray = array();
-		foreach ($result as $row) {
-			$sequenceSqlArray[] = ' DROP SEQUENCE IF EXISTS ' . $row['sequence_name'] . ';';
-			$sequenceSqlArray[] = ' CREATE SEQUENCE ' . $row['sequence_name']
-					. ' INCREMENT ' . $row['increment']
-					. ' MINVALUE ' . $row['minimum_value']
-					. ' MAXVALUE ' . $row['maximum_value']
-					. ' START ' . $row['start_value']
-					. ' CACHE 1;';
-		}
-		return $sequenceSqlArray;
-	}
-
-	private function getTableColumnsSql(Pdo $dbh) {
+	private function buildColumnSqlFragments($formatted = false) {
 		$columns = $this->getMetaEntity()->getColumns();
+		$columnArray = array();
+		$columnStatementFragmentBuilder = new PgsqlColumnStatementFragmentBuilder($this->pdo);
+		$enumStatementBuilder = new PgsqlEnumStatementBuilder($this->pdo);
 
 		foreach ($columns as $column) {
-			$typeName = $column->getTypeForCurrentState();
+			if ($column instanceof EnumColumn) {
+				if ($enumStatementBuilder->containsEnumType($column)) {
+					$this->enumTypeSqlStatements[] = $enumStatementBuilder->buildDropEnumTypeStatement($column);
+				}
 
-			if ($column instanceof PgsqlEnumColumn) {
-				for ($i = 0; $i <= PHP_INT_MAX; $i++) {
-					$typeName = 'enum_type_' . $i;
-					if (!$this->containsTypeName($typeName) && !in_array($typeName, $this->getNewTypeNames())) {
-						$this->addNewTypeName($typeName);
-						break;
-					}
-				}
-				if (sizeof($column->getValues())) {
-					$this->addEnumCreateTypeSqlStatement(' CREATE TYPE ' . $typeName
-							. ' AS ENUM (\'' . implode('\',\'', $column->getValues()) . '\');');
-				}
+				$this->enumTypeSqlStatements[] = $enumStatementBuilder->buildCreateEnumTypeStatement($column);
 			}
-
-			$columnArrayValue = null;
-			$columnAttrs = $column->getAttrs();
-			$columnArrayValue = $column->getName() . ' ' . $typeName;
-
-			$columnArrayValue .= (isset($columnAttrs['collctype']) ? ' COLLATION '
-					. $dbh->quoteField($columnAttrs['collctype']) : '') . ($column->isNullAllowed() ? ' NULL ' : ' NOT NULL ');
-			if (isset($columnAttrs['column_default'])) {
-				$columnArrayValue .= ' DEFAULT ';
-				if (substr($columnAttrs['column_default'], 0, 7) == 'nextval') {
-					$columnArrayValue .= $columnAttrs['column_default'];
-				} else {
-					$columnArrayValue .= $columnAttrs['column_default'];
-				}
-			}
-			$columnArray[] = $columnArrayValue;
+				
+			$columnArray[] = ($formatted ? PHP_EOL . "\t" : '') . $columnStatementFragmentBuilder->generateColumnFragment($column);
 		}
 
 		return $columnArray;
 	}
 
-	private function getTableIndexesSql(Pdo $dbh) {
-		$indexArray = array();
-		$indexes = $this->getMetaEntity()->getIndexes();
-		if (sizeof($indexes)) {
+	private function buildIndexesSql(bool $replace = false, bool $formatted = false) {
+		if (count($indexes = $this->getMetaEntity()->getIndexes()) > 0) {
+			$indexStatementBuilder = new PgsqlIndexStatementBuilder($this->pdo);
 			foreach ($indexes as $index) {
-				$indexAttrs = $index->getAttrs();
-
-				$indexColumnArray = array();
-				foreach ($index->getColumns() as $indexColumn) {
-					$indexColumnArray[] = $indexColumn->getName();
+				if ($replace) {
+					$this->sqlStatements[] = $indexStatementBuilder->buildDropStatement($index);
 				}
 
-				$indexArray[] = ' ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName())
-						. ' DROP CONSTRAINT IF EXISTS ' . $dbh->quoteField($index->getName()) . ';';
-				$indexArray[] = ' DROP INDEX IF EXISTS ' . $dbh->quoteField($index->getName()) . ';';
-
-				if (strtoupper($index->getType()) == strtoupper(IndexType::UNIQUE)) {
-					$indexArray[] = ' CREATE UNIQUE INDEX ' . $dbh->quoteField($index->getName()) . ' ON '
-							. $this->metaEntity->getName() . ' (' . implode(',', $indexColumnArray) . '); ';
-					$indexArray[] = ' ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName())
-							. ' ADD ' . $index->getType() . ' USING INDEX '  . $dbh->quoteField($index->getName()) . ';';
-				} elseif (strtoupper($index->getType()) == strtoupper(IndexType::PRIMARY) . ' KEY'
-						|| strtoupper($index->getType()) == strtoupper(IndexType::PRIMARY)) {
-					$indexArray[] = ' ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName())
-							. ' ADD CONSTRAINT ' . $dbh->quoteField($index->getName()) . ' '
-							. (strtoupper($index->getType()) == strtoupper(IndexType::PRIMARY)
-									? strtoupper($index->getType()) . ' KEY' : '')
-							. ' (' . implode(',', $indexColumnArray) . ');';
-				} elseif (strtoupper($index->getType()) == strtoupper(IndexType::INDEX)) {
-					$indexArray[] = ' CREATE INDEX ' . $dbh->quoteField($index->getName()) . ' ON '
-							. $dbh->quoteField($this->getMetaEntity()->getName()) . ' (' . implode(',', $indexColumnArray) . ');';
-				}
+				$this->sqlStatements[] = $indexStatementBuilder->buildCreateStatement($index);
 			}
 		}
-		return $indexArray;
-	}
-
-	private function addEnumCreateTypeSqlStatement($sqlStatement) {
-		$this->enumCreateTypeSqlStatements[] = $sqlStatement;
-	}
-
-	private function getEnumCreateTypeSqlStatements() {
-		return $this->enumCreateTypeSqlStatements;
-	}
-
-	private function containsTypeName($name) {
-		$sql = 'SELECT n.nspname AS enum_schema,  
-					t.typname AS enum_name,  
-					e.enumlabel AS enum_value
-				FROM pg_type t 
-					JOIN pg_enum e ON t.oid = e.enumtypid
-					JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
-				WHERE t.typname = ?
-				LIMIT 1;';
-		$stmt = $this->dbh->prepare($sql);
-		$stmt->execute(array($name));
-
-		return $stmt->fetchAll(Pdo::FETCH_ASSOC);
 	}
 }

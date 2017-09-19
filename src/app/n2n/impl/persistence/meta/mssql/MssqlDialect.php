@@ -23,7 +23,6 @@ namespace n2n\impl\persistence\meta\mssql;
 
 use n2n\io\InputStream;
 use n2n\persistence\meta\data\common\CommonInsertStatementBuilder;
-use n2n\core\SysTextUtils;
 use n2n\persistence\meta\structure\InvalidColumnAttributesException;
 use n2n\persistence\meta\structure\IntegerColumn;
 use n2n\persistence\meta\data\common\CommonDeleteStatementBuilder;
@@ -90,8 +89,9 @@ class MssqlDialect extends DialectAdapter {
 
 	public function applyIdentifierGeneratorToColumn(Pdo $dbh, Column $column, $sequenceName = null) {
 		if (!($column instanceof IntegerColumn)) {
-			throw new InvalidColumnAttributesException(SysTextUtils::get('n2n_error_persistance_invalid_generated_identifier',
-							array('required_column_type' => 'n2n\impl\persistence\meta\sqlite\IntegerColumn', 'given_column_type' => get_class($column))));
+			throw new InvalidColumnAttributesException('Invalid generated identifier "' . $column->getName() 
+					. '" in table "' . $column->getTable()->getName() 
+					. '". Column of type ' . IntegerColumn::class . ' required, ' . get_class($column) . ' given');
 		}
 		//this triggers a changerequest -> type will be changed to INTEGER
 		$column->setGeneratedIdentifier(true);

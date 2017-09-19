@@ -25,11 +25,13 @@ use n2n\persistence\meta\structure\common\DatabaseAdapter;
 use n2n\persistence\meta\structure\common\ChangeRequestQueue;
 use n2n\persistence\meta\structure\MetaEntity;
 use n2n\persistence\Pdo;
+use n2n\impl\persistence\meta\pgsql\management\PgsqlAlterMetaEntityRequest;
+use n2n\impl\persistence\meta\pgsql\management\PgsqlCreateMetaEntityRequest;
+use n2n\impl\persistence\meta\pgsql\management\PgsqlDropMetaEntityRequest;
 
 class PgsqlDatabase extends DatabaseAdapter {
 	const TABLE_SCHEMA = 'public';
 
-	private $metaEntities;
 	private $changeRequestQueue;
 	private $metaEntityFactory;
 
@@ -39,7 +41,6 @@ class PgsqlDatabase extends DatabaseAdapter {
 
 	public function __construct(Pdo $dbh) {
 		parent::__construct($dbh);
-		$this->changeRequestQueue = new ChangeRequestQueue();
 		$this->pgsqlMetaEntityBuilder = new PgsqlMetaEntityBuilder($dbh, $this);
 	}
 
@@ -61,21 +62,6 @@ class PgsqlDatabase extends DatabaseAdapter {
 			$this->charset = $result['charset'];
 		}
 		return $this->charset;
-	}
-
-	public function setMetaEntities(array $metaEntities) {
-		$this->removeMetaEntities();
-		foreach ($metaEntities as $metaEntity) {
-			$this->addMetaEntity($metaEntity);
-			$metaEntity->registerChangeListeners($this);
-		}
-	}
-
-	public function getMetaEntities() {
-		if (!sizeof($this->metaEntities)) {
-			$this->metaEntities = $this->getPersistedMetaEntities();
-		}
-		return $this->metaEntities;
 	}
 
 	public function getAttrs() {
@@ -116,14 +102,14 @@ class PgsqlDatabase extends DatabaseAdapter {
 	}
 
 	public function createAlterMetaEntityRequest(MetaEntity $metaEntity) {
-		return new PgsqlMetaEntityAlterChangeRequest($metaEntity);
+		return new PgsqlAlterMetaEntityRequest($metaEntity);
 	}
 
 	public function createCreateMetaEntityRequest(MetaEntity $metaEntity) {
-		return new PgsqlMetaEntityAddChangeRequest($metaEntity);
+		return new PgsqlCreateMetaEntityRequest($metaEntity);
 	}
 
 	public function createDropMetaEntityRequest(MetaEntity $metaEntity) {
-		return new PgsqlMetaEntityRemoveChangeRequest($metaEntity);
+		return new PgsqlDropMetaEntityRequest($metaEntity);
 	}
 }

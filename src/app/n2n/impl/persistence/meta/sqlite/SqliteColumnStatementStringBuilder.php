@@ -21,12 +21,8 @@
  */
 namespace n2n\impl\persistence\meta\sqlite;
 
-use n2n\core\SysTextUtils;
-
 use n2n\persistence\meta\structure\UnavailableTypeException;
-
 use n2n\persistence\meta\structure\Column;
-
 use n2n\persistence\Pdo;
 
 class SqliteColumnStatementStringBuilder {
@@ -38,8 +34,8 @@ class SqliteColumnStatementStringBuilder {
 	
 	public function generateStatementString(Column $column) {
 		if (!$type = $this->getTypeForCurrentState($column)) {
-			throw new UnavailableTypeException(SysTextUtils::get('n2n_error_persistence_meta_sqlite_no_column_type_given',
-					array('table' => $column->getTable()->getName(), 'column' => $column->getName(), 'type' => get_class($column))));	
+			throw new UnavailableTypeException('Sqlite column type for column"' . $column->getName() . '" (' .  get_class($column) . ') in table"'
+					. $column->getTable()->getName() . 'could not be determined.');	
 		} 
 		$statementString = $this->dbh->quoteField($column->getName()) . ' ' . $type;
 		$statementString .= $this->generateDefaultStatementStringPart($column);

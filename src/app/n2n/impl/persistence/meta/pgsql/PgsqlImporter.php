@@ -26,6 +26,7 @@ use n2n\io\InputStream;
 use n2n\persistence\Pdo;
 
 use n2n\persistence\meta\data\Importer;
+use n2n\util\ex\IllegalStateException;
 
 class PgsqlImporter implements Importer {
 	private $dbh;
@@ -37,6 +38,9 @@ class PgsqlImporter implements Importer {
 	}
 
 	public function execute() {
+		if (!($this->inputStream->isOpen())) {
+			throw new IllegalStateException('Inputstream not open');
+		}
 		$this->dbh->exec($this->inputStream->read());
 	}
 }

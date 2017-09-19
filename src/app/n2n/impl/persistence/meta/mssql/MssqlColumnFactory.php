@@ -22,19 +22,11 @@
 namespace n2n\impl\persistence\meta\mssql;
 
 use n2n\persistence\meta\structure\common\CommonFloatingPointColumn;
-
 use n2n\persistence\meta\structure\common\CommonFixedPointColumn;
-
 use n2n\persistence\meta\structure\common\CommonBinaryColumn;
-
 use n2n\persistence\meta\structure\common\CommonTextColumn;
-
 use n2n\persistence\meta\structure\common\CommonStringColumn;
-
-use n2n\core\SysTextUtils;
-
 use n2n\persistence\meta\structure\ColumnFactory;
-
 use n2n\persistence\meta\structure\UnavailableTypeException;
 
 class MssqlColumnFactory implements ColumnFactory {
@@ -84,7 +76,7 @@ class MssqlColumnFactory implements ColumnFactory {
 	}
 	
 	public function createEnumColumn($name, array $values) {
-		throw new UnavailableTypeException(SysTextUtils::get('n2n_error_persistence_meta_dialect_mssql_enum_type_not_available'));
+		throw new UnavailableTypeException('Mssql does not support enum columns');
 	}
 	
 	public function createFixedPointColumn($name, $numIntegerDigits, $numDecimalDigits) {

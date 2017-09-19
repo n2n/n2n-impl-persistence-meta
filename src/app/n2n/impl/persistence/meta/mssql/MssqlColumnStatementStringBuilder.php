@@ -24,25 +24,14 @@ namespace n2n\impl\persistence\meta\mssql;
 use n2n\persistence\meta\structure\InvalidColumnAttributesException;
 
 use n2n\persistence\meta\structure\FixedPointColumn;
-
-use n2n\core\SysTextUtils;
-
 use n2n\persistence\meta\structure\UnavailableTypeException;
-
 use n2n\persistence\Pdo;
-
 use n2n\persistence\meta\structure\TextColumn;
-
 use n2n\persistence\meta\structure\StringColumn;
-
 use n2n\persistence\meta\structure\common\CommonFloatingPointColumn;
-
 use n2n\persistence\meta\structure\FloatingPointColumn;
-
 use n2n\persistence\meta\structure\BinaryColumn;
-
 use n2n\persistence\meta\structure\IntegerColumn;
-
 use n2n\persistence\meta\structure\Column;
 use n2n\persistence\meta\structure\Size;
 
@@ -58,8 +47,8 @@ class MssqlColumnStatementStringBuilder {
 	
 	public function generateStatementString(Column $column) {
 		if (!$type = $this->getTypeForCurrentState($column)) {
-			throw new UnavailableTypeException(SysTextUtils::get('n2n_error_persistence_meta_mssql_no_column_type_given',
-					array('table' => $column->getTable()->getName(), 'column' => $column->getName(), 'type' => get_class($column))));	
+			throw new UnavailableTypeException('Mssql column type for column"' . $column->getName() . '" (' .  get_class($column) . ') in table"' 
+					. $column->getTable()->getName() . 'could not be determined.');	
 		} 
 		$statementString = $this->dbh->quoteField($column->getName()) . ' ' . $type;
 		$statementString .= $this->generateDefaultStatementStringPart($column);
@@ -76,13 +65,14 @@ class MssqlColumnStatementStringBuilder {
 		}
 		if ($column->isValueGenerated()) {
 			//@todo isGeneratedIdentifier to Dialect
-			if ($column instanceof IntegerColumn && $column->isGeneratedIdentifier()) {
+			if ($column instanceof MssqlIntegerColumn && $column->isGeneratedIdentifier()) {
 				$statementString .= ' IDENTITY(1,1)';
 			} else {
 				$attrs = $column->getAttrs();
 				if (!isset($attrs[self::ATTR_NAME_COMPUTED_VALUE])) {
-					throw new InvalidColumnAttributesException(SysTextUtils::get('n2n_error_computing_definition_not_set',
-							array('table_name' => ($column->getTable()) ? $column->getTable()->getName() : null, 'column_name' => $column->getName())));
+					$tableStr = null !== ($table = $column->getTable()) ? ' in table "' . $table->getName() . '"' : '';
+					throw new InvalidColumnAttributesException('No computing definition for generated value given. Column "' 
+							. $column->getName() . $tableStr);
 				}
 				$statementString .= ' AS ' .  $attrs[self::ATTR_NAME_COMPUTED_VALUE];
 			}

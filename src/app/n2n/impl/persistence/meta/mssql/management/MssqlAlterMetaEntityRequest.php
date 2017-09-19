@@ -56,7 +56,8 @@ class MssqlAlterMetaEntityRequest extends ChangeRequestAdapter implements AlterM
 				} elseif (isset($persistedColumns[$column->getName()]) && (!($column->equals($persistedColumns[$column->getName()])))) {
 					//Identity not allowed in ALTER Statement
 					if ($column instanceof MssqlIntegerColumn && $column->isGeneratedIdentifier()) {
-						throw new InvalidColumnAttributesException(SysTextUtils::get('n2n_persistance_meta_mssql_altering_generated_identifiers_not_possible', array('table' => $this->getMetaEntity()->getName(), 'column' => $column->getName())));
+						throw new InvalidColumnAttributesException('Altering identifiers is not allowed. Tried to alter column"' 
+								. $column->getName() . '" in table "' . $this->getMetaEntity()->getName());
 					} else {
 						$dbh->exec('ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName()) . ' ALTER COLUMN ' . $columnStatementStringBuilder->generateStatementString($column));
 					} 

@@ -23,7 +23,6 @@ namespace n2n\impl\persistence\meta\oracle;
 
 use n2n\persistence\meta\structure\common\BackuperAdapter;
 use n2n\util\ex\IllegalStateException;
-use n2n\core\SysTextUtils;
 use n2n\persistence\meta\structure\Table;
 use n2n\persistence\meta\data\QueryTable;
 use n2n\persistence\Pdo;
@@ -34,7 +33,7 @@ class OracleBackuper extends BackuperAdapter {
 
 	public function start() {
 		if (!(($this->getOutputStream()) || !($this->getOutputStream()->isOpen()) )) {
-			throw new IllegalStateException(SysTextUtils::get('n2n_error_persistence_meta_oracle_backuper_outputstream_not_set'));
+			throw new IllegalStateException('Outputstream not set');
 		}
 
 		$this->getOutputStream()->write($this->getHeader());

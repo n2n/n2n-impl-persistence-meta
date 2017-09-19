@@ -26,7 +26,6 @@ use n2n\persistence\meta\structure\Column;
 use n2n\persistence\Pdo;
 use n2n\impl\persistence\meta\DialectAdapter;
 use n2n\persistence\meta\structure\InvalidColumnAttributesException;
-use n2n\core\SysTextUtils;
 use n2n\persistence\PersistenceUnitConfig;
 use n2n\persistence\meta\data\common\CommonSelectStatementBuilder;
 use n2n\persistence\meta\data\common\CommonUpdateStatementBuilder;
@@ -34,8 +33,7 @@ use n2n\persistence\meta\data\common\CommonInsertStatementBuilder;
 use n2n\persistence\meta\data\common\CommonDeleteStatementBuilder;
 
 class PgsqlDialect extends DialectAdapter {
-	public function __construct() {
-	}
+	public function __construct() {}
 	/**
 	 * @return string
 	 */
@@ -43,15 +41,15 @@ class PgsqlDialect extends DialectAdapter {
 		return 'Pgsql';
 	}
 	/**
-	 * 
+	 *
 	 * @param Pdo $dbh
 	 * @param DatabaseConfiguration $data
 	 */
 	public function initializeConnection(Pdo $dbh, PersistenceUnitConfig $data) {
-		
+
 	}
 	/**
-	 * 
+	 *
 	 * @param Pdo $dbh
 	 * @return Database
 	 */
@@ -59,19 +57,19 @@ class PgsqlDialect extends DialectAdapter {
 		return new PgsqlDatabase($dbh);
 	}
 	/**
-	 * 
+	 *
 	 * @param String $str
 	 */
 	public function quoteField($str) {
 		return '"' . str_replace('"', '', (string) $str) . '"';
 	}
-	
+
 	public function escapeLikePattern($pattern) {
 		return str_replace(array('\\', '%', '_'), array('\\\\', '\\%', '\\_'), $pattern);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param Pdo $dbh
 	 * @return SelectStatementBuilder
 	 */
@@ -149,9 +147,10 @@ class PgsqlDialect extends DialectAdapter {
 	 */
 	public function applyIdentifierGeneratorToColumn(Pdo $dbh, Column $column, $sequenceName) {
 		if (!($column instanceof PgsqlIntegerColumn)) {
-			throw new InvalidColumnAttributesException(SysTextUtils::get('n2n_error_persistance_invalid_generated_identifier',
-					array('required_column_type' => 'n2n\impl\persistence\meta\sqlite\IntegerColumn', 'given_column_type' => get_class($column))));
+			throw new InvalidColumnAttributesException('Invalid generated identifier column "' . $column->getName()
+					. 'Column  must be of type "n2n\impl\persistence\meta\pgsql\PgsqlIntegerColumn, "' . get_class($column) . '" given. ');
 		}
+
 		$column->setNullAllowed(false);
 		$column->setValueGenerated(true);
 	}
