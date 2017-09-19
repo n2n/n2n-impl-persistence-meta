@@ -21,15 +21,12 @@
  */
 namespace n2n\impl\persistence\meta\mssql;
 
-use n2n\core\SysTextUtils;
-
 use n2n\util\ex\IllegalStateException;
-
 use n2n\io\InputStream;
-
 use n2n\persistence\Pdo;
+use n2n\persistence\meta\data\Importer;
 
-class MssqlImporter /* implements Importer */ {
+class MssqlImporter implements Importer {
 	const STATEMENT_DELIMITER = ';';
 	const BATCH_CONTEXT_DELIMITER = 'GO';
 	/**
@@ -53,8 +50,7 @@ class MssqlImporter /* implements Importer */ {
 	
 	public function execute() {
 		if (!($this->inputStream->isOpen())) {
-			throw new IllegalStateException(
-					SysTextUtils::get('n2n_error_persistence_meta_mssql_importer_inputstream_not_open'));
+			throw new IllegalStateException('Inputstream not open');
 		}
 		
 		$statement = '';

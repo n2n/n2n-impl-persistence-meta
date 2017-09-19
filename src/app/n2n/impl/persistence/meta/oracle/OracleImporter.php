@@ -21,12 +21,8 @@
  */
 namespace n2n\impl\persistence\meta\oracle;
 
-use n2n\core\SysTextUtils;
-
 use n2n\util\ex\IllegalStateException;
-
 use n2n\io\InputStream;
-
 use n2n\persistence\Pdo;
 
 class OracleImporter /* implements Importer */ {
@@ -56,9 +52,9 @@ class OracleImporter /* implements Importer */ {
 	public function execute() {
 
 		if (!($this->inputStream->isOpen())) {
-			throw new IllegalStateException(
-					SysTextUtils::get('n2n_error_persistence_meta_mssql_importer_inputstream_not_open'));
+			throw new IllegalStateException('Inputstream not open');
 		}
+		
 		$statement = '';
 		$inStringContext = '';
 		$inPlsqlContext = false;

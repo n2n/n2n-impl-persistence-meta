@@ -22,11 +22,7 @@
 namespace n2n\impl\persistence\meta\sqlite;
 
 use n2n\persistence\meta\structure\Index;
-
-use n2n\core\SysTextUtils;
-
 use n2n\persistence\meta\structure\IndexType;
-
 use n2n\persistence\Pdo;
 
 class SqliteIndexStatementStringBuilder {
@@ -42,7 +38,7 @@ class SqliteIndexStatementStringBuilder {
 	
 		switch ($index->getType()) {
 			case (IndexType::PRIMARY) :
-				throw new \InvalidArgumentException(SysTextUtils::get('n2n_error_persistence_meta_sqlite_primary_keys_can_not_be_created_seperately'));
+				throw new \InvalidArgumentException('Sqlite does not allow to create primary keys manually');
 			case (IndexType::UNIQUE) :
 				$statementString .= ' UNIQUE';
 		}
@@ -69,7 +65,7 @@ class SqliteIndexStatementStringBuilder {
 		$statementString = '';
 		switch ($index->getType()) {
 			case (IndexType::PRIMARY) :
-				throw new \InvalidArgumentException(SysTextUtils::get('n2n_error_persistence_meta_sqlite_primary_keys_can_not_be_dropped'));
+				throw new \InvalidArgumentException('Sqlite does not allow to drop primary keys manually');
 			case (IndexType::UNIQUE) :
 			case (IndexType::INDEX) :
 				$statementString .= 'DROP INDEX'  

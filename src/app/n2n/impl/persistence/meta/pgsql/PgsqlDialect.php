@@ -26,7 +26,6 @@ use n2n\persistence\meta\structure\Column;
 use n2n\persistence\Pdo;
 use n2n\impl\persistence\meta\DialectAdapter;
 use n2n\persistence\meta\structure\InvalidColumnAttributesException;
-use n2n\core\SysTextUtils;
 use n2n\persistence\PersistenceUnitConfig;
 use n2n\persistence\meta\data\common\CommonSelectStatementBuilder;
 use n2n\persistence\meta\data\common\CommonUpdateStatementBuilder;
@@ -149,7 +148,7 @@ class PgsqlDialect extends DialectAdapter {
 	public function applyIdentifierGeneratorToColumn(Pdo $dbh, Column $column, $sequenceName) {
 		if (!($column instanceof PgsqlIntegerColumn)) {
 			throw new InvalidColumnAttributesException('Invalid generated identifier column "' . $column->getName()
-					. 'Column  must be of type "n2n\persistence\meta\impl\pgsql\PgsqlIntegerColumn, "' . get_class($column) . '" given. ');
+					. 'Column  must be of type "n2n\impl\persistence\meta\pgsql\PgsqlIntegerColumn, "' . get_class($column) . '" given. ');
 		}
 
 		$column->setNullAllowed(false);

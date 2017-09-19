@@ -1,12 +1,13 @@
 <?php
-namespace n2n\persistence\meta\impl\pgsql\management;
+namespace n2n\impl\persistence\meta\pgsql\management;
 
 use n2n\persistence\Pdo;
-use n2n\persistence\meta\impl\pgsql\PgsqlIndexStatementBuilder;
+use n2n\impl\persistence\meta\pgsql\PgsqlIndexStatementBuilder;
 use n2n\persistence\meta\structure\Table;
 use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
-use n2n\persistence\meta\impl\pgsql\PgsqlMetaEntityBuilder;
-use n2n\persistence\meta\impl\pgsql\PgsqlColumnStatementFragmentBuilder;
+use n2n\impl\persistence\meta\pgsql\PgsqlMetaEntityBuilder;
+use n2n\persistence\meta\structure\View;
+use n2n\impl\persistence\meta\pgsql\PgsqlColumnStatementFragmentBuilder;
 
 class PgsqlAlterMetaEntityRequest extends ChangeRequestAdapter {
 

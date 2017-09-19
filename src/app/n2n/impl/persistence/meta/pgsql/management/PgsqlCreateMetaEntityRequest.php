@@ -1,9 +1,9 @@
 <?php
-namespace n2n\persistence\meta\impl\pgsql\management;
+namespace n2n\impl\persistence\meta\pgsql\management;
 
 use n2n\persistence\Pdo;
 use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
-use n2n\persistence\meta\impl\pgsql\PgsqlCreateStatementBuilder;
+use n2n\impl\persistence\meta\pgsql\PgsqlCreateStatementBuilder;
 
 class PgsqlCreateMetaEntityRequest extends ChangeRequestAdapter {
 	public function execute(Pdo $dbh) {

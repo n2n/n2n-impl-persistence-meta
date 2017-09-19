@@ -22,26 +22,18 @@
 namespace n2n\impl\persistence\meta\mssql;
 
 use n2n\persistence\meta\data\QueryTable;
-
 use n2n\persistence\meta\structure\common\BackuperAdapter;
-
 use n2n\persistence\meta\structure\Table;
-
 use n2n\persistence\meta\data\QueryConstant;
-
 use n2n\persistence\meta\data\QueryColumn;
-
 use n2n\persistence\Pdo;
-
-use n2n\core\SysTextUtils;
-
 use n2n\util\ex\IllegalStateException;
 
 class MssqlBackuper extends BackuperAdapter {
 
 	public function start() {
 		if (!(($this->getOutputStream()) || !($this->getOutputStream()->isOpen()) )) {
-			throw new IllegalStateException(SysTextUtils::get('n2n_error_persistence_meta_mysql_backuper_outputstream_not_set'));
+			throw new IllegalStateException('Outputstream not set');
 		}
 
 		$this->getOutputStream()->write($this->getHeader());

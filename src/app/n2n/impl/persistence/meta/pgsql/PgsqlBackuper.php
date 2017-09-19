@@ -27,13 +27,14 @@ use n2n\persistence\Pdo;
 use n2n\persistence\meta\data\QueryTable;
 use n2n\persistence\meta\structure\common\BackuperAdapter;
 use n2n\impl\persistence\meta\pgsql\PgsqlCreateStatementBuilder;
+use n2n\util\ex\IllegalStateException;
 
 class PgsqlBackuper extends BackuperAdapter {
 	const NUM_INSERT_STATEMENTS = 1000;
 
 	public function start() {
 		if (!(($this->getOutputStream()) || !($this->getOutputStream()->isOpen()) )) {
-			throw new IllegalStateException('No outputstream set for pgsql backuper');
+			throw new IllegalStateException('Outputstream not set');
 		}
 
 		$this->getOutputStream()->write($this->getHeader());

@@ -1,5 +1,5 @@
 <?php
-namespace n2n\persistence\meta\impl\pgsql\management;
+namespace n2n\impl\persistence\meta\pgsql\management;
 
 use n2n\persistence\Pdo;
 use n2n\persistence\meta\structure\common\ChangeRequestAdapter;

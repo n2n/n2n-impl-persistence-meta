@@ -21,7 +21,9 @@
  */
 namespace n2n\impl\persistence\meta\pgsql;
 
-use n2n\persistence\meta\structure\DateTimeColumn;
+
+use n2n\persistence\meta\structure\common\DateTimeColumnAdapter;
+use n2n\util\ex\IllegalStateException;
 
 class PgsqlDateTimeColumn extends DateTimeColumnAdapter {
 	const FORMAT_DATE = 'Y-m-d';

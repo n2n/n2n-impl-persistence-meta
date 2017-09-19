@@ -23,18 +23,18 @@ namespace n2n\impl\persistence\meta\pgsql;
 
 use n2n\persistence\Pdo;
 use n2n\impl\persistence\meta\pgsql\PgsqlDatabase;
-use n2n\impl\persistence\meta\pgsql\PgsqlView;
 use n2n\impl\persistence\meta\pgsql\PgsqlTable;
 
-use n2n\impl\persistence\meta\pgsql\PgsqlBinaryColumn;
 use n2n\impl\persistence\meta\pgsql\PgsqlDateTimeColumn;
-use n2n\impl\persistence\meta\pgsql\PgsqlEnumColumn;
-use n2n\impl\persistence\meta\pgsql\PgsqlFixedPointColumn;
-use n2n\impl\persistence\meta\pgsql\PgsqlFloatingPointColumn;
 use n2n\impl\persistence\meta\pgsql\PgsqlIntegerColumn;
-use n2n\impl\persistence\meta\pgsql\PgsqlStringColumn;
-use n2n\impl\persistence\meta\pgsql\PgsqlTextColumn;
-use n2n\impl\persistence\meta\pgsql\PgsqlColumn;
+use n2n\persistence\meta\structure\common\CommonView;
+use n2n\persistence\meta\structure\IndexType;
+use n2n\persistence\meta\structure\common\CommonBinaryColumn;
+use n2n\persistence\meta\structure\common\CommonFixedPointColumn;
+use n2n\persistence\meta\structure\common\CommonFloatingPointColumn;
+use n2n\persistence\meta\structure\common\CommonStringColumn;
+use n2n\persistence\meta\structure\common\CommonTextColumn;
+use n2n\persistence\meta\structure\common\CommonEnumColumn;
 
 class PgsqlMetaEntityBuilder {
 	const TABLE_TYPE_BASE_TABLE = 'BASE TABLE';

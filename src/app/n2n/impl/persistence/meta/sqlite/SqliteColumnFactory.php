@@ -22,11 +22,7 @@
 namespace n2n\impl\persistence\meta\sqlite;
 
 use n2n\persistence\meta\structure\Table;
-
-use n2n\core\SysTextUtils;
-
 use n2n\persistence\meta\structure\UnavailableTypeException;
-
 use n2n\persistence\meta\structure\ColumnFactory;
 
 class SqliteColumnFactory implements ColumnFactory {
@@ -62,7 +58,7 @@ class SqliteColumnFactory implements ColumnFactory {
 	}
 	
 	public function createTextColumn($name, $size, $charset = null) {
-		throw $this->createUnvailableTypeException('TextColumn');
+		throw new UnavailableTypeException('Sqlite does not support Text columns');
 	}
 	
 	public function createBinaryColumn($name, $size) {
@@ -78,7 +74,7 @@ class SqliteColumnFactory implements ColumnFactory {
 	}
 	
 	public function createEnumColumn($name, array $values) {
-		throw $this->createUnvailableTypeException('EnumColumn');
+		throw new UnavailableTypeException('Sqlite does not support Enum columns');
 	}
 	
 	public function createFixedPointColumn($name, $numIntegerDigits, $numDecimalDigits) {
@@ -91,10 +87,6 @@ class SqliteColumnFactory implements ColumnFactory {
 		$column = new SqliteFloatingPointColumn($name);
 		$this->table->addColumn($column);
 		return $column;
-	}
-	
-	private function createUnvailableTypeException($type) {
-		return new UnavailableTypeException(SysTextUtils::get('n2n_persistence_meta_dialect_sqlite_type_is_unavailable', array('type' => $type)));
 	}
 	
 }

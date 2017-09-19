@@ -21,22 +21,13 @@
  */
 namespace n2n\impl\persistence\meta\oracle\management;
 
-use n2n\persistence\meta\structure\common\CommonTextColumn;
-
 use n2n\impl\persistence\meta\oracle\OracleMetaEntityBuilder;
-
 use n2n\impl\persistence\meta\oracle\OracleIndexStatementStringBuilder;
-
 use n2n\impl\persistence\meta\oracle\OracleColumnStatementStringBuilder;
-
 use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
-
 use n2n\persistence\meta\structure\Table;
-
 use n2n\persistence\meta\structure\common\AlterMetaEntityRequest;
-
 use n2n\persistence\meta\structure\View;
-
 use n2n\persistence\Pdo;
 
 class OracleAlterMetaEntityRequest extends ChangeRequestAdapter implements AlterMetaEntityRequest  {

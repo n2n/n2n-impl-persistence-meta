@@ -32,7 +32,6 @@ use n2n\persistence\meta\structure\Column;
 use n2n\core\N2N;
 use n2n\persistence\Pdo;
 use n2n\impl\persistence\meta\DialectAdapter;
-use n2n\core\SysTextUtils;
 use n2n\persistence\PersistenceUnitConfig;
 
 class MysqlDialect extends DialectAdapter {

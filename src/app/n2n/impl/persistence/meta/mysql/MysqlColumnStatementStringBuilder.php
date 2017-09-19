@@ -22,29 +22,16 @@
 namespace n2n\impl\persistence\meta\mysql;
 
 use n2n\persistence\meta\structure\Size;
-
 use n2n\persistence\meta\structure\FixedPointColumn;
-
-use n2n\core\SysTextUtils;
-
 use n2n\persistence\meta\structure\UnavailableTypeException;
-
 use n2n\persistence\Pdo;
-
 use n2n\persistence\meta\structure\TextColumn;
-
 use n2n\persistence\meta\structure\StringColumn;
-
 use n2n\persistence\meta\structure\FloatingPointColumn;
-
 use n2n\persistence\meta\structure\EnumColumn;
-
 use n2n\persistence\meta\structure\DateTimeColumn;
-
 use n2n\persistence\meta\structure\BinaryColumn;
-
 use n2n\persistence\meta\structure\IntegerColumn;
-
 use n2n\persistence\meta\structure\Column;
 
 class MysqlColumnStatementStringBuilder {
@@ -60,8 +47,8 @@ class MysqlColumnStatementStringBuilder {
 	
 	public function generateStatementString(Column $column) {
 		if (!$type = $this->getTypeForCurrentState($column)) {
-			throw new UnavailableTypeException(SysTextUtils::get('n2n_error_persistence_meta_mysql_no_column_type_given',
-					array('table' => $column->getTable()->getName(), 'column' => $column->getName(), 'type' => get_class($column))));	
+			throw new UnavailableTypeException('Mysql column type for column"' . $column->getName() . '" (' .  get_class($column) . ') in table"'
+					. $column->getTable()->getName() . 'could not be determined.');	
 		} 
 		$statementString = $this->dbh->quoteField($column->getName()) . ' ' . $type;
 		$statementString .= $this->generateDefaultStatementStringPart($column);

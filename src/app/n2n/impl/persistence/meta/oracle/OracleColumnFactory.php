@@ -21,20 +21,12 @@
  */
 namespace n2n\impl\persistence\meta\oracle;
 
-use n2n\core\SysTextUtils;
-
 use n2n\persistence\meta\structure\UnavailableTypeException;
-
 use n2n\persistence\meta\structure\common\CommonFloatingPointColumn;
-
 use n2n\persistence\meta\structure\common\CommonFixedPointColumn;
-
 use n2n\persistence\meta\structure\common\CommonBinaryColumn;
-
 use n2n\persistence\meta\structure\common\CommonTextColumn;
-
 use n2n\persistence\meta\structure\common\CommonStringColumn;
-
 use n2n\persistence\meta\structure\ColumnFactory;
 
 class OracleColumnFactory implements ColumnFactory {
@@ -83,7 +75,7 @@ class OracleColumnFactory implements ColumnFactory {
 	}
 	
 	public function createEnumColumn($name, array $values) {
-		throw new UnavailableTypeException((SysTextUtils::get('n2n_error_persistence_meta_dialect_oracle_enum_type_not_available')));
+		throw new UnavailableTypeException('Oracle does not support enum columns');
 	}
 	
 	public function createFixedPointColumn($name, $numIntegerDigits, $numDecimalDigits) {

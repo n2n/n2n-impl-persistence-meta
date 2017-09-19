@@ -22,19 +22,11 @@
 namespace n2n\impl\persistence\meta\sqlite;
 
 use n2n\io\InputStream;
-
 use n2n\persistence\meta\data\common\CommonInsertStatementBuilder;
-
 use n2n\persistence\meta\data\common\CommonUpdateStatementBuilder;
-
 use n2n\persistence\meta\data\common\CommonDeleteStatementBuilder;
-
 use n2n\persistence\meta\data\common\CommonSelectStatementBuilder;
-
-use n2n\core\SysTextUtils;
-
 use n2n\persistence\meta\structure\InvalidColumnAttributesException;
-
 use n2n\persistence\meta\structure\Column;
 use n2n\persistence\PersistenceUnitConfig;
 use n2n\persistence\Pdo;
@@ -100,8 +92,9 @@ class SqliteDialect extends DialectAdapter {
 	public function applyIdentifierGeneratorToColumn(Pdo $dbh, Column $column, $sequenceName = null) {
 		
 		if (!($column instanceof SqliteIntegerColumn)) {
-			throw new InvalidColumnAttributesException(SysTextUtils::get('n2n_error_persistance_invalid_generated_identifier',
-							array('required_column_type' => 'n2n\impl\persistence\meta\sqlite\SqliteIntegerColumn', 'given_column_type' => get_class($column))));
+			throw new InvalidColumnAttributesException('Invalid generated identifier column \"' . $column->getName()
+					. '\" for Table \"' . $column->getTable()->getName()
+					. '\". Column must be of type \"' . SqliteIntegerColumn::class . "\". Given column type is \"" . get_class($column) . "\"");
 		}
 		//the Value automatically gets Generated Identifier if the column type is Integer
 		//this triggers a changerequest -> type will be changed to INTEGER

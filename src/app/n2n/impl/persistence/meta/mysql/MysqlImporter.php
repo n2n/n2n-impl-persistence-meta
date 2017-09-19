@@ -21,12 +21,8 @@
  */
 namespace n2n\impl\persistence\meta\mysql;
 
-use n2n\core\SysTextUtils;
-
 use n2n\util\ex\IllegalStateException;
-
 use n2n\io\InputStream;
-
 use n2n\persistence\Pdo;
 
 class MysqlImporter /* implements Importer */ {
@@ -53,8 +49,7 @@ class MysqlImporter /* implements Importer */ {
 	
 	public function execute() {
 		if (!($this->inputStream->isOpen())) {
-			throw new IllegalStateException(
-					SysTextUtils::get('n2n_error_persistence_meta_mysql_importer_inputstream_not_open'));
+			throw new IllegalStateException('Inputstream not open');
 		}
 		$this->dbh->exec($this->inputStream->read());
 	}

@@ -21,16 +21,10 @@
  */
 namespace n2n\impl\persistence\meta\pgsql;
 
-use n2n\persistence\meta\structure\Column;
 use n2n\persistence\meta\structure\ColumnFactory;
 use n2n\impl\persistence\meta\pgsql\PgsqlColumnFactory;
-use n2n\persistence\meta\structure\IndexType;
-use n2n\impl\persistence\meta\pgsql\PgsqlColumn;
-use n2n\persistence\meta\structure\UnknownColumnException;
-use n2n\persistence\meta\structure\common\ColumnChangeListener;
-use n2n\persistence\meta\structure\Table;
-use n2n\core\SysTextUtils;
-use n2n\persistence\meta\structure\DuplicateMetaElementException;
+use n2n\persistence\meta\structure\common\TableAdapter;
+use n2n\util\StringUtils;
 
 class PgsqlTable extends TableAdapter {
 	private $columnFactory;
@@ -46,4 +40,20 @@ class PgsqlTable extends TableAdapter {
 	public function generatePrimaryKeyName() {
 		return StringUtils::hyphenated($this->getName()) . '_primary';
 	}
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\Table::copy()
+	 */
+	public function copy($newTableName = null) {
+		if (is_null($newTableName)) {
+			$newTableName = $this->getName();
+		}
+		$newTable = new PgsqlTable($newTableName);
+		
+		$newTable->applyColumnsFrom($this);
+		$newTable->applyIndexesFrom($this);
+		return $newTable;
+	}
+	
+
 }

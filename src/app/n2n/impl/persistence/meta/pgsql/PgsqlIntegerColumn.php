@@ -21,7 +21,8 @@
  */
 namespace n2n\impl\persistence\meta\pgsql;
 
-use n2n\persistence\meta\structure\IntegerColumn;
+use n2n\persistence\meta\structure\common\CommonIntegerColumn;
+use n2n\persistence\meta\structure\Size;
 
 class PgsqlIntegerColumn extends CommonIntegerColumn {
 	protected function purifySize($size) {

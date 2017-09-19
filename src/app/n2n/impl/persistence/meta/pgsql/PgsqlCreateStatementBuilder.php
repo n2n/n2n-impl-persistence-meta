@@ -21,8 +21,11 @@
  */
 namespace n2n\impl\persistence\meta\pgsql;
 
-use n2n\persistence\meta\structure\IndexType;
 use n2n\persistence\Pdo;
+use n2n\persistence\meta\structure\MetaEntity;
+use n2n\persistence\meta\structure\View;
+use n2n\util\ex\IllegalStateException;
+use n2n\persistence\meta\structure\EnumColumn;
 
 class PgsqlCreateStatementBuilder {
 	private $pdo;
@@ -69,7 +72,7 @@ class PgsqlCreateStatementBuilder {
 		$metaEntity = $this->getMetaEntity();
 		$quotedMetaEntityName = $this->pdo->quoteField($metaEntity->getName());
 
-		if ($this->getMetaEntity() instanceof PgsqlView) {
+		if ($this->getMetaEntity() instanceof View) {
 			if ($replace) {
 				$this->sqlStatements[] = 'DROP VIEW IF EXISTS ' . $quotedMetaEntityName . '; ';
 			}

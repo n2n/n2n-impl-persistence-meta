@@ -22,16 +22,10 @@
 namespace n2n\impl\persistence\meta\sqlite;
 
 use n2n\persistence\meta\structure\View;
-
 use n2n\persistence\meta\structure\Table;
-
 use n2n\persistence\meta\structure\MetaEntity;
-
 use n2n\persistence\meta\structure\IndexType;
-
 use n2n\persistence\Pdo;
-use n2n\persistence\meta\structure\UnknownMetaEntityException;
-use n2n\core\SysTextUtils;
 
 class SqliteCreateStatementBuilder {
 	
@@ -75,10 +69,6 @@ class SqliteCreateStatementBuilder {
 	}
 	
 	public function createSqlStatements($replace = false, $formatted = false) {
-		if (!(isset($this->metaEntity))) {
-			throw new UnknownMetaEntityException(SysTextUtils::get('n2n_persistence_meta_mssql_meta_entity_not_set'));
-		}
-		
 		$sqlStatements = array();
 		$sql = '';
 		

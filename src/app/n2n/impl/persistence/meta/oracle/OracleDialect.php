@@ -22,7 +22,6 @@
 namespace n2n\impl\persistence\meta\oracle;
 
 use n2n\io\InputStream;
-use n2n\core\SysTextUtils;
 use n2n\core\N2N;
 use n2n\persistence\meta\data\common\CommonDeleteStatementBuilder;
 use n2n\persistence\meta\data\common\CommonInsertStatementBuilder;
@@ -93,7 +92,8 @@ class OracleDialect extends DialectAdapter {
 		if (null != ($result = $statement->fetch(Pdo::FETCH_ASSOC))) {
 			return $result['NEXT_INSERT_ID'];
 		}
-		throw new \InvalidArgumentException(SysTextUtils::get('n2n_error_persistence_meta_oracle_sequence_name_invalid', array('sequence_name' => $sequenceName)));
+		
+		throw new \InvalidArgumentException('Invalid sequence name "' . $sequenceName . '"');
 	}
 	
 	public function applyIdentifierGeneratorToColumn(Pdo $dbh, Column $column, $sequenceName) {
