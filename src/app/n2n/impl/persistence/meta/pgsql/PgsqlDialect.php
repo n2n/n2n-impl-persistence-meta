@@ -40,18 +40,18 @@ class PgsqlDialect extends DialectAdapter {
 	public function getName() {
 		return 'Pgsql';
 	}
+	
 	/**
-	 *
-	 * @param Pdo $dbh
-	 * @param DatabaseConfiguration $data
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::initializeConnection()
 	 */
 	public function initializeConnection(Pdo $dbh, PersistenceUnitConfig $data) {
 
 	}
+	
 	/**
-	 *
-	 * @param Pdo $dbh
-	 * @return Database
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::createMetaDatabase()
 	 */
 	public function createMetaDatabase(Pdo $dbh) {
 		return new PgsqlDatabase($dbh);
@@ -69,52 +69,48 @@ class PgsqlDialect extends DialectAdapter {
 	}
 
 	/**
-	 *
-	 * @param Pdo $dbh
-	 * @return SelectStatementBuilder
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::createSelectStatementBuilder()
 	 */
 	public function createSelectStatementBuilder(Pdo $dbh) {
 		return new CommonSelectStatementBuilder($dbh);
 	}
 
 	/**
-	 *
-	 * @param Pdo $dbh
-	 * @return UpdateStatementBuilder
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::createUpdateStatementBuilder()
 	 */
 	public function createUpdateStatementBuilder(Pdo $dbh) {
 		return new CommonUpdateStatementBuilder($dbh);
 	}
 
 	/**
-	 *
-	 * @param Pdo $dbh
-	 * @return InsertStatementBuilder
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::createInsertStatementBuilder()
 	 */
 	public function createInsertStatementBuilder(Pdo $dbh) {
 		return new CommonInsertStatementBuilder($dbh);
 	}
 
 	/**
-	 *
-	 * @param Pdo $dbh
-	 * @return DeleteStatementBuilder
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::createDeleteStatementBuilder()
 	 */
 	public function createDeleteStatementBuilder(Pdo $dbh) {
 		return new CommonDeleteStatementBuilder($dbh);
 	}
 
 	/**
-	 * @param Pdo $dbh
-	 * @param InputStream $inputStream
-	 * @return \n2n\persistence\meta\data\Importer
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::createImporter()
 	 */
 	public function createImporter(Pdo $dbh, InputStream $inputStream) {
 		return new PgsqlImporter($dbh, $inputStream);
 	}
 
 	/**
-	 * @return OrmDialectConfig
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::getOrmDialectConfig()
 	 */
 	public function getOrmDialectConfig() {
 		return new PgsqlOrmDialectConfig();

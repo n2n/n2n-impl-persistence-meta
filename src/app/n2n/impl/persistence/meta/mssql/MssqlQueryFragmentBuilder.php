@@ -31,7 +31,7 @@ class MssqlQueryFragmentBuilder implements QueryFragmentBuilder {
 	const NAMED_PLACE_MARKER_PREFIX = ':';
 	
 	/**
-	 * @var n2n\persistence\Pdo
+	 * @var \n2n\persistence\Pdo
 	 */
 	private $dbh;
 	private $sql = '';

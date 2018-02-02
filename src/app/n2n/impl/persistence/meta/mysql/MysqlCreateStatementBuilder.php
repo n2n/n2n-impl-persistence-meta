@@ -36,12 +36,12 @@ use n2n\persistence\Pdo;
 class MysqlCreateStatementBuilder {
 	
 	/**
-	 * @var n2n\persistence\Pdo
+	 * @var Pdo
 	 */
 	private $dbh;
 	
 	/**
-	 * @var n2n\impl\persistence\meta\mysql\MysqlMetaEntity
+	 * @var MetaEntity
 	 */
 	private $metaEntity;
 	

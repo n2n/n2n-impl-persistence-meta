@@ -21,8 +21,6 @@
  */
 namespace n2n\impl\persistence\meta\pgsql;
 
-use n2n\persistence\meta\structure\ColumnFactory;
-use n2n\impl\persistence\meta\pgsql\PgsqlColumnFactory;
 use n2n\persistence\meta\structure\common\TableAdapter;
 use n2n\util\StringUtils;
 

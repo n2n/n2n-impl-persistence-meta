@@ -27,7 +27,7 @@ class MssqlTable extends TableAdapter {
 	const PREFIX_PRIMARY_KEY = 'PK_';
 	
 	/**
-	 * @var n2n\impl\persistence\meta\mssql\MssqlColumnFactory
+	 * @var MssqlColumnFactory
 	 */
 	private $columnFactory;
 	
@@ -43,7 +43,7 @@ class MssqlTable extends TableAdapter {
 	}
 	
 	/** 
-	 * @return n2n\impl\persistence\meta\mssql\MssqlColumnFactory
+	 * @return MssqlColumnFactory
 	 */
 	public function createColumnFactory() {
 		if (!($this->columnFactory)) {

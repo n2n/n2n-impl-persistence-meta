@@ -30,12 +30,12 @@ use n2n\persistence\Pdo;
 class SqliteCreateStatementBuilder {
 	
 	/**
-	 * @var n2n\persistence\Pdo
+	 * @var Pdo
 	 */
 	private $dbh;
 	
 	/**
-	 * @var SqliteMetaEntity
+	 * @var MetaEntity
 	 */
 	private $metaEntity;
 	

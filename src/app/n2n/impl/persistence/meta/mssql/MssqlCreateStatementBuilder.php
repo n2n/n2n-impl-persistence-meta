@@ -37,12 +37,12 @@ use n2n\persistence\Pdo;
 class MssqlCreateStatementBuilder {
 	
 	/**
-	 * @var n2n\persistence\Pdo
+	 * @var Pdo
 	 */
 	private $dbh;
 	
 	/**
-	 * @var n2n\impl\persistence\meta\mssql\MetaEntity
+	 * @var MetaEntity
 	 */
 	private $metaEntity;
 	

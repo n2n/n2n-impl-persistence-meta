@@ -26,7 +26,6 @@ use n2n\persistence\meta\data\QueryColumn;
 use n2n\persistence\Pdo;
 use n2n\persistence\meta\data\QueryTable;
 use n2n\persistence\meta\structure\common\BackuperAdapter;
-use n2n\impl\persistence\meta\pgsql\PgsqlCreateStatementBuilder;
 use n2n\util\ex\IllegalStateException;
 
 class PgsqlBackuper extends BackuperAdapter {

@@ -32,7 +32,7 @@ class MysqlTable extends TableAdapter {
 	const ATTRS_ENGINE = 'ENGINE';
 	
 	/**
-	 * @var n2n\impl\persistence\meta\mysql\MysqlColumnFactory
+	 * @var MysqlColumnFactory
 	 */
 	private $columnFactory;
 	
@@ -48,8 +48,7 @@ class MysqlTable extends TableAdapter {
 	}
 	
 	/**
-	 * 
-	 * @return n2n\impl\persistence\meta\mysql\MysqlColumnFactory
+	 * @return MysqlColumnFactory
 	 */
 	public function createColumnFactory() {
 		if (!($this->columnFactory)) {

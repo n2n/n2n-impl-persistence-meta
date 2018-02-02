@@ -32,7 +32,7 @@ class MysqlIndexStatementStringBuilder {
 	const INDEX_TYPE_NAME_FULLTEXT_INDEX = 'FULLTEXT';
 	
 	/**
-	 * @var n2n\persistence\Pdo
+	 * @var \n2n\persistence\Pdo
 	 */
 	private $dbh;
 	

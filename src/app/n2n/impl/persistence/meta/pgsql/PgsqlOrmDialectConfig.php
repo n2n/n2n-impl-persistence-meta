@@ -28,7 +28,7 @@ class PgsqlOrmDialectConfig implements OrmDialectConfig {
 	/**
 	 * @param string $rawValue
 	 * @return \DateTime
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
 	public function parseDateTime($rawValue) {
 		if (null === $rawValue) return null;
@@ -40,7 +40,7 @@ class PgsqlOrmDialectConfig implements OrmDialectConfig {
 		}
 	}
 	/**
-	 * @param DateTime $dateTime
+	 * @param \DateTime $dateTime
 	 * @return string
 	 */
 	public function buildDateTimeRawValue(\DateTime $dateTime = null) {

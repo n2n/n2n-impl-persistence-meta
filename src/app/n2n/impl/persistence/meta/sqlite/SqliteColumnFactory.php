@@ -33,7 +33,7 @@ class SqliteColumnFactory implements ColumnFactory {
 	private $table;
 	
 	/**
-	 * @var n2n\persistence\Pdo
+	 * @var \n2n\persistence\Pdo
 	 */
 	private $dbh;
 	

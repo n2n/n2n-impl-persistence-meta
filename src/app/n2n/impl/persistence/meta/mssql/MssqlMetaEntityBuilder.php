@@ -22,25 +22,14 @@
 namespace n2n\impl\persistence\meta\mssql;
 
 use n2n\persistence\meta\structure\common\CommonIndex;
-
 use n2n\persistence\meta\structure\common\CommonFloatingPointColumn;
-
 use n2n\persistence\meta\structure\common\CommonFixedPointColumn;
-
 use n2n\persistence\meta\structure\common\CommonBinaryColumn;
-
 use n2n\persistence\meta\structure\common\CommonView;
-
 use n2n\persistence\meta\structure\common\CommonTextColumn;
-
 use n2n\persistence\meta\structure\common\CommonStringColumn;
-
 use n2n\persistence\meta\structure\Size;
-
-use n2n\impl\persistence\meta\mssql\MssqlDatabase;
-
 use n2n\persistence\meta\structure\IndexType;
-
 use n2n\persistence\Pdo;
 
 class MssqlMetaEntityBuilder {
@@ -50,12 +39,12 @@ class MssqlMetaEntityBuilder {
 	const INDEX_TYPE_DESC_HEAP = 'HEAP';
 	
 	/**
-	 * @var n2n\persistence\Pdo
+	 * @var Pdo
 	 */
 	private $dbh;
 	
 	/**
-	 * @var n2n\impl\persistence\meta\mssql\MssqlDatabase
+	 * @var MssqlDatabase
 	 */
 	private $database;
 	
@@ -66,7 +55,7 @@ class MssqlMetaEntityBuilder {
 	
 	/**
 	 * @param string $name
-	 * @return n2n\persistence\meta\structure\MetaEntity
+	 * @return \n2n\persistence\meta\structure\MetaEntity
 	 */
 	public function createMetaEntity($name) {
 		

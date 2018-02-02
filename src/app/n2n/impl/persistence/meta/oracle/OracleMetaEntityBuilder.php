@@ -50,12 +50,12 @@ class OracleMetaEntityBuilder {
 	const CONSTRAINT_TYPE_UNIQUE = 'U';
 	
 	/**
-	 * @var n2n\persistence\Pdo
+	 * @var Pdo
 	 */
 	private $dbh;
 	
 	/**
-	 * @var n2n\impl\persistence\meta\oracle\OracleDatabase
+	 * @var OracleDatabase
 	 */
 	private $database;
 	
@@ -80,7 +80,7 @@ class OracleMetaEntityBuilder {
 	}
 	/**
 	 * @param string $name
-	 * @return n2n\persistence\meta\structure\MetaEntity
+	 * @return \n2n\persistence\meta\structure\MetaEntity
 	 */
 	public function createTable($name) {
 		$table = null;

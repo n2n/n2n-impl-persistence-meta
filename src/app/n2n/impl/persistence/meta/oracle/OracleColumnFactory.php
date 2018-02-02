@@ -32,7 +32,7 @@ use n2n\persistence\meta\structure\ColumnFactory;
 class OracleColumnFactory implements ColumnFactory {
 	
 	/**
-	 * @var n2n\impl\persistence\meta\oracle\OracleTable
+	 * @var OracleTable
 	 */
 	private $table;
 	

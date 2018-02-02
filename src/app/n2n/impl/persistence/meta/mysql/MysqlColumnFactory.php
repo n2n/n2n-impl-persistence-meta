@@ -38,7 +38,7 @@ use n2n\persistence\meta\structure\ColumnFactory;
 class MysqlColumnFactory implements ColumnFactory {
 	
 	/**
-	 * @var n2n\impl\persistence\meta\mysql\MysqlTable
+	 * @var MysqlTable
 	 */
 	private $table;
 	

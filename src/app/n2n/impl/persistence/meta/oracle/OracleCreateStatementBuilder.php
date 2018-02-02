@@ -36,12 +36,12 @@ use n2n\persistence\Pdo;
 class OracleCreateStatementBuilder {
 	
 	/**
-	 * @var \n2n\persistence\Pdo
+	 * @var Pdo
 	 */
 	private $dbh;
 	
 	/**
-	 * @var n2n\persistence\meta\structure\MetaEntity
+	 * @var MetaEntity
 	 */
 	private $metaEntity;
 	

@@ -30,7 +30,7 @@ use n2n\persistence\Pdo;
 class OracleIndexStatementStringBuilder {
 	
 	/**
-	 * @var n2n\persistence\Pdo
+	 * @var \n2n\persistence\Pdo
 	 */
 	private $dbh;
 	

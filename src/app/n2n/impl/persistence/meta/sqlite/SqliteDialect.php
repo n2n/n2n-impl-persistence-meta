@@ -57,10 +57,7 @@ class SqliteDialect extends DialectAdapter {
 	public function quoteField($str) {
 		return "[" . str_replace("[", "[[", str_replace("]", "]]", (string) $str)) . "]";
 	}
-	/**
-	 *
-	 * @return SelectStatementBuilder
-	 */
+	
 	public function createSelectStatementBuilder(Pdo $dbh) {
 		return new CommonSelectStatementBuilder($dbh, new SqliteQueryFragmentBuilderFactory($dbh));
 	}

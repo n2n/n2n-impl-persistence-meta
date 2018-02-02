@@ -40,12 +40,12 @@ class MssqlDatabase extends DatabaseAdapter {
 	private $attrs;
 	
 	/**
-	 * @var  n2n\impl\persistence\meta\mssql\MssqlMetaEntityFactory
+	 * @var MssqlMetaEntityFactory
 	 */
 	private $metaEntityFactory;
 	
 	/**
-	 * @var  n2n\impl\persistence\meta\mssql\MssqlMetaEntityBuilder
+	 * @var MssqlMetaEntityBuilder
 	 */
 	private $metaEntityBuilder;
 	
