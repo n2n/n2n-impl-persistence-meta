@@ -40,6 +40,7 @@ use n2n\persistence\meta\structure\common\AlterMetaEntityRequest;
 use n2n\impl\persistence\meta\sqlite\SqliteMetaEntityBuilder;
 
 use n2n\persistence\Pdo;
+use n2n\reflection\CastUtils;
 
 class SqliteAlterMetaEntityRequest extends ChangeRequestAdapter implements AlterMetaEntityRequest {
 	
@@ -48,15 +49,19 @@ class SqliteAlterMetaEntityRequest extends ChangeRequestAdapter implements Alter
 		$indexStatementStringBuilder = new SqliteIndexStatementStringBuilder($dbh);
 		$metaEntityBuilder = new SqliteMetaEntityBuilder($dbh, $this->getMetaEntity()->getDatabase());
 		
-		if ($this->getMetaEntity() instanceof View) {
-			$dbh->exec('DROP VIEW ' . $dbh->quoteField($this->getMetaEntity()->getName()));
-			$dbh->exec('CREATE VIEW ' . $dbh->quoteField($this->getMetaEntity()->getName()) . ' AS ' . $this->getMetaEntity()->getQuery());
+		$metaEntity = $this->getMetaEntity();
+		if ($metaEntity instanceof View) {
+			$dbh->exec('DROP VIEW ' . $dbh->quoteField($metaEntity->getName()));
+			$dbh->exec('CREATE VIEW ' . $dbh->quoteField($metaEntity->getName()) . ' AS ' . $metaEntity->getQuery());
 			return;
 		}				
-		if ($this->getMetaEntity() instanceof Table) {
+		
+		if ($metaEntity instanceof Table) {
 			//columns to Add
-			$columns = $this->getMetaEntity()->getColumns();
-			$persistedTable =  $metaEntityBuilder->createMetaEntity($this->getMetaEntity()->getName());
+			$columns = $metaEntity->getColumns();
+			$persistedTable = $metaEntityBuilder->createMetaEntity($this->getMetaEntity()->getName());
+			CastUtils::assertTrue($persistedTable instanceof Table);
+			
 			$persistedColumns = $persistedTable->getColumns();
 			$createStatementBuilder = new SqliteCreateStatementBuilder($dbh);
 			$copyColumns = array();
@@ -69,9 +74,9 @@ class SqliteAlterMetaEntityRequest extends ChangeRequestAdapter implements Alter
 				}
 			}
 			
-			$dbh->exec('ALTER TABLE ' . $this->getMetaEntity()->getName() . ' RENAME TO ' . $tempTableName );
+			$dbh->exec('ALTER TABLE ' . $metaEntity->getName() . ' RENAME TO ' . $tempTableName );
 			
-			$createStatementBuilder->setMetaEntity($this->getMetaEntity());
+			$createStatementBuilder->setMetaEntity($metaEntity);
 			$createStatementBuilder->createMetaEntity();
 
 			
@@ -81,7 +86,7 @@ class SqliteAlterMetaEntityRequest extends ChangeRequestAdapter implements Alter
 				}
 			}
 			
-			$dbh->exec('INSERT INTO ' . $this->getMetaEntity()->getName() . '('. implode(',',$copyColumns) . ') SELECT ' 
+			$dbh->exec('INSERT INTO ' . $metaEntity->getName() . '('. implode(',',$copyColumns) . ') SELECT ' 
 					. implode(',', $copyColumns) . 'FROM ' . $tempTableName);
 			
 			$dbh->exec('DROP TABLE ' . $tempTableName);

@@ -33,6 +33,7 @@ class PgsqlDatabase extends DatabaseAdapter {
 
 	private $changeRequestQueue;
 	private $metaEntityFactory;
+	private $pgsqlMetaEntityBuilder;
 
 	private $name;
 	private $charset;

@@ -53,7 +53,7 @@ class OracleIntegerColumn extends ColumnAdapter implements IntegerColumn {
 		if (is_null($newColumnName)) {
 			$newColumnName = $this->getName();
 		}
-		$newColumn = new self($newColumnName, $this->getSize(), $this->isSigned());
+		$newColumn = new self($newColumnName);
 		$newColumn->applyCommonAttributes($this);
 		return $newColumn;
 	}

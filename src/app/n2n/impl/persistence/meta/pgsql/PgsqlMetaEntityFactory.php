@@ -22,6 +22,7 @@
 namespace n2n\impl\persistence\meta\pgsql;
 
 use n2n\persistence\meta\structure\MetaEntityFactory;
+use n2n\persistence\meta\structure\common\CommonView;
 
 class PgsqlMetaEntityFactory implements MetaEntityFactory {
 	private $database;
@@ -41,7 +42,7 @@ class PgsqlMetaEntityFactory implements MetaEntityFactory {
 	}
 
 	public function createView($name, $query) {
-		$newView = new PgsqlView($name, $query);
+		$newView = new CommonView($name, $query);
 		$this->database->addMetaEntity($newView);
 		return $newView;
 	}

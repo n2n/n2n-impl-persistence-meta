@@ -22,17 +22,11 @@
 namespace n2n\impl\persistence\meta\mssql;
 
 use n2n\persistence\meta\structure\MetaEntity;
-
 use n2n\persistence\meta\structure\Table;
-
 use n2n\persistence\meta\structure\View;
-
 use n2n\persistence\meta\structure\UnknownMetaEntityException;
-
 use n2n\persistence\meta\structure\IndexType;
-
 use n2n\persistence\Pdo;
-
 
 class MssqlCreateStatementBuilder {
 	
@@ -86,31 +80,33 @@ class MssqlCreateStatementBuilder {
 		
 		$columnStatementStringBuilder = new MssqlColumnStatementStringBuilder($this->dbh);
 		$indexStatementStringBuilder = new MssqlIndexStatementStringBuilder($this->dbh);
-		if ($this->metaEntity instanceof View) {
+		
+		$metaEntity = $this->getMetaEntity();
+		if ($metaEntity instanceof View) {
 			if ($replace) {
 				$sqlStatements[] = 'IF EXISTS (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.' . $this->dbh->quoteField('TABLES') 
-						. ' WHERE ' . $this->dbh->quoteField('TABLE_NAME') . ' =\'' . $this->metaEntity->getName() . '\' AND ' 
+						. ' WHERE ' . $this->dbh->quoteField('TABLE_NAME') . ' =\'' . $metaEntity->getName() . '\' AND ' 
 						. $this->dbh->quoteField('TABLE_TYPE') . ' = \'' . MssqlMetaEntityBuilder::TABLE_TYPE_VIEW .'\')' 
-						. ' DROP VIEW ' . $this->dbh->quoteField($this->metaEntity->getName()) . ';';
+						. ' DROP VIEW ' . $this->dbh->quoteField($metaEntity->getName()) . ';';
 			}
 			if ($formatted) {
 				$sqlStatements['GO'];
 			}
-			$sqlStatements[] = 'CREATE VIEW ' . $this->dbh->quoteField($this->metaEntity->getName()) . ' AS ' . $this->metaEntity->getQuery() . ';';
+			$sqlStatements[] = 'CREATE VIEW ' . $this->dbh->quoteField($metaEntity->getName()) . ' AS ' . $metaEntity->getQuery() . ';';
 			if ($formatted) {
 				$sqlStatements['GO'];
 			}
-		} elseif ($this->metaEntity instanceof Table) {
+		} elseif ($metaEntity instanceof Table) {
 			if ($replace) {
 				$sqlStatements[] = 'IF EXISTS (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.' . $this->dbh->quoteField('TABLES') 
-						. ' WHERE ' . $this->dbh->quoteField('TABLE_NAME') . ' = ' . $this->dbh->quote($this->metaEntity->getName()) . ' AND ' 
+						. ' WHERE ' . $this->dbh->quoteField('TABLE_NAME') . ' = ' . $this->dbh->quote($metaEntity->getName()) . ' AND ' 
 						. $this->dbh->quoteField('TABLE_TYPE') . ' = \'' . MssqlMetaEntityBuilder::TABLE_TYPE_BASE_TABLE .'\')' 
-						. ' DROP TABLE ' . $this->dbh->quoteField($this->metaEntity->getName()) . ';';
+						. ' DROP TABLE ' . $this->dbh->quoteField($metaEntity->getName()) . ';';
 						
 			}
-			$sql = 'CREATE TABLE ' . $this->dbh->quoteField($this->metaEntity->getName()) . ' ( ';
+			$sql = 'CREATE TABLE ' . $this->dbh->quoteField($metaEntity->getName()) . ' ( ';
 			$first = true;
-			foreach ($this->metaEntity->getColumns() as $column) {
+			foreach ($metaEntity->getColumns() as $column) {
 				if (!$first) {
 					$sql .= ', ';
 				} else {
@@ -121,8 +117,9 @@ class MssqlCreateStatementBuilder {
 				}
 				$sql .= $columnStatementStringBuilder->generateStatementString($column);
 			}
+			
 			//Primary Key
-			$primaryKey = $this->metaEntity->getPrimaryKey();
+			$primaryKey = $metaEntity->getPrimaryKey();
 			if ($primaryKey) {
 				if ($formatted) {
 					$sql .= PHP_EOL . "\t";
@@ -146,7 +143,7 @@ class MssqlCreateStatementBuilder {
 	
 			$sqlStatements[] = $sql;
 	
-			$indexes = $this->metaEntity->getIndexes();
+			$indexes = $metaEntity->getIndexes();
 			foreach ($indexes as $index) {
 				if ($index->getType() == IndexType::PRIMARY) continue;
 				$sqlStatements[] = $indexStatementStringBuilder->generateCreateStatementStringForIndex($index) . ';';

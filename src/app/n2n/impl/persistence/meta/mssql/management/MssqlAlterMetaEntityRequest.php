@@ -31,6 +31,7 @@ use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
 use n2n\impl\persistence\meta\mssql\MssqlMetaEntityBuilder;
 use n2n\persistence\meta\structure\InvalidColumnAttributesException;
 use n2n\persistence\Pdo;
+use n2n\reflection\CastUtils;
 
 class MssqlAlterMetaEntityRequest extends ChangeRequestAdapter implements AlterMetaEntityRequest{
 	
@@ -39,38 +40,41 @@ class MssqlAlterMetaEntityRequest extends ChangeRequestAdapter implements AlterM
 		$indexStatementStringBuilder = new MssqlIndexStatementStringBuilder($dbh);
 		$metaEntityBuilder = new MssqlMetaEntityBuilder($dbh, $this->getMetaEntity()->getDatabase());
 		
-		if ($this->getMetaEntity() instanceof View) {
-			$dbh->exec('ALTER VIEW ' . $dbh->quoteField($this->getMetaEntity()->getName()) . ' AS ' . $this->getMetaEntity()->getQuery());
+		$metaEntity = $this->getMetaEntity();
+		if ($metaEntity instanceof View) {
+			$dbh->exec('ALTER VIEW ' . $dbh->quoteField($metaEntity->getName()) . ' AS ' . $metaEntity->getQuery());
 			return;
 		}
 		
-		if ($this->getMetaEntity() instanceof Table) {
+		if ($metaEntity instanceof Table) {
 			//columns to Add
-			$columns = $this->getMetaEntity()->getColumns();
-			$persistedTable =  $metaEntityBuilder->createMetaEntity($this->getMetaEntity()->getName());
+			$columns = $metaEntity->getColumns();
+			
+			$persistedTable = $metaEntityBuilder->createMetaEntity($metaEntity->getName());
+			CastUtils::assertTrue($persistedTable instanceof Table);
 			$persistedColumns = $persistedTable->getColumns();
 			
 			foreach ($columns as $column) {
 				if (!(isset($persistedColumns[$column->getName()]))) {
-					$dbh->exec('ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName()) . ' ADD ' . $columnStatementStringBuilder->generateStatementString($column));
+					$dbh->exec('ALTER TABLE ' . $dbh->quoteField($metaEntity->getName()) . ' ADD ' . $columnStatementStringBuilder->generateStatementString($column));
 				} elseif (isset($persistedColumns[$column->getName()]) && (!($column->equals($persistedColumns[$column->getName()])))) {
 					//Identity not allowed in ALTER Statement
 					if ($column instanceof MssqlIntegerColumn && $column->isGeneratedIdentifier()) {
 						throw new InvalidColumnAttributesException('Altering identifiers is not allowed. Tried to alter column"' 
-								. $column->getName() . '" in table "' . $this->getMetaEntity()->getName());
+								. $column->getName() . '" in table "' . $metaEntity->getName());
 					} else {
-						$dbh->exec('ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName()) . ' ALTER COLUMN ' . $columnStatementStringBuilder->generateStatementString($column));
+						$dbh->exec('ALTER TABLE ' . $dbh->quoteField($metaEntity->getName()) . ' ALTER COLUMN ' . $columnStatementStringBuilder->generateStatementString($column));
 					} 
 				}
 			}
 			
 			foreach ($persistedColumns as $persistedColumn) {
 				if (!(isset($columns[$persistedColumn->getName()]))) {
-					$dbh->exec('ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName()) . ' DROP COLUMN ' . $dbh->quoteField($persistedColumn->getName()));
+					$dbh->exec('ALTER TABLE ' . $dbh->quoteField($metaEntity->getName()) . ' DROP COLUMN ' . $dbh->quoteField($persistedColumn->getName()));
 				}
 			}
 			
-			$indexes = $this->getMetaEntity()->getIndexes();
+			$indexes = $metaEntity->getIndexes();
 			$persistedIndexes = $persistedTable->getIndexes();
 			
 			foreach ($indexes as $index) {

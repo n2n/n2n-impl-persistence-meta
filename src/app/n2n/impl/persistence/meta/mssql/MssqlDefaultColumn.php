@@ -29,7 +29,7 @@ class MssqlDefaultColumn extends ColumnAdapter {
 		if (is_null($newColumnName)) {
 			$newColumnName = $this->getName();
 		}
-		$newColumn = new self($newColumnName, $this->isDateAvailable(), $this->isTimeAvailable());
+		$newColumn = new self($newColumnName);
 		$newColumn->applyCommonAttributes($this);
 		return $newColumn;
 	}

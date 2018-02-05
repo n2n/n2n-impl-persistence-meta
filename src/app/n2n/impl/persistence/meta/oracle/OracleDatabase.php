@@ -39,6 +39,7 @@ class OracleDatabase extends DatabaseAdapter {
 	 * @var OracleMetaEntityBuilder
 	 */
 	private $metaEntityFactory;
+	private $metaEntityBuilder;
 	
 	private $charset;
 	private $name;

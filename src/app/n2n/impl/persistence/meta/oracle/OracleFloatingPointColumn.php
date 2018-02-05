@@ -39,7 +39,7 @@ class OracleFloatingPointColumn extends ColumnAdapter implements FloatingPointCo
 		if (is_null($newColumnName)) {
 			$newColumnName = $this->getName();
 		}
-		$newColumn = new self($newColumnName, $this->getSize(), $this->isSigned());
+		$newColumn = new self($newColumnName);
 		$newColumn->applyCommonAttributes($this);
 		return $newColumn;
 	}

@@ -74,19 +74,23 @@ class SqliteCreateStatementBuilder {
 		
 		$columnStatementStringBuilder = new SqliteColumnStatementStringBuilder($this->dbh);
 		$indexStatementStringBuilder = new SqliteIndexStatementStringBuilder($this->dbh);
-		if ($this->metaEntity instanceof View) {
-			if ($replace) {
-				$sqlStatements[] = 'DROP VIEW IF EXISTS ' . $this->dbh->quoteField($this->metaEntity->getName()) . ';';
-			}
-			$sqlStatements[] = 'CREATE VIEW ' . $this->dbh->quoteField($this->metaEntity->getName()) . ' AS ' . $this->metaEntity->getQuery() . ';';
 		
-		} elseif ($this->metaEntity instanceof Table) {
+		$metaEntity = $this->getMetaEntity();
+		
+		if ($metaEntity instanceof View) {
 			if ($replace) {
-				$sqlStatements[] = 'DROP TABLE IF EXISTS ' . $this->dbh->quoteField($this->metaEntity->getName()) . ';';
+				$sqlStatements[] = 'DROP VIEW IF EXISTS ' . $this->dbh->quoteField($metaEntity->getName()) . ';';
 			}
-			$sql = 'CREATE TABLE ' . $this->dbh->quoteField($this->metaEntity->getName()) . ' ( ';
+			$sqlStatements[] = 'CREATE VIEW ' . $this->dbh->quoteField($metaEntity->getName()) . ' AS ' 
+					. $metaEntity->getQuery() . ';';
+		
+		} elseif ($metaEntity instanceof Table) {
+			if ($replace) {
+				$sqlStatements[] = 'DROP TABLE IF EXISTS ' . $this->dbh->quoteField($metaEntity->getName()) . ';';
+			}
+			$sql = 'CREATE TABLE ' . $this->dbh->quoteField($metaEntity->getName()) . ' ( ';
 			$first = true;
-			foreach ($this->metaEntity->getColumns() as $column) {
+			foreach ($metaEntity->getColumns() as $column) {
 				if (!$first) {
 					$sql .= ', ';
 				} else {
@@ -97,9 +101,9 @@ class SqliteCreateStatementBuilder {
 				}
 				$sql .= $columnStatementStringBuilder->generateStatementString($column);
 			}
+
 			//Primary Key
-	
-			$primaryKey = $this->metaEntity->getPrimaryKey();
+			$primaryKey = $metaEntity->getPrimaryKey();
 			if ($primaryKey) {
 				if ($formatted) {
 					$sql .= PHP_EOL . "\t";
@@ -123,7 +127,7 @@ class SqliteCreateStatementBuilder {
 	
 			$sqlStatements[] = $sql;
 	
-			$indexes = $this->metaEntity->getIndexes();
+			$indexes = $metaEntity->getIndexes();
 			foreach ($indexes as $index) {
 				if ($index->getType() == IndexType::PRIMARY) continue;
 				$sqlStatements[] = $indexStatementStringBuilder->generateCreateStatementString($index) . ';';

@@ -26,6 +26,8 @@ use n2n\persistence\meta\structure\MetaEntity;
 use n2n\persistence\meta\structure\View;
 use n2n\util\ex\IllegalStateException;
 use n2n\persistence\meta\structure\EnumColumn;
+use n2n\reflection\CastUtils;
+use n2n\persistence\meta\structure\Table;
 
 class PgsqlCreateStatementBuilder {
 	private $pdo;
@@ -72,13 +74,13 @@ class PgsqlCreateStatementBuilder {
 		$metaEntity = $this->getMetaEntity();
 		$quotedMetaEntityName = $this->pdo->quoteField($metaEntity->getName());
 
-		if ($this->getMetaEntity() instanceof View) {
+		if ($metaEntity instanceof View) {
 			if ($replace) {
 				$this->sqlStatements[] = 'DROP VIEW IF EXISTS ' . $quotedMetaEntityName . '; ';
 			}
 				
 			$this->sqlStatements[] = 'CREATE VIEW ' . $quotedMetaEntityName . ' AS '
-					. $this->pdo->quote($this->getMetaEntity()->getQuery());
+					. $this->pdo->quote($metaEntity->getQuery());
 						
 					return $this->sqlStatements;
 		}
@@ -100,7 +102,10 @@ class PgsqlCreateStatementBuilder {
 	}
 
 	private function buildColumnSqlFragments($formatted = false) {
-		$columns = $this->getMetaEntity()->getColumns();
+		$metaEntity = $this->getMetaEntity();
+		CastUtils::assertTrue($metaEntity instanceof Table);
+		
+		$columns = $metaEntity->getColumns();
 		$columnArray = array();
 		$columnStatementFragmentBuilder = new PgsqlColumnStatementFragmentBuilder($this->pdo);
 		$enumStatementBuilder = new PgsqlEnumStatementBuilder($this->pdo);
@@ -121,7 +126,10 @@ class PgsqlCreateStatementBuilder {
 	}
 
 	private function buildIndexesSql(bool $replace = false, bool $formatted = false) {
-		if (count($indexes = $this->getMetaEntity()->getIndexes()) > 0) {
+		$metaEntity = $this->getMetaEntity();
+		CastUtils::assertTrue($metaEntity instanceof Table);
+		
+		if (count($indexes = $metaEntity->getIndexes()) > 0) {
 			$indexStatementBuilder = new PgsqlIndexStatementBuilder($this->pdo);
 			foreach ($indexes as $index) {
 				if ($replace) {

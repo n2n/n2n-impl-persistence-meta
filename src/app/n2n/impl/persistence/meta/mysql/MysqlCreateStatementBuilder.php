@@ -22,16 +22,10 @@
 namespace n2n\impl\persistence\meta\mysql;
 
 use n2n\persistence\meta\structure\MetaEntity;
-
 use n2n\persistence\meta\structure\View;
-
 use n2n\persistence\meta\structure\Table;
-
 use n2n\persistence\meta\structure\IndexType;
-
 use n2n\persistence\Pdo;
-
-
 
 class MysqlCreateStatementBuilder {
 	
@@ -83,18 +77,20 @@ class MysqlCreateStatementBuilder {
 		$columnStatementStringBuilder = new MysqlColumnStatementStringBuilder($this->dbh);
 		$indexStatementStringBuilder = new MysqlIndexStatementStringBuilder($this->dbh);
 		
-		if ($this->metaEntity instanceof View) {
+		$metaEntity = $this->getMetaEntity();
+		
+		if ($metaEntity instanceof View) {
 			if ($replace) {
-				$sqlStatements[] = 'DROP VIEW IF EXISTS ' . $this->dbh->quoteField($this->metaEntity->getName()) . ';';
+				$sqlStatements[] = 'DROP VIEW IF EXISTS ' . $this->dbh->quoteField($metaEntity->getName()) . ';';
 			}
-			$sqlStatements[] = 'CREATE VIEW ' . $this->dbh->quoteField($this->metaEntity->getName()) . ' AS ' . $this->metaEntity->getQuery() . ';';
-		} elseif ($this->metaEntity instanceof Table) {
+			$sqlStatements[] = 'CREATE VIEW ' . $this->dbh->quoteField($metaEntity->getName()) . ' AS ' . $metaEntity->getQuery() . ';';
+		} elseif ($metaEntity instanceof Table) {
 			if ($replace) {
 				$sqlStatements[] = 'DROP TABLE IF EXISTS ' . $this->dbh->quoteField($this->metaEntity->getName()) . ';';
 			}
 			$sql = 'CREATE TABLE ' . $this->dbh->quoteField($this->metaEntity->getName()) . ' ( ';
 			$first = true;
-			foreach ($this->metaEntity->getColumns() as $column) {
+			foreach ($metaEntity->getColumns() as $column) {
 				if (!$first) {
 					$sql .= ', ';
 				} else {
@@ -105,9 +101,9 @@ class MysqlCreateStatementBuilder {
 				}
 				$sql .= $columnStatementStringBuilder->generateStatementString($column);
 			}
+			
 			//Primary Key
-	
-			$primaryKey = $this->metaEntity->getPrimaryKey();
+			$primaryKey = $metaEntity->getPrimaryKey();
 			if ($primaryKey) {
 				if ($formatted) {
 					$sql .= PHP_EOL . "\t";
@@ -133,7 +129,7 @@ class MysqlCreateStatementBuilder {
 			
 			
 			$sqlStatements[] = $sql;
-			$indexes = $this->metaEntity->getIndexes();
+			$indexes = $metaEntity->getIndexes();
 			foreach ($indexes as $index) {
 				if ($index->getType() == IndexType::PRIMARY) continue;
 				$sqlStatements[] = 'ALTER TABLE ' . $this->dbh->quoteField($this->metaEntity->getName()) . ' ADD ' 

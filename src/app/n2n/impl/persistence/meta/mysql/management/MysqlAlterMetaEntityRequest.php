@@ -36,6 +36,7 @@ use n2n\impl\persistence\meta\mysql\MysqlColumnStatementStringBuilder;
 use n2n\impl\persistence\meta\mysql\MysqlMetaEntityBuilder;
 
 use n2n\persistence\Pdo;
+use n2n\reflection\CastUtils;
 
 class MysqlAlterMetaEntityRequest extends ChangeRequestAdapter implements AlterMetaEntityRequest  {
 	
@@ -44,14 +45,17 @@ class MysqlAlterMetaEntityRequest extends ChangeRequestAdapter implements AlterM
 		$indexStatementStringBuilder = new MysqlIndexStatementStringBuilder($dbh);
 		$metaEntityBuilder = new MysqlMetaEntityBuilder($dbh, $this->getMetaEntity()->getDatabase());
 		
-		if ($this->getMetaEntity() instanceof View) {
-			$dbh->exec('ALTER VIEW ' . $dbh->quoteField($this->getMetaEntity()->getName()) . ' AS ' . $this->getMetaEntity()->getQuery());
+		$metaEntity = $this->getMetaEntity();
+		
+		if ($metaEntity instanceof View) {
+			$dbh->exec('ALTER VIEW ' . $dbh->quoteField($metaEntity->getName()) . ' AS ' . $metaEntity->getQuery());
 			return;
 		}	
-		if ($this->getMetaEntity() instanceof Table) {
+		if ($metaEntity instanceof Table) {
 			//columns to Add
-			$columns = $this->getMetaEntity()->getColumns();
-			$persistedTable =  $metaEntityBuilder->createMetaEntity($this->getMetaEntity()->getName());
+			$columns = $metaEntity->getColumns();
+			$persistedTable =  $metaEntityBuilder->createMetaEntity($metaEntity->getName());
+			CastUtils::assertTrue($persistedTable instanceof Table);
 			$persistedColumns = $persistedTable->getColumns();
 
 			foreach ($columns as $column) {
@@ -70,7 +74,7 @@ class MysqlAlterMetaEntityRequest extends ChangeRequestAdapter implements AlterM
 				}
 			}
 			
-			$indexes = $this->getMetaEntity()->getIndexes();
+			$indexes = $metaEntity->getIndexes();
 			$persistedIndexes = $persistedTable->getIndexes();
 			
 			foreach ($indexes as $index) {

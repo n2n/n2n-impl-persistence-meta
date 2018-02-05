@@ -101,7 +101,7 @@ class PgsqlMetaEntityBuilder {
 			switch ($row['data_type']) {
 				case 'date':
 					$column = new PgsqlDateTimeColumn($row['column_name'], true, false);
-					$this->applyCommonColumnAttributes($column, $row);
+					//$this->applyCommonColumnAttributes($column, $row);
 					$columns[$column->getName()] = $column;
 					break;
 				case 'time with time zone':
