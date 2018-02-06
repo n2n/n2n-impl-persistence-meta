@@ -30,7 +30,7 @@ class PgsqlAlterMetaEntityRequest extends ChangeRequestAdapter {
 			$metaEntityBuilder = new PgsqlMetaEntityBuilder($dbh, $database);
 			
 			//columns to Add
-			$columns = $this->getMetaEntity()->getColumns();
+			$columns = $metaEntity->getColumns();
 			$persistedTable =  $metaEntityBuilder->createMetaEntity($this->getMetaEntity()->getName());
 			$persistedColumns = $persistedTable->getColumns();
 			
@@ -61,7 +61,7 @@ class PgsqlAlterMetaEntityRequest extends ChangeRequestAdapter {
 		$sql = '';
 		
 		$currentTableIndexes = $currentTable->getIndexes();
-		$newTableIndexes = $this->getMetaEntity()->getIndexes();
+		$newTableIndexes = $newTable->getIndexes();
 			
 		$creatableIndexes = array_diff($newTableIndexes, $currentTableIndexes);
 		$changeableIndexes = array_intersect($currentTableIndexes, $newTableIndexes);

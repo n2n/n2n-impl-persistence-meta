@@ -27,7 +27,7 @@ use n2n\persistence\meta\Dialect;
 abstract class DialectAdapter implements Dialect {
 	/**
 	 * Quotes the like wildcard chars
-	 * @param unknown $pattern
+	 * @param string $pattern
 	 */
 	public function escapeLikePattern($pattern) {
 		$esc = $this->getLikeEscapeCharacter();

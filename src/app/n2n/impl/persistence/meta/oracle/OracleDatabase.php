@@ -36,9 +36,10 @@ use n2n\persistence\meta\structure\common\DatabaseAdapter;
 class OracleDatabase extends DatabaseAdapter {
 	
 	/**
-	 * @var n2n\impl\persistence\meta\oracle\OracleMetaEntityFactory
+	 * @var OracleMetaEntityBuilder
 	 */
 	private $metaEntityFactory;
+	private $metaEntityBuilder;
 	
 	private $charset;
 	private $name;
@@ -83,7 +84,8 @@ class OracleDatabase extends DatabaseAdapter {
 	}
 
 	/**
-	 * @return n2n\impl\persistence\meta\oracle\OracleMetaEntityFactory
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Database::createMetaEntityFactory()
 	 */
 	public function createMetaEntityFactory() {
 		if (!(isset($this->metaEntityFactory))) {
@@ -104,11 +106,10 @@ class OracleDatabase extends DatabaseAdapter {
 		return new OracleDropMetaEntityRequest($metaEntity);
 	}
 	
-	
 	/**
-	* @return n2n\impl\persistence\meta\oracle\Backuper
-	*/
-	
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Database::createBackuper()
+	 */
 	public function createBackuper(array $metaEnities = null) {
 		return new OracleBackuper($this->dbh, $this, $metaEnities);
 	}

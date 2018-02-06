@@ -22,16 +22,12 @@
 namespace n2n\impl\persistence\meta\sqlite;
 
 use n2n\impl\persistence\meta\sqlite\management\SqliteDropMetaEntityRequest;
-
 use n2n\impl\persistence\meta\sqlite\management\SqliteCreateMetaEntityRequest;
-
 use n2n\impl\persistence\meta\sqlite\management\SqliteAlterMetaEntityRequest;
-
 use n2n\persistence\meta\structure\common\DatabaseAdapter;
-
 use n2n\persistence\meta\structure\MetaEntity;
-
 use n2n\persistence\Pdo;
+use n2n\persistence\meta\structure\Backuper;
 
 class SqliteDatabase extends DatabaseAdapter {
 
@@ -107,7 +103,6 @@ class SqliteDatabase extends DatabaseAdapter {
 	/**
 	* @return Backuper
 	*/
-	
 	public function createBackuper(array $metaEnities = null) {
 		return new SqliteBackuper($this->dbh, $this, $metaEnities);
 	}

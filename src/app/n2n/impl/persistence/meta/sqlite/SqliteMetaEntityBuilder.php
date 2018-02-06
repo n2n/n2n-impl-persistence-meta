@@ -36,12 +36,12 @@ class SqliteMetaEntityBuilder {
 	const TYPE_INDEX = 'index';
 	
 	/**
-	 * @var n2n\persistence\Pdo
+	 * @var Pdo
 	 */
 	private $dbh;
 	
 	/**
-	 * @var n2n\impl\persistence\meta\sqlite\SQLiteDatabase
+	 * @var SQLiteDatabase
 	 */
 	private $database;
 	
@@ -52,7 +52,7 @@ class SqliteMetaEntityBuilder {
 	
 	/**
 	 * @param string $name
-	 * @return n2n\persistence\meta\structure\MetaEntity
+	 * @return \n2n\persistence\meta\structure\MetaEntity
 	 */
 	public function createMetaEntity($name) {
 		

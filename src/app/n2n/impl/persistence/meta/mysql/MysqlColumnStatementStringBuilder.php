@@ -37,7 +37,7 @@ use n2n\persistence\meta\structure\Column;
 class MysqlColumnStatementStringBuilder {
 	
 	/**
-	 * @var n2n\persistence\Pdo
+	 * @var \n2n\persistence\Pdo
 	 */
 	private $dbh;
 	

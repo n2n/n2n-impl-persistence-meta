@@ -38,7 +38,7 @@ class OracleColumnStatementStringBuilder {
 	const NATIONAL_CHARACTER_SET = 'NCHAR_CS';
 	
 	/**
-	 * @var n2n\persistence\Pdo
+	 * @var \n2n\persistence\Pdo
 	 */
 	private $dbh;
 	

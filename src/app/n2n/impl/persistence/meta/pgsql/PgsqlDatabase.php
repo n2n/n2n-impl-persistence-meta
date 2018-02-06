@@ -22,7 +22,6 @@
 namespace n2n\impl\persistence\meta\pgsql;
 
 use n2n\persistence\meta\structure\common\DatabaseAdapter;
-use n2n\persistence\meta\structure\common\ChangeRequestQueue;
 use n2n\persistence\meta\structure\MetaEntity;
 use n2n\persistence\Pdo;
 use n2n\impl\persistence\meta\pgsql\management\PgsqlAlterMetaEntityRequest;
@@ -34,6 +33,7 @@ class PgsqlDatabase extends DatabaseAdapter {
 
 	private $changeRequestQueue;
 	private $metaEntityFactory;
+	private $pgsqlMetaEntityBuilder;
 
 	private $name;
 	private $charset;

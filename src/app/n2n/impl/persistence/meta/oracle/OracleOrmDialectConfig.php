@@ -21,8 +21,6 @@
  */
 namespace n2n\impl\persistence\meta\oracle;
 
-use n2n\impl\persistence\meta\oracle\OracleDateTimeColumn;
-
 use n2n\persistence\meta\OrmDialectConfig;
 use n2n\util\DateUtils;
 

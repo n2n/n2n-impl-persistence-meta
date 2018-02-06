@@ -28,7 +28,7 @@ use n2n\persistence\meta\structure\MetaEntityFactory;
 class MssqlMetaEntityFactory implements MetaEntityFactory {
 	
 	/**
-	 * @var n2n\impl\persistence\meta\mssql\MssqlDatabase
+	 * @var MssqlDatabase
 	 */
 	private $database;
 	

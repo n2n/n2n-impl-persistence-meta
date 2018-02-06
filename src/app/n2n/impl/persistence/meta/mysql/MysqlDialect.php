@@ -53,16 +53,18 @@ class MysqlDialect extends DialectAdapter {
 	public function createMetaDatabase(Pdo $dbh) {
 		return new MysqlDatabase($dbh);
 	}
+
 	/**
-	 *
-	 * @param string $str
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::quoteField()
 	 */
 	public function quoteField($str) {
 		return "`" . str_replace("`", "``", (string) $str) . "`";
 	}
+
 	/**
-	 *
-	 * @return SelectStatementBuilder
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::createSelectStatementBuilder()
 	 */
 	public function createSelectStatementBuilder(Pdo $dbh) {
 		return new CommonSelectStatementBuilder($dbh, new MysqlQueryFragmentBuilderFactory($dbh));

@@ -14,7 +14,6 @@ use n2n\persistence\meta\structure\IntegerColumn;
 use n2n\persistence\meta\structure\Column;
 use n2n\reflection\ReflectionUtils;
 use n2n\persistence\meta\structure\EnumColumn;
-use n2n\impl\persistence\meta\pgsql\PgsqlEnumStatementBuilder;
 
 class PgsqlColumnStatementFragmentBuilder {
 	private $pdo;

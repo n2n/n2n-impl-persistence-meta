@@ -41,8 +41,8 @@ class OracleTable extends TableAdapter {
 	}
 	
 	/**
-	 *
-	 * @return n2n\impl\persistence\meta\oracle\OracleColumnFactory
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\Table::createColumnFactory()
 	 */
 	public function createColumnFactory() {
 		if (!($this->columnFactory)) {

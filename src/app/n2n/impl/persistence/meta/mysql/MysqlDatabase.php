@@ -33,17 +33,15 @@ use n2n\persistence\meta\structure\common\DatabaseAdapter;
 
 use n2n\persistence\Pdo;
 
-use n2n\impl\persistence\meta\mysql\MysqlMetaEntityBuilder;
-
 class MysqlDatabase extends DatabaseAdapter {
 	
 	/**
-	 * @var n2n\impl\persistence\meta\mysql\MetaEntityFactory
+	 * @var MysqlMetaEntityFactory
 	 */
 	private $metaEntityFactory;
 	
 	/**
-	 * @var n2n\impl\persistence\meta\mysql\MysqlMetaEntityBuilder
+	 * @var MysqlMetaEntityBuilder
 	 */
 	private $metaEntityBuilder;
 	
@@ -89,8 +87,10 @@ class MysqlDatabase extends DatabaseAdapter {
 		return $this->attrs;
 	}
 
+	
 	/**
-	 * @return n2n\impl\persistence\meta\mysql\MysqlMetaEntityFactory
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Database::createMetaEntityFactory()
 	 */
 	public function createMetaEntityFactory() {
 		if (!(isset($this->metaEntityFactory))) {
@@ -111,15 +111,18 @@ class MysqlDatabase extends DatabaseAdapter {
 		return new MysqlDropMetaEntityRequest($metaEntity);
 	}
 	
-	
 	/**
-	* @return n2n\impl\persistence\meta\mysql\Backuper
-	*/
-	
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Database::createBackuper()
+	 */
 	public function createBackuper(array $metaEnities = null) {
 		return new MysqlBackuper($this->dbh, $this, $metaEnities);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\common\DatabaseAdapter::getPersistedMetaEntities()
+	 */
 	protected function getPersistedMetaEntities() {
 		$metaEntities = array();
 		$sql = 'SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = :TABLE_SCHEMA;';

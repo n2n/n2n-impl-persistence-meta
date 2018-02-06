@@ -29,21 +29,25 @@ use n2n\persistence\meta\structure\Table;
 use n2n\persistence\meta\structure\common\AlterMetaEntityRequest;
 use n2n\persistence\meta\structure\View;
 use n2n\persistence\Pdo;
+use n2n\reflection\CastUtils;
 
 class OracleAlterMetaEntityRequest extends ChangeRequestAdapter implements AlterMetaEntityRequest  {
 	
 	public function execute(Pdo $dbh) {
-		if ($this->getMetaEntity() instanceof View) {
-			$dbh->exec('ALTER VIEW ' . $dbh->quoteField($this->getMetaEntity()->getName()) . ' AS ' . $this->getMetaEntity()->getQuery());
+		$metaEntity = $this->getMetaEntity();
+		if ($metaEntity instanceof View) {
+			$dbh->exec('ALTER VIEW ' . $dbh->quoteField($metaEntity->getName()) . ' AS ' . $metaEntity->getQuery());
 			return;
-		}	
-		if ($this->getMetaEntity() instanceof Table) {
+		}
+		
+		if ($metaEntity instanceof Table) {
 			$columnStatementStringBuilder = new OracleColumnStatementStringBuilder($dbh);
 			$indexStatementStringBuilder = new OracleIndexStatementStringBuilder($dbh);
 			$metaEntityBuilder = new OracleMetaEntityBuilder($dbh, $this->getMetaEntity()->getDatabase());
 			//columns to Add
-			$columns = $this->getMetaEntity()->getColumns();
+			$columns = $metaEntity->getColumns();
 			$persistedTable =  $metaEntityBuilder->createTable($this->getMetaEntity()->getName());
+			CastUtils::assertTrue($persistedTable instanceof Table);
 			$persistedColumns = $persistedTable->getColumns();
 
 			foreach ($columns as $column) {
@@ -62,7 +66,7 @@ class OracleAlterMetaEntityRequest extends ChangeRequestAdapter implements Alter
 				}
 			}
 			
-			$indexes = $this->getMetaEntity()->getIndexes();
+			$indexes = $metaEntity->getIndexes();
 			$persistedIndexes = $persistedTable->getIndexes();
 			
 			foreach ($indexes as $index) {

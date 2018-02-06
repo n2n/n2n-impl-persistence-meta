@@ -22,26 +22,20 @@
 namespace n2n\impl\persistence\meta\oracle;
 
 use n2n\persistence\meta\structure\MetaEntity;
-
 use n2n\persistence\meta\structure\View;
-
 use n2n\persistence\meta\structure\Table;
-
 use n2n\persistence\meta\structure\IndexType;
-
 use n2n\persistence\Pdo;
-
-
 
 class OracleCreateStatementBuilder {
 	
 	/**
-	 * @var \n2n\persistence\Pdo
+	 * @var Pdo
 	 */
 	private $dbh;
 	
 	/**
-	 * @var n2n\persistence\meta\structure\MetaEntity
+	 * @var MetaEntity
 	 */
 	private $metaEntity;
 	
@@ -73,9 +67,13 @@ class OracleCreateStatementBuilder {
 		foreach ($this->createSqlStatements() as $sql) {
 			$this->dbh->exec($sql);
 		}
-		//set the columns of the table with the persisted ones, that we get everything the Oracle DBMS sets by itself
-		$metaEntityBuilder = new OracleMetaEntityBuilder($this->dbh, $this->metaEntity->getDatabase());
-		$this->metaEntity->setColumns($metaEntityBuilder->createTable($this->metaEntity->getName())->getColumns());
+		
+		$metaEntity = $this->getMetaEntity();
+		if ($metaEntity instanceof Table) {
+			//set the columns of the table with the persisted ones, that we get everything the Oracle DBMS sets by itself
+			$metaEntityBuilder = new OracleMetaEntityBuilder($this->dbh, $this->metaEntity->getDatabase());
+			$metaEntity->setColumns($metaEntityBuilder->createTable($this->metaEntity->getName())->getColumns());
+		}
 	}
 	
 	public function createSqlStatements($replace = false, $formatted = false) {
@@ -85,21 +83,22 @@ class OracleCreateStatementBuilder {
 		$columnStatementStringBuilder = new OracleColumnStatementStringBuilder($this->dbh);
 		$indexStatementStringBuilder = new OracleIndexStatementStringBuilder($this->dbh);
 		
-		if ($this->metaEntity instanceof View) {
+		$metaEntity = $this->getMetaEntity();
+		if ($metaEntity instanceof View) {
 			if ($replace) {
-				$sqlStatement = 'CREATE OR REPLACE VIEW ' . $this->dbh->quoteField($this->metaEntity->getName()) . ' AS ' . $this->metaEntity->getQuery();
+				$sqlStatement = 'CREATE OR REPLACE VIEW ' . $this->dbh->quoteField($metaEntity->getName()) . ' AS ' . $metaEntity->getQuery();
 				if ($formatted) {
 					$sqlStatement .= ';';
 				}
 				$sqlStatements[] = $sqlStatement;
 			} else {
-				$sqlStatement = 'CREATE VIEW ' . $this->metaEntity->getName() . ' AS ' . $this->metaEntity->getQuery();
+				$sqlStatement = 'CREATE VIEW ' . $metaEntity->getName() . ' AS ' . $metaEntity->getQuery();
 				if ($formatted) {
 					$sqlStatement .= ';';
 				}
 				$sqlStatements[] = $sqlStatement;
 			}
-		} elseif ($this->metaEntity instanceof Table) {
+		} elseif ($metaEntity instanceof Table) {
 			if ($replace) {
 				$sqlStatements[] = 'BEGIN EXECUTE IMMEDIATE \'DROP TABLE ' . $this->dbh->quoteField($this->metaEntity->getName()) . '\'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF;END;';
 				if ($formatted) {
@@ -108,7 +107,7 @@ class OracleCreateStatementBuilder {
 			}
 			$sql = 'CREATE TABLE ' . $this->dbh->quoteField($this->metaEntity->getName()) . ' ( ';
 			$first = true;
-			foreach ($this->metaEntity->getColumns() as $column) {
+			foreach ($metaEntity->getColumns() as $column) {
 				if (!$first) {
 					$sql .= ', ';
 				} else {
@@ -119,9 +118,9 @@ class OracleCreateStatementBuilder {
 				}
 				$sql .= $columnStatementStringBuilder->generateStatementString($column);
 			}
+
 			//Primary Key
-	
-			$primaryKey = $this->metaEntity->getPrimaryKey();
+			$primaryKey = $metaEntity->getPrimaryKey();
 			if ($primaryKey) {
 				if ($formatted) {
 					$sql .= PHP_EOL . "\t";
@@ -146,7 +145,7 @@ class OracleCreateStatementBuilder {
 				$sql .= ';';
 			}
 			$sqlStatements[] = $sql;
-			$indexes = $this->metaEntity->getIndexes();
+			$indexes = $metaEntity->getIndexes();
 			foreach ($indexes as $index) {
 				if ($index->getType() == IndexType::PRIMARY) continue;
 				if ($replace) {

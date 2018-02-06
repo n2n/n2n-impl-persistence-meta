@@ -58,9 +58,10 @@ class OracleDialect extends DialectAdapter {
 		return '"' . str_replace('"', '""', (string) $str) . '"';
 		return $str;
 	}
+
 	/**
-	 *
-	 * @return SelectStatementBuilder
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::createSelectStatementBuilder()
 	 */
 	public function createSelectStatementBuilder(Pdo $dbh) {
 		return new CommonSelectStatementBuilder($dbh, new OracleQueryFragmentBuilderFactory($dbh));

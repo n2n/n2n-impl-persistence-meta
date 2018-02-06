@@ -22,11 +22,6 @@
 namespace n2n\impl\persistence\meta\pgsql;
 
 use n2n\persistence\Pdo;
-use n2n\impl\persistence\meta\pgsql\PgsqlDatabase;
-use n2n\impl\persistence\meta\pgsql\PgsqlTable;
-
-use n2n\impl\persistence\meta\pgsql\PgsqlDateTimeColumn;
-use n2n\impl\persistence\meta\pgsql\PgsqlIntegerColumn;
 use n2n\persistence\meta\structure\common\CommonView;
 use n2n\persistence\meta\structure\IndexType;
 use n2n\persistence\meta\structure\common\CommonBinaryColumn;
@@ -106,7 +101,7 @@ class PgsqlMetaEntityBuilder {
 			switch ($row['data_type']) {
 				case 'date':
 					$column = new PgsqlDateTimeColumn($row['column_name'], true, false);
-					$this->applyCommonColumnAttributes($column, $row);
+					//$this->applyCommonColumnAttributes($column, $row);
 					$columns[$column->getName()] = $column;
 					break;
 				case 'time with time zone':

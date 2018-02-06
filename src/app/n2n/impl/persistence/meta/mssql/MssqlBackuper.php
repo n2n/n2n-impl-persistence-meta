@@ -28,6 +28,7 @@ use n2n\persistence\meta\data\QueryConstant;
 use n2n\persistence\meta\data\QueryColumn;
 use n2n\persistence\Pdo;
 use n2n\util\ex\IllegalStateException;
+use n2n\reflection\CastUtils;
 
 class MssqlBackuper extends BackuperAdapter {
 
@@ -44,6 +45,10 @@ class MssqlBackuper extends BackuperAdapter {
 		}
 
 		$createStatementBuilder = new MssqlCreateStatementBuilder($this->dbh);
+		
+		$dialect = $this->dbh->getMetaData()->getDialect();
+		CastUtils::assertTrue($dialect instanceof MssqlDialect);
+		
 		foreach ($metaEntities as $metaEntity) {
 				
 			if (is_scalar($metaEntity)) {
@@ -63,7 +68,9 @@ class MssqlBackuper extends BackuperAdapter {
 					//remove Identity for insert
 				foreach ($metaEntity->getColumns() as $column) {
 					//@todo extend DialectInterface byisColumnIdentifierGenerator
-					if ($this->dbh->getMetaData()->getDialect()->isColumnIdentifierGenerator($column)) {
+					
+					
+					if ($dialect->isColumnIdentifierGenerator($column)) {
 						$hasIdentifierGenerator = true;
 						break;
 					}
@@ -83,7 +90,7 @@ class MssqlBackuper extends BackuperAdapter {
 					$insertStatementBuilder->setTable($metaEntity->getName());
 					foreach ($row as $columnName => $value) {
 						$column = $metaEntity->getColumnByName($columnName);
-						if ($column->isValueGenerated() && !$this->dbh->getMetaData()->getDialect()->isColumnIdentifierGenerator($column)) continue;
+						if ($column->isValueGenerated() && !$dialect->isColumnIdentifierGenerator($column)) continue;
 
 						$insertStatementBuilder->addColumn(new QueryColumn($columnName), new QueryConstant($value));
 					}

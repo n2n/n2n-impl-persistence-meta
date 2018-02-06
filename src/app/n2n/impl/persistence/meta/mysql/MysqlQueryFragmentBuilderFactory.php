@@ -28,7 +28,7 @@ use n2n\persistence\meta\data\common\QueryFragmentBuilderFactory;
 class MysqlQueryFragmentBuilderFactory implements QueryFragmentBuilderFactory {
 	
 	/**
-	 * @var n2n\persistence\Pdo
+	 * @var \n2n\persistence\Pdo
 	 */
 	private $dbh;
 	

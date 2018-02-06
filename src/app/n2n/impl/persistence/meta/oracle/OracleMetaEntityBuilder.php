@@ -42,6 +42,7 @@ use n2n\persistence\meta\structure\common\CommonStringColumn;
 use n2n\persistence\meta\structure\IndexType;
 
 use n2n\persistence\Pdo;
+use n2n\reflection\CastUtils;
 
 class OracleMetaEntityBuilder {
 	
@@ -50,12 +51,12 @@ class OracleMetaEntityBuilder {
 	const CONSTRAINT_TYPE_UNIQUE = 'U';
 	
 	/**
-	 * @var n2n\persistence\Pdo
+	 * @var Pdo
 	 */
 	private $dbh;
 	
 	/**
-	 * @var n2n\impl\persistence\meta\oracle\OracleDatabase
+	 * @var OracleDatabase
 	 */
 	private $database;
 	
@@ -80,7 +81,7 @@ class OracleMetaEntityBuilder {
 	}
 	/**
 	 * @param string $name
-	 * @return n2n\persistence\meta\structure\MetaEntity
+	 * @return \n2n\persistence\meta\structure\MetaEntity
 	 */
 	public function createTable($name) {
 		$table = null;
@@ -199,6 +200,7 @@ class OracleMetaEntityBuilder {
 	}
 	
 	private function getIndexesForTable(Table $table) {
+		CastUtils::assertTrue($table instanceof OracleTable);
 		$indexes = array();
 		$columns = $table->getColumns();
 		$statement = $this->dbh->prepare('SELECT * FROM user_indexes WHERE INDEX_TYPE = :NORMAL AND GENERATED != :Y AND TABLE_NAME = :TABLE_NAME');
