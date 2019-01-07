@@ -31,7 +31,7 @@ use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
 use n2n\impl\persistence\meta\mssql\MssqlMetaEntityBuilder;
 use n2n\persistence\meta\structure\InvalidColumnAttributesException;
 use n2n\persistence\Pdo;
-use n2n\reflection\CastUtils;
+use n2n\util\type\CastUtils;
 
 class MssqlAlterMetaEntityRequest extends ChangeRequestAdapter implements AlterMetaEntityRequest{
 	

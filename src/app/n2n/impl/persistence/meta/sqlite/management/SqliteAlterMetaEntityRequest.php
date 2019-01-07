@@ -40,7 +40,7 @@ use n2n\persistence\meta\structure\common\AlterMetaEntityRequest;
 use n2n\impl\persistence\meta\sqlite\SqliteMetaEntityBuilder;
 
 use n2n\persistence\Pdo;
-use n2n\reflection\CastUtils;
+use n2n\util\type\CastUtils;
 
 class SqliteAlterMetaEntityRequest extends ChangeRequestAdapter implements AlterMetaEntityRequest {
 	
