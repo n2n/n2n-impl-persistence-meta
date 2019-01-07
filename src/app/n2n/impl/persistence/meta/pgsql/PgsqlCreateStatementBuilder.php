@@ -26,7 +26,7 @@ use n2n\persistence\meta\structure\MetaEntity;
 use n2n\persistence\meta\structure\View;
 use n2n\util\ex\IllegalStateException;
 use n2n\persistence\meta\structure\EnumColumn;
-use n2n\reflection\CastUtils;
+use n2n\util\type\CastUtils;
 use n2n\persistence\meta\structure\Table;
 
 class PgsqlCreateStatementBuilder {

@@ -28,7 +28,7 @@ use n2n\persistence\meta\data\QueryConstant;
 use n2n\persistence\meta\data\QueryColumn;
 use n2n\persistence\Pdo;
 use n2n\util\ex\IllegalStateException;
-use n2n\reflection\CastUtils;
+use n2n\util\type\CastUtils;
 
 class MssqlBackuper extends BackuperAdapter {
 

@@ -42,7 +42,7 @@ use n2n\persistence\meta\structure\common\CommonStringColumn;
 use n2n\persistence\meta\structure\IndexType;
 
 use n2n\persistence\Pdo;
-use n2n\reflection\CastUtils;
+use n2n\util\type\CastUtils;
 
 class OracleMetaEntityBuilder {
 	

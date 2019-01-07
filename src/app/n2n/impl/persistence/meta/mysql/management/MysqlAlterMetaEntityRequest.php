@@ -36,7 +36,7 @@ use n2n\impl\persistence\meta\mysql\MysqlColumnStatementStringBuilder;
 use n2n\impl\persistence\meta\mysql\MysqlMetaEntityBuilder;
 
 use n2n\persistence\Pdo;
-use n2n\reflection\CastUtils;
+use n2n\util\type\CastUtils;
 
 class MysqlAlterMetaEntityRequest extends ChangeRequestAdapter implements AlterMetaEntityRequest  {
 	
