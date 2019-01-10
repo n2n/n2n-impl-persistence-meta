@@ -64,7 +64,7 @@ class MssqlBackuper extends BackuperAdapter {
 			//then the data
 			if ($this->isBackupDataEnabled() && ($metaEntity instanceof Table)) {
 				$hasIdentifierGenerator = false;
-				$columnStatementStringBuilder = new MssqlColumnStatementStringBuilder($this->dbh);
+// 				$columnStatementStringBuilder = new MssqlColumnStatementStringBuilder($this->dbh);
 					//remove Identity for insert
 				foreach ($metaEntity->getColumns() as $column) {
 					//@todo extend DialectInterface byisColumnIdentifierGenerator
