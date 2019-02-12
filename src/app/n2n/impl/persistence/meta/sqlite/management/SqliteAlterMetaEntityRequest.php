@@ -33,8 +33,6 @@ use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
 
 use n2n\impl\persistence\meta\sqlite\SqliteIndexStatementStringBuilder;
 
-use n2n\impl\persistence\meta\sqlite\SqliteColumnStatementStringBuilder;
-
 use n2n\persistence\meta\structure\common\AlterMetaEntityRequest;
 
 use n2n\impl\persistence\meta\sqlite\SqliteMetaEntityBuilder;
@@ -45,7 +43,7 @@ use n2n\util\type\CastUtils;
 class SqliteAlterMetaEntityRequest extends ChangeRequestAdapter implements AlterMetaEntityRequest {
 	
 	public function execute(Pdo $dbh) {
-		$columnStatementStringBuilder = new SqliteColumnStatementStringBuilder($dbh);
+// 		$columnStatementStringBuilder = new SqliteColumnStatementStringBuilder($dbh);
 		$indexStatementStringBuilder = new SqliteIndexStatementStringBuilder($dbh);
 		$metaEntityBuilder = new SqliteMetaEntityBuilder($dbh, $this->getMetaEntity()->getDatabase());
 		
