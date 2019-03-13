@@ -129,7 +129,6 @@ class MysqlCreateStatementBuilder {
 			
 			//Default Charset, engine and collation
 			
-			
 			$sqlStatements[] = $sql;
 			$indexes = $metaEntity->getIndexes();
 			foreach ($indexes as $index) {
