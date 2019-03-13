@@ -81,7 +81,7 @@ class MysqlCreateStatementBuilder {
 		
 		if ($metaEntity instanceof View) {
 			if ($replace) {
-				$sqlStatements[] = 'DROP VIEW IF EXISTS ' . $this->dbh->quoteField($metaEntity->getName()) . ';';
+				$sqlStatements[] = 'DROP VIEW IF EXISTS ' . $this->dbh->quote($metaEntity->getName()) . ';';
 			}
 			$sqlStatements[] = 'CREATE VIEW ' . $this->dbh->quoteField($metaEntity->getName()) . ' AS ' . $metaEntity->getQuery() . ';';
 		} elseif ($metaEntity instanceof Table) {
@@ -137,6 +137,7 @@ class MysqlCreateStatementBuilder {
 						. $indexStatementStringBuilder->generateCreateStatementString($index) . ';';
 			}
 		}
+		
 		return $sqlStatements;
 	}
 	

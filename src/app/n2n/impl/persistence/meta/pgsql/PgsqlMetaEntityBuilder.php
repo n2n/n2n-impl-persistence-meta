@@ -30,22 +30,36 @@ use n2n\persistence\meta\structure\common\CommonFloatingPointColumn;
 use n2n\persistence\meta\structure\common\CommonStringColumn;
 use n2n\persistence\meta\structure\common\CommonTextColumn;
 use n2n\persistence\meta\structure\common\CommonEnumColumn;
+use n2n\persistence\meta\structure\Table;
+use n2n\persistence\meta\Database;
+use n2n\util\type\CastUtils;
+use n2n\persistence\meta\structure\common\MetaEntityAdapter;
 
 class PgsqlMetaEntityBuilder {
 	const TABLE_TYPE_BASE_TABLE = 'BASE TABLE';
 	const TABLE_TYPE_VIEW = 'VIEW';
 
 	private $dbh;
-	private $database;
 
-	public function __construct(Pdo $dbh, PgsqlDatabase $database) {
+	public function __construct(Pdo $dbh) {
 		$this->dbh = $dbh;
-		$this->database = $database;
+	}
+	
+	public function createMetaEntityFromDatabase(Database $database, string $name) {
+		$metaEntity = $this->createMetaEntity($database->getName(), $name);
+		CastUtils::assertTrue($metaEntity instanceof MetaEntityAdapter);
+		$metaEntity->setDatabase($database);
+		
+		if ($metaEntity instanceof Table) {
+			$this->applyIndexesForTablename($database->getName(), $metaEntity);
+		}
+		
+		return $metaEntity;
 	}
 
-	public function createMetaEntity($name) {
+	public function createMetaEntity(string $dbName, $name) {
 		$stmt = $this->dbh->prepare('SELECT * FROM information_schema.tables WHERE table_catalog = ? AND table_name = ?');
-		$stmt->execute(array($this->database->getName(), $name));
+		$stmt->execute(array($dbName, $name));
 		$result = $stmt->fetch(Pdo::FETCH_ASSOC);
 
 		$metaEntity = null;
@@ -53,7 +67,7 @@ class PgsqlMetaEntityBuilder {
 			case self::TABLE_TYPE_VIEW:
 
 				$stmt = $this->dbh->prepare('select view_definition from INFORMATION_SCHEMA.VIEWS where table_catalog = ? AND table_name = ?');
-				$stmt->execute(array($this->database->getName(), $name));
+				$stmt->execute(array($dbName, $name));
 				$result = $stmt->fetch(Pdo::FETCH_ASSOC);
 
 				$metaEntity = new CommonView($name, $result['view_definition']);
@@ -63,17 +77,7 @@ class PgsqlMetaEntityBuilder {
 			case self::TABLE_TYPE_BASE_TABLE:
 				$metaEntity = new PgsqlTable($name);
 				$metaEntity->setColumns($this->getColumnsForTablename($name));
-
-				foreach ($this->getIndexesForTablename($name) as $index) {
-						
-					$metaEntity->createIndex($this->toMetaIndexType($index['indtype']),
-							explode(',', substr($index['indcolumns'], 1, -1)), $index['indname']);
-				}
 				break;
-		}
-
-		if (null !== $metaEntity) {
-			$metaEntity->setDatabase($this->database);
 		}
 
 		return $metaEntity;
@@ -86,14 +90,14 @@ class PgsqlMetaEntityBuilder {
 		return $rawIndexType;
 	}
 
-	private function getColumnsForTablename($name) {
+	private function getColumnsForTablename(string $dbName, string $name) {
 		$stmt = $this->dbh->prepare('
 			SELECT * FROM INFORMATION_SCHEMA.columns AS isc
 			LEFT JOIN pg_collation AS pc ON isc.collation_name = pc.collname
 			WHERE isc.table_catalog = ? AND isc.table_name = ?
 		');
 
-		$stmt->execute(array($this->database->getName(), $name));
+		$stmt->execute(array($dbName, $name));
 		$result = $stmt->fetchAll(Pdo::FETCH_ASSOC);
 		$columns = array();
 
@@ -132,7 +136,7 @@ class PgsqlMetaEntityBuilder {
 						WHERE constraint_catalog = ?
 						AND (check_clause LIKE ? AND check_clause NOT LIKE ? AND check_clause NOT LIKE ?)
 					');
-					$stmtInteger->execute(array($this->database->getName(), '%' . $row['column_name'] . ' > 0%', '%' . $row['column_name'] . ' > 0% %OR%', '%OR% %' . $row['column_name'] . ' > 0%'));
+					$stmtInteger->execute(array($dbName, '%' . $row['column_name'] . ' > 0%', '%' . $row['column_name'] . ' > 0% %OR%', '%OR% %' . $row['column_name'] . ' > 0%'));
 					$integerResult = $stmtInteger->fetchAll(Pdo::FETCH_ASSOC);
 
 					$unsigned = true;
@@ -182,7 +186,7 @@ class PgsqlMetaEntityBuilder {
 		return $columns;
 	}
 
-	private function getIndexesForTablename($metaEntityName) {
+	public function applyIndexesForTablename(string $dbName, Table $table) {
 		$stmtPrimary = $this->dbh->prepare('
 			SELECT istc.constraint_name AS indname, istc.constraint_type AS indtype,
 				ARRAY (
@@ -193,7 +197,7 @@ class PgsqlMetaEntityBuilder {
 			FROM INFORMATION_SCHEMA.table_constraints AS istc
 				JOIN pg_index AS idx ON istc.constraint_name = TEXT(idx.indexrelid::regclass)
 			WHERE istc.constraint_type != ? AND istc.table_name = ?;');
-		$stmtPrimary->execute(array('CHECK', $metaEntityName));
+		$stmtPrimary->execute(array('CHECK', $table->getName()));
 		$stmtPrimaryArray = $stmtPrimary->fetchAll(Pdo::FETCH_ASSOC);
 
 		$sql = '
@@ -208,12 +212,15 @@ class PgsqlMetaEntityBuilder {
 				JOIN pg_am AS am ON i.relam = am.oid
 			WHERE TEXT(idx.indrelid::regclass) = ?
 				 AND idx.indisprimary != ? AND idx.indisunique != ? ';
-		$executeArray = array($metaEntityName, 't', 't');
+		$executeArray = array($table->getName(), 't', 't');
 
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute($executeArray);
 		$stmtArray = $stmt->fetchAll(Pdo::FETCH_ASSOC);
 
-		return array_merge($stmtPrimaryArray, $stmtArray);
+		foreach (array_merge($stmtPrimaryArray, $stmtArray) as $index) {
+			$table->createIndex($this->toMetaIndexType($index['indtype']),
+				explode(',', substr($index['indcolumns'], 1, -1)), $index['indname']);
+		}
 	}
 }

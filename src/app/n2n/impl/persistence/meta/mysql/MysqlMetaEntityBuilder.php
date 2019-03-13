@@ -63,9 +63,12 @@ class MysqlMetaEntityBuilder {
 	}
 	
 	public function createMetaEntityFromDatabase(Database $database, string $name) {
-		$metaEntity = $this->createMetaEntity($database->getName(), $name, true);
+		$metaEntity = $this->createMetaEntity($database->getName(), $name);
 		CastUtils::assertTrue($metaEntity instanceof MetaEntityAdapter);
 		$metaEntity->setDatabase($database);
+		if ($metaEntity instanceof Table) {
+			$this->applyIndexesForTable($database->getName(), $metaEntity);
+		}
 		
 		return $metaEntity;
 	}
@@ -74,7 +77,7 @@ class MysqlMetaEntityBuilder {
 	 * @param string $name
 	 * @return \n2n\persistence\meta\structure\MetaEntity
 	 */
-	public function createMetaEntity(string $dbName, string $name, bool $applyIndexes = false) {
+	public function createMetaEntity(string $dbName, string $name, $applyIndexes = false) {
 		$metaEntity = null;
 		$statement = $this->dbh->prepare('SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = :TABLE_SCHEMA AND TABLE_NAME = :TABLE_NAME');
 		$statement->execute(array(':TABLE_SCHEMA' => $dbName, ':TABLE_NAME' => $name));

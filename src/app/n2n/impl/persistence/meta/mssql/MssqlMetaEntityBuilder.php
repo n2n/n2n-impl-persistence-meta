@@ -31,6 +31,10 @@ use n2n\persistence\meta\structure\common\CommonStringColumn;
 use n2n\persistence\meta\structure\Size;
 use n2n\persistence\meta\structure\IndexType;
 use n2n\persistence\Pdo;
+use n2n\persistence\meta\Database;
+use n2n\util\type\CastUtils;
+use n2n\persistence\meta\structure\Table;
+use n2n\persistence\meta\structure\common\MetaEntityAdapter;
 
 class MssqlMetaEntityBuilder {
 	
@@ -43,27 +47,33 @@ class MssqlMetaEntityBuilder {
 	 */
 	private $dbh;
 	
-	/**
-	 * @var MssqlDatabase
-	 */
-	private $database;
-	
-	public function __construct(Pdo $dbh, MssqlDatabase $database) {
+	public function __construct(Pdo $dbh) {
 		$this->dbh = $dbh;
-		$this->database = $database;
+	}
+	
+	public function createMetaEntityFromDatabase(Database $database, string $name) {
+		$metaEntity = $this->createMetaEntity($database->getName(), $name);
+		CastUtils::assertTrue($metaEntity instanceof MetaEntityAdapter);
+		$metaEntity->setDatabase($database);
+		
+		if ($metaEntity instanceof Table) {
+			$this->applyIndexesForTable($database->getName(), $metaEntity);
+		}
+		
+		return $metaEntity;
 	}
 	
 	/**
 	 * @param string $name
 	 * @return \n2n\persistence\meta\structure\MetaEntity
 	 */
-	public function createMetaEntity($name) {
+	public function createMetaEntity(string $dbName, string $name) {
 		
 		$metaEntity = null;
 		
 		$sql = 'SELECT * FROM information_schema.' . $this->dbh->quoteField('TABLES') . ' WHERE TABLE_CATALOG = :TABLE_CATALOG AND TABLE_NAME = :TABLE_NAME;';
 		$statement = $this->dbh->prepare($sql);
-		$statement->execute(array(':TABLE_CATALOG' => $this->database->getName(), ':TABLE_NAME' => $name));
+		$statement->execute(array(':TABLE_CATALOG' => $dbName, ':TABLE_NAME' => $name));
 		$result = $statement->fetch(Pdo::FETCH_ASSOC);
 		
 		$tableType = $result['TABLE_TYPE'];
@@ -71,15 +81,14 @@ class MssqlMetaEntityBuilder {
 			case self::TABLE_TYPE_BASE_TABLE:
 				$table = new MssqlTable($name);
 				$columns = $this->getColumnsForTable($table);
-				$table->setColumns($columns);
-				$table->setIndexes($this->getIndexesForTable($table));
+				$table->setColumns($dbName, $columns);
 				$table->setAttrs($result);
 				$metaEntity = $table;
 				break;
 			case self::TABLE_TYPE_VIEW:
 				$viewSql = 'SELECT * FROM information_schema.' . $this->dbh->quoteField('VIEWS') . ' WHERE TABLE_CATALOG = :TABLE_CATALOG AND TABLE_NAME = :TABLE_NAME;';
 				$viewStatement = $this->dbh->prepare($viewSql);
-				$viewStatement->execute(array(':TABLE_CATALOG' => $this->database->getName(), ':TABLE_NAME' => $name));
+				$viewStatement->execute(array(':TABLE_CATALOG' => $dbName, ':TABLE_NAME' => $name));
 				$viewResult = $viewStatement->fetch(Pdo::FETCH_ASSOC);
 					
 				$view = new CommonView($name, $this->parseViewCreateStatement($viewResult['VIEW_DEFINITION']));
@@ -87,16 +96,15 @@ class MssqlMetaEntityBuilder {
 				$metaEntity = $view;
 				break;
 		}
-		$metaEntity->setDatabase($this->database);
-		$metaEntity->registerChangeListener($this->database);
+		
 		return $metaEntity;
 	}
 	
-	private function getColumnsForTable(MssqlTable $table) {
+	private function getColumnsForTable(string $dbName, MssqlTable $table) {
 		$columns = array();
 		//show tables not sufficient to get the character set
 		$stmt = $this->dbh->prepare('SELECT * FROM INFORMATION_SCHEMA.[COLUMNS] WHERE TABLE_CATALOG = :TABLE_CATALOG AND TABLE_NAME = :TABLE_NAME');
-		$stmt->execute(array(':TABLE_CATALOG' => $this->database->getName(), ':TABLE_NAME' => $table->getName()));
+		$stmt->execute(array(':TABLE_CATALOG' => $dbName, ':TABLE_NAME' => $table->getName()));
 
 		while (null != ($row = $stmt->fetch(PDO::FETCH_ASSOC))) {
 			$column = null;
@@ -201,7 +209,7 @@ class MssqlMetaEntityBuilder {
 		return $columns;
 	}
 	
-	private function getIndexesForTable(MssqlTable $table) {
+	public function applyIndexesForTable(string $dbName, MssqlTable $table) {
 		$indexes = array();
 		$columns = $table->getColumns();
 		
@@ -249,7 +257,8 @@ class MssqlMetaEntityBuilder {
 //			$name = MssqlIndex::FULLTEXT_INDEX_NAME . $this->getName();
 //			$this->indexes[$name] = new MssqlIndex($this, $this->dbh, $name, $result, false, false, true);
 //		}
-		return $indexes;
+
+		$table->setIndexes($indexes);
 	}
 	
 	private function getIndexTypeFor($isPrimary, $isUnique) {

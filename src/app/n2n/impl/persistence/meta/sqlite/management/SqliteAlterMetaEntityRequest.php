@@ -48,7 +48,8 @@ class SqliteAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter {
 		if ($metaEntity instanceof Table) {
 			//columns to Add
 			$columns = $metaEntity->getColumns();
-			$persistedTable = $metaEntityBuilder->createMetaEntity($this->getMetaEntity()->getName());
+			$persistedTable = $metaEntityBuilder->createMetaEntityFromDatabase($metaEntity->getDatabase(),
+					$metaEntity->getName());
 			CastUtils::assertTrue($persistedTable instanceof Table);
 			
 			$persistedColumns = $persistedTable->getColumns();

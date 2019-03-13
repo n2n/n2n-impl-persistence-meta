@@ -19,33 +19,13 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\impl\persistence\meta\sqlite;
+namespace n2n\impl\persistence\meta\mysql\management;
 
-use n2n\persistence\meta\structure\common\DatabaseAdapter;
+use n2n\persistence\Pdo;
+use n2n\persistence\meta\structure\common\RenameMetaEntityRequestAdapter;
 
-class SqliteDatabase extends DatabaseAdapter {
-	const RESERVED_NAME_PREFIX = 'sqlite_';
-	const FIXED_DATABASE_NAME = 'main';
-	
-	/**
-	 * @var SqliteMetaEntityFactory
-	 */
-	private $metaEntityFactory;
-	private $charset;
-	private $attrs;
-	
-	public function __construct($charset, $metaEntities, $attrs) {
-		parent::__construct(self::FIXED_DATABASE_NAME, $charset, $metaEntities, $attrs);
-	}
-	
-	/* (non-PHPdoc)
-	 * @see n2n\persistence\meta\structure\column.DatabaseAdapter::createMetaEntityFactory()
-	 */
-	public function createMetaEntityFactory() {
-		if (null === $this->metaEntityFactory) {
-			$this->metaEntityFactory = new SqliteMetaEntityFactory($this);
-		}
-		
-		return $this->metaEntityFactory;
+class MysqlRenameMetaEntityRequest extends RenameMetaEntityRequestAdapter  {
+	public function execute(Pdo $dbh) {
+		$dbh->exec('RENAME TABLE ' . $dbh->quoteField($this->oldName) . ' TO ' . $dbh->quoteField($this->newName));
 	}
 }

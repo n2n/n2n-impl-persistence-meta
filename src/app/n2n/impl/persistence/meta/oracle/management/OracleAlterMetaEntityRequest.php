@@ -45,7 +45,8 @@ class OracleAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter  {
 			$metaEntityBuilder = new OracleMetaEntityBuilder($dbh, $this->getMetaEntity()->getDatabase());
 			//columns to Add
 			$columns = $metaEntity->getColumns();
-			$persistedTable =  $metaEntityBuilder->createTable($this->getMetaEntity()->getName());
+			$persistedTable =  $metaEntityBuilder->createMetaEntityFromDatabase($metaEntity->getDatabase(),
+					$metaEntity->getName());
 			CastUtils::assertTrue($persistedTable instanceof Table);
 			$persistedColumns = $persistedTable->getColumns();
 
