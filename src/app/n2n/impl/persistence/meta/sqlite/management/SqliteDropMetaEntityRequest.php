@@ -21,20 +21,13 @@
  */
 namespace n2n\impl\persistence\meta\sqlite\management;
 
-use n2n\persistence\meta\structure\common\DropMetaEntityRequest;
-
 use n2n\persistence\meta\structure\Table;
-
 use n2n\persistence\meta\structure\View;
-
-use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
-
 use n2n\persistence\Pdo;
+use n2n\persistence\meta\structure\common\DropMetaEntityRequestAdapter;
 
-class SqliteDropMetaEntityRequest extends ChangeRequestAdapter implements DropMetaEntityRequest {
-
+class SqliteDropMetaEntityRequest extends DropMetaEntityRequestAdapter {
 	public function execute(Pdo $dbh) {
-		
 		if ($this->getMetaEntity() instanceof View) {
 			$dbh->exec('DROP VIEW ' . $dbh->quoteField($this->getMetaEntity()->getName()));
 		} elseif ($this->getMetaEntity() instanceof Table) {

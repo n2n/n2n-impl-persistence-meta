@@ -21,17 +21,12 @@
  */
 namespace n2n\impl\persistence\meta\oracle\management;
 
-use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
-
-use n2n\persistence\meta\structure\common\DropMetaEntityRequest;
-
 use n2n\persistence\meta\structure\Table;
-
 use n2n\persistence\meta\structure\View;
-
 use n2n\persistence\Pdo;
+use n2n\persistence\meta\structure\common\DropMetaEntityRequestAdapter;
 
-class OracleDropMetaEntityRequest extends ChangeRequestAdapter implements DropMetaEntityRequest {
+class OracleDropMetaEntityRequest extends DropMetaEntityRequestAdapter {
 
 	public function execute(Pdo $dbh) {
 		if ($this->getMetaEntity() instanceof View) {

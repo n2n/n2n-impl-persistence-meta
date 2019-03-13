@@ -44,6 +44,9 @@ use n2n\persistence\meta\structure\common\CommonStringColumn;
 use n2n\persistence\meta\structure\IndexType;
 
 use n2n\persistence\Pdo;
+use n2n\util\type\CastUtils;
+use n2n\persistence\meta\Database;
+use n2n\persistence\meta\structure\common\MetaEntityAdapter;
 
 class MysqlMetaEntityBuilder {
 	
@@ -55,34 +58,33 @@ class MysqlMetaEntityBuilder {
 	 */
 	private $dbh;
 	
-	/**
-	 * @var MysqlDatabase
-	 */
-	private $database;
-	
-	public function __construct(Pdo $dbh, MysqlDatabase $database) {
+	public function __construct(Pdo $dbh) {
 		$this->dbh = $dbh;
-		$this->database = $database;
+	}
+	
+	public function createMetaEntityFromDatabase(Database $database, string $name) {
+		$metaEntity = $this->createMetaEntity($database->getName(), $name, true);
+		CastUtils::assertTrue($metaEntity instanceof MetaEntityAdapter);
+		$metaEntity->setDatabase($database);
+		
+		return $metaEntity;
 	}
 	
 	/**
 	 * @param string $name
 	 * @return \n2n\persistence\meta\structure\MetaEntity
 	 */
-	public function createMetaEntity($name) {
-		
+	public function createMetaEntity(string $dbName, string $name, bool $applyIndexes = false) {
 		$metaEntity = null;
 		$statement = $this->dbh->prepare('SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = :TABLE_SCHEMA AND TABLE_NAME = :TABLE_NAME');
-		$statement->execute(array(':TABLE_SCHEMA' => $this->database->getName(), ':TABLE_NAME' => $name));
+		$statement->execute(array(':TABLE_SCHEMA' => $dbName, ':TABLE_NAME' => $name));
 		$result = $statement->fetch(Pdo::FETCH_ASSOC);
-		
 		
 		$tableType = $result['TABLE_TYPE'];
 		switch ($tableType) {
 			case self::TABLE_TYPE_BASE_TABLE:
 				$table = new MysqlTable($name);
-				$table->setColumns($this->getColumnsForTable($table));
-				$table->setIndexes($this->getIndexesForTable($table));
+				$table->setColumns($this->getColumnsForTable($dbName, $table));
 				$table->setAttrs($result);
 				
 				//get the default Charset
@@ -94,10 +96,13 @@ class MysqlMetaEntityBuilder {
 				
 				
 				$metaEntity = $table;
+				if ($applyIndexes) {
+					$this->applyIndexesForTable($dbName, $table);
+				}
 				break;
 			case self::TABLE_TYPE_VIEW:
 				$viewStatement = $this->dbh->prepare('SELECT * FROM information_schema.VIEWS WHERE TABLE_SCHEMA = :TABLE_SCHEMA AND TABLE_NAME = :TABLE_NAME');
-				$viewStatement->execute(array(':TABLE_SCHEMA' => $this->database->getName(), ':TABLE_NAME' => $name));
+				$viewStatement->execute(array(':TABLE_SCHEMA' => $dbName, ':TABLE_NAME' => $name));
 				$viewResult = $viewStatement->fetch(Pdo::FETCH_ASSOC);
 					
 				$view = new CommonView($name, $viewResult['VIEW_DEFINITION']);
@@ -105,18 +110,15 @@ class MysqlMetaEntityBuilder {
 				$metaEntity = $view;
 				break;
 		}
-		if (!is_null($metaEntity)) {
-			$metaEntity->setDatabase($this->database);
-			$metaEntity->registerChangeListener($this->database);
-		}
+		
 		return $metaEntity;
 	}
 	
-	private function getColumnsForTable(MysqlTable $table) {
+	private function getColumnsForTable(string $dbName, MysqlTable $table) {
 		$columns = array();
 		//show tables not sufficient to get the character set
 		$stmt = $this->dbh->prepare('SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = :TABLE_SCHEMA AND TABLE_NAME = :TABLE_NAME');
-		$stmt->execute(array(':TABLE_SCHEMA' => $this->database->getName(), ':TABLE_NAME' => $table->getName()));
+		$stmt->execute(array(':TABLE_SCHEMA' => $dbName, ':TABLE_NAME' => $table->getName()));
 			
 		while (null != ($row = $stmt->fetch(PDO::FETCH_ASSOC))) {
 			$column = null;
@@ -192,6 +194,7 @@ class MysqlMetaEntityBuilder {
 			}
 			$column->setNullAllowed($row['IS_NULLABLE'] == 'YES');
 			$column->setDefaultValue($row['COLUMN_DEFAULT']);
+			
 			if (is_numeric(strpos($row['EXTRA'], 'auto_increment'))) {
 				$this->dbh->getMetaData()->getDialect()->applyIdentifierGeneratorToColumn($this->dbh, $column);
 			}
@@ -205,23 +208,24 @@ class MysqlMetaEntityBuilder {
 		return explode(',', preg_replace('/(^enum\(|\)$|\')/', '', $columnType));
 	}
 	
-	private function getIndexesForTable(Table $table) {
-		$indexes = array();
-		$columns = $table->getColumns();
-		$sql = 'SHOW INDEX FROM ' . $this->dbh->quoteField($table->getName()) . ' FROM ' . $this->dbh->quoteField($this->database->getName()) ;
+	public function applyIndexesForTable(string $dbName, Table $table) {
+		$sql = 'SHOW INDEX FROM ' . $this->dbh->quoteField($table->getName()) . ' FROM ' . $this->dbh->quoteField($dbName) ;
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
 		$results = $statement->fetchAll(Pdo::FETCH_ASSOC);
+		
 		foreach ($results as $result) {
-			if (array_key_exists($result['Key_name'], $indexes)) continue;
+			$indexName = $result['Key_name'];
+			if ($table->containsIndexName($indexName)) continue;
 	
 			$type = null;
 			if ($result['Key_name'] == MysqlTable::KEY_NAME_PRIMARY) {
 				$type = IndexType::PRIMARY;
 			} else {
-				$indexSql = 'SHOW INDEX FROM ' . $this->dbh->quoteField($table->getName()) . ' FROM ' . $this->dbh->quoteField($this->database->getName()) .  ' WHERE Key_name = :Key_name';
+				$indexSql = 'SHOW INDEX FROM ' . $this->dbh->quoteField($table->getName()) . ' FROM ' 
+						. $this->dbh->quoteField($dbName) .  ' WHERE Key_name = :indexName';
 				$indexStatement = $this->dbh->prepare($indexSql);
-				$indexStatement->execute(array(':Key_name' => $result['Key_name']));
+				$indexStatement->execute([':indexName' => $indexName]);
 				$indexResult = $indexStatement->fetch(Pdo::FETCH_ASSOC);
 				if ($indexResult['Index_type'] == MysqlTable::INDEX_TYPE_FULLTEXT) {
 					$type = IndexType::INDEX;
@@ -232,19 +236,44 @@ class MysqlMetaEntityBuilder {
 				}
 			}
 	
-			$indexColumns = array();
-			$columnsSql = 'SHOW INDEX FROM ' . $this->dbh->quoteField($table->getName()) . ' FROM ' . $this->dbh->quoteField($this->database->getName()) . ' WHERE Key_name = :Key_name';
+			$columnNames = array();
+			$columnsSql = 'SHOW INDEX FROM ' . $this->dbh->quoteField($table->getName()) . ' FROM ' 
+					. $this->dbh->quoteField($dbName) . ' WHERE Key_name = :Key_name';
 			$columnsStatement = $this->dbh->prepare($columnsSql);
-			$columnsStatement->execute(array(':Key_name' => $result['Key_name']));
+			$columnsStatement->execute(array(':Key_name' => $indexName));
 			$columnsResults = $columnsStatement->fetchAll(Pdo::FETCH_ASSOC);
 			foreach ($columnsResults as $columnResult) {
-				$indexColumns[$columnResult['Column_name']] = $columns[$columnResult['Column_name']];
+				$columnNames[$columnResult['Column_name']] = $columnResult['Column_name'];
 			}
-	
-			$index = new CommonIndex($table, $result['Key_name'], $type, $indexColumns, $result);
+			
+			$refTable = null;
+			$refColumnNames = [];
+			if ($type === IndexType::INDEX) {
+				
+				$fkSql = 'SELECT ' . $this->dbh->quoteField('REFERENCED_TABLE_NAME') . ', ' 
+								. $this->dbh->quoteField('REFERENCED_COLUMN_NAME') . ' '
+								. 'FROM ' . $this->dbh->quoteField('information_schema') . '.'
+								. $this->dbh->quoteField('KEY_COLUMN_USAGE') . ' WHERE ' 
+								. $this->dbh->quoteField('CONSTRAINT_NAME') . ' = :indexName AND '
+								. $this->dbh->quoteField('TABLE_NAME') . ' = :tableName AND '
+								. $this->dbh->quoteField('TABLE_SCHEMA') . ' = :dbName';
+				$fkStatement = $this->dbh->prepare($fkSql);
+				$fkStatement->execute([':indexName' => $indexName, 
+						':tableName' => $table->getName(), ':dbName' => $dbName]);
+				$fkResult = $fkStatement->fetchAll(Pdo::FETCH_ASSOC);
+				if (count($fkResult) > 0) {
+					$type = IndexType::FOREIGN;
+					foreach ($fkResult as $fkResultEntry) {
+						if (null === $refTable) {
+							$refTable = $table->getDatabase()->getMetaEntityByName($fkResultEntry['REFERENCED_TABLE_NAME']);
+						}
+						$refColumnNames[] = $fkResultEntry['REFERENCED_COLUMN_NAME'];
+					}
+				}
+			} 
+			$index = $table->createIndex($type, $columnNames, $indexName, $refTable, $refColumnNames);
+			CastUtils::assertTrue($index instanceof CommonIndex);
 			$index->setAttrs($result);
-			$indexes[$result['Key_name']] = $index;
 		}
-		return $indexes;
 	}
 }

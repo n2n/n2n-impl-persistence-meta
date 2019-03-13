@@ -34,6 +34,15 @@ use n2n\persistence\meta\structure\common\CommonTextColumn;
 use n2n\persistence\meta\structure\common\CommonStringColumn;
 
 use n2n\persistence\meta\structure\ColumnFactory;
+use n2n\persistence\meta\structure\IntegerColumn;
+use n2n\persistence\meta\structure\StringColumn;
+use n2n\persistence\meta\structure\TextColumn;
+use n2n\persistence\meta\structure\BinaryColumn;
+use n2n\persistence\meta\structure\DateTimeColumn;
+use n2n\persistence\meta\structure\EnumColumn;
+use n2n\persistence\meta\structure\FixedPointColumn;
+use n2n\persistence\meta\structure\FloatingPointColumn;
+use n2n\persistence\meta\structure\Table;
 
 class MysqlColumnFactory implements ColumnFactory {
 	
@@ -46,53 +55,98 @@ class MysqlColumnFactory implements ColumnFactory {
 		$this->table = $table;
 	}
 	
-	public function getTable() {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::getTable()
+	 * @return Table
+	 */
+	public function getTable(): Table {
 		return $this->table;
 	}
 	
-	public function createIntegerColumn($name, $size, $signed = true) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::createIntegerColumn()
+	 * @return IntegerColumn
+	 */
+	public function createIntegerColumn(string $name, int $size, bool $signed = true): IntegerColumn {
 		$column = new MysqlIntegerColumn($name, $size, $signed);
 		$this->table->addColumn($column);
 		return $column;
 	}
 	
-	public function createStringColumn($name, $length, $charset = null) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::createStringColumn()
+	 * @return StringColumn
+	 */
+	public function createStringColumn(string $name, int $length, string $charset = null): StringColumn {
 		$column = new CommonStringColumn($name, $length, $charset);
 		$this->table->addColumn($column);
 		return $column;
 	}
 	
-	public function createTextColumn($name, $size, $charset = null) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::createTextColumn()
+	 * @return TextColumn
+	 */
+	public function createTextColumn(string $name, int $size, string $charset = null): TextColumn {
 		$column = new CommonTextColumn($name, $size, $charset);
 		$this->table->addColumn($column);
 		return $column;
 	}
 	
-	public function createBinaryColumn($name, $size) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::createBinaryColumn()
+	 * @return BinaryColumn
+	 */
+	public function createBinaryColumn(string $name, int $size): BinaryColumn {
 		$column = new CommonBinaryColumn($name, $size);
 		$this->table->addColumn($column);
 		return $column;
 	}
 	
-	public function createDateTimeColumn($name, $dateAvailable = true, $timeAvailable = true) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::createDateTimeColumn()
+	 * @return DateTimeColumn
+	 */
+	public function createDateTimeColumn(string $name, bool $dateAvailable = true, bool $timeAvailable = true): DateTimeColumn {
 		$column = new MysqlDateTimeColumn($name, $dateAvailable, $timeAvailable);
 		$this->table->addColumn($column);
 		return $column;
 	}
 	
-	public function createEnumColumn($name, array $values) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::createEnumColumn()
+	 * @return EnumColumn
+	 */
+	public function createEnumColumn(string $name, array $values): EnumColumn {
 		$column = new CommonEnumColumn($name, $values);
 		$this->table->addColumn($column);
 		return $column;
 	}
 	
-	public function createFixedPointColumn($name, $numIntegerDigits, $numDecimalDigits) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::createFixedPointColumn()
+	 * @return FixedPointColumn
+	 */
+	public function createFixedPointColumn(string $name, int $numIntegerDigits, int $numDecimalDigits): FixedPointColumn {
 		$column = new CommonFixedPointColumn($name, $numIntegerDigits, $numDecimalDigits);
 		$this->table->addColumn($column);
 		return $column;
 	}
 	
-	public function createFloatingPointColumn($name, $size) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::createFloatingPointColumn()
+	 * @return FloatingPointColumn
+	 */
+	public function createFloatingPointColumn(string $name, int $size): FloatingPointColumn {
 		$column = new CommonFloatingPointColumn($name, $size);
 		$this->table->addColumn($column);
 		return $column;

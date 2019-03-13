@@ -21,17 +21,12 @@
  */
 namespace n2n\impl\persistence\meta\mssql\management;
 
-use n2n\persistence\meta\structure\common\DropMetaEntityRequest;
-
-use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
-
 use n2n\persistence\meta\structure\Table;
-
 use n2n\persistence\meta\structure\View;
-
 use n2n\persistence\Pdo;
+use n2n\persistence\meta\structure\common\DropMetaEntityRequestAdapter;
 
-class MssqlDropMetaEntityRequest extends ChangeRequestAdapter implements DropMetaEntityRequest {
+class MssqlDropMetaEntityRequest extends DropMetaEntityRequestAdapter {
 
 	public function execute(Pdo $dbh) {
 		if ($this->getMetaEntity() instanceof View) {

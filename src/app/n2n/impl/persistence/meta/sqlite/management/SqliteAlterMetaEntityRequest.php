@@ -22,25 +22,16 @@
 namespace n2n\impl\persistence\meta\sqlite\management;
 
 use n2n\persistence\meta\structure\IndexType;
-
 use n2n\impl\persistence\meta\sqlite\SqliteCreateStatementBuilder;
-
 use n2n\persistence\meta\structure\Table;
-
 use n2n\persistence\meta\structure\View;
-
-use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
-
 use n2n\impl\persistence\meta\sqlite\SqliteIndexStatementStringBuilder;
-
-use n2n\persistence\meta\structure\common\AlterMetaEntityRequest;
-
 use n2n\impl\persistence\meta\sqlite\SqliteMetaEntityBuilder;
-
 use n2n\persistence\Pdo;
 use n2n\util\type\CastUtils;
+use n2n\persistence\meta\structure\common\AlterMetaEntityRequestAdapter;
 
-class SqliteAlterMetaEntityRequest extends ChangeRequestAdapter implements AlterMetaEntityRequest {
+class SqliteAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter {
 	
 	public function execute(Pdo $dbh) {
 // 		$columnStatementStringBuilder = new SqliteColumnStatementStringBuilder($dbh);
@@ -76,7 +67,6 @@ class SqliteAlterMetaEntityRequest extends ChangeRequestAdapter implements Alter
 			
 			$createStatementBuilder->setMetaEntity($metaEntity);
 			$createStatementBuilder->createMetaEntity();
-
 			
 			foreach ($columns as $column) {
 				if (isset($persistedColumns[$column->getName()])) {

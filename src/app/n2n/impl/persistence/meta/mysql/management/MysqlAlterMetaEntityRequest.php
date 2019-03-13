@@ -21,74 +21,65 @@
  */
 namespace n2n\impl\persistence\meta\mysql\management;
 
-use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
-
 use n2n\persistence\meta\structure\Table;
-
-use n2n\persistence\meta\structure\common\AlterMetaEntityRequest;
-
 use n2n\persistence\meta\structure\View;
-
 use n2n\impl\persistence\meta\mysql\MysqlIndexStatementStringBuilder;
-
 use n2n\impl\persistence\meta\mysql\MysqlColumnStatementStringBuilder;
-
 use n2n\impl\persistence\meta\mysql\MysqlMetaEntityBuilder;
-
 use n2n\persistence\Pdo;
 use n2n\util\type\CastUtils;
+use n2n\persistence\meta\structure\common\AlterMetaEntityRequestAdapter;
 
-class MysqlAlterMetaEntityRequest extends ChangeRequestAdapter implements AlterMetaEntityRequest  {
+class MysqlAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter  {
 	
 	public function execute(Pdo $dbh) {
 		$columnStatementStringBuilder = new MysqlColumnStatementStringBuilder($dbh);
 		$indexStatementStringBuilder = new MysqlIndexStatementStringBuilder($dbh);
-		$metaEntityBuilder = new MysqlMetaEntityBuilder($dbh, $this->getMetaEntity()->getDatabase());
-		
 		$metaEntity = $this->getMetaEntity();
+		$metaEntityBuilder = new MysqlMetaEntityBuilder($dbh);
 		
 		if ($metaEntity instanceof View) {
 			$dbh->exec('ALTER VIEW ' . $dbh->quoteField($metaEntity->getName()) . ' AS ' . $metaEntity->getQuery());
 			return;
-		}	
+		}
 		if ($metaEntity instanceof Table) {
 			//columns to Add
 			$columns = $metaEntity->getColumns();
-			$persistedTable =  $metaEntityBuilder->createMetaEntity($metaEntity->getName());
+			$persistedTable = $metaEntityBuilder->createMetaEntityFromDatabase($metaEntity->getDatabase(), 
+					$metaEntity->getName());
 			CastUtils::assertTrue($persistedTable instanceof Table);
 			$persistedColumns = $persistedTable->getColumns();
 
 			foreach ($columns as $column) {
-				if (!(isset($persistedColumns[$column->getName()]))) {
+				if (!$persistedTable->containsColumnName($column->getName())) {
 					$dbh->exec('ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName()) . ' ADD COLUMN ' 
 							. $columnStatementStringBuilder->generateStatementString($column));
-				} elseif (isset($persistedColumns[$column->getName()]) && (!($column->equals($persistedColumns[$column->getName()])))) {
-					$dbh->exec('ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName()) . ' CHANGE COLUMN ' . $dbh->quoteField($column->getName()) 
+				} elseif (!$column->equals($persistedTable->getColumnByName($column->getName()))) {
+					$dbh->exec('ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName()) 
+							. ' CHANGE COLUMN ' . $dbh->quoteField($column->getName()) 
 							. ' ' . $columnStatementStringBuilder->generateStatementString($column)); 
 				}
 			}
 			
 			foreach ($persistedColumns as $persistedColumn) {
-				if (!(isset($columns[$persistedColumn->getName()]))) {
-					$dbh->exec('ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName()) . ' DROP COLUMN ' . $dbh->quoteField($persistedColumn->getName()));
-				}
+				if ($metaEntity->containsColumnName($persistedColumn->getName())) continue;
+				
+				$dbh->exec('ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName()) 
+						. ' DROP COLUMN ' . $dbh->quoteField($persistedColumn->getName()));
 			}
 			
-			$indexes = $metaEntity->getIndexes();
-			$persistedIndexes = $persistedTable->getIndexes();
-			
-			foreach ($indexes as $index) {
-				if (!isset($persistedIndexes[$index->getName()])) {
-					$dbh->exec('ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName()) . ' ADD ' 
-							. $indexStatementStringBuilder->generateCreateStatementString($index));
-				}
+			foreach ($persistedTable->getIndexes() as $persistedIndex) {
+				$persistedIndex->getName();
+				if ($metaEntity->containsIndexName($persistedIndex->getName()) 
+						&& $persistedIndex->equals($metaEntity->getIndexByName($persistedIndex->getName()))) continue;
+				$dbh->exec($indexStatementStringBuilder->generateDropStatementString($persistedIndex));
 			}
 			
-			foreach ($persistedIndexes as $persistedIndex) {
-				if (!isset($indexes[$persistedIndex->getName()]) ) {
-					$dbh->exec('ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName()) . ' DROP ' 
-							. $indexStatementStringBuilder->generateDropStatementString($persistedIndex));
-				}
+			foreach ($metaEntity->getIndexes() as $index) {
+				if ($persistedTable->containsIndexName($index->getName())) continue;
+				
+				$dbh->exec('ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName()) . ' ADD ' 
+						. $indexStatementStringBuilder->generateCreateStatementString($index));
 			}
 		}
 	}

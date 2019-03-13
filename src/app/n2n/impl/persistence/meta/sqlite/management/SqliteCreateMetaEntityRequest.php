@@ -21,15 +21,11 @@
  */
 namespace n2n\impl\persistence\meta\sqlite\management;
 
-use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
-
-use n2n\persistence\meta\structure\common\CreateMetaEntityRequest;
-
 use n2n\impl\persistence\meta\sqlite\SqliteCreateStatementBuilder;
-
 use n2n\persistence\Pdo;
+use n2n\persistence\meta\structure\common\CreateMetaEntityRequestAdapter;
 
-class SqliteCreateMetaEntityRequest extends ChangeRequestAdapter implements CreateMetaEntityRequest {
+class SqliteCreateMetaEntityRequest extends CreateMetaEntityRequestAdapter {
 	
 	public function execute(Pdo $dbh) {
 		$createStatementBuilder = new SqliteCreateStatementBuilder($dbh);

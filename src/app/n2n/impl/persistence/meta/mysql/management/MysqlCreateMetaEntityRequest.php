@@ -22,15 +22,11 @@
 namespace n2n\impl\persistence\meta\mysql\management;
 
 
-use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
-
-use n2n\persistence\meta\structure\common\CreateMetaEntityRequest;
-
 use n2n\impl\persistence\meta\mysql\MysqlCreateStatementBuilder;
-
 use n2n\persistence\Pdo;
+use n2n\persistence\meta\structure\common\CreateMetaEntityRequestAdapter;
 
-class MysqlCreateMetaEntityRequest extends ChangeRequestAdapter implements CreateMetaEntityRequest {
+class MysqlCreateMetaEntityRequest extends CreateMetaEntityRequestAdapter {
 	
 	public function execute(Pdo $dbh) {
 		$createStatementBuilder = new MysqlCreateStatementBuilder($dbh);

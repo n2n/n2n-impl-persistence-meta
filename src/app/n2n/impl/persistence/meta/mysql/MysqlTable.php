@@ -22,6 +22,8 @@
 namespace n2n\impl\persistence\meta\mysql;
 
 use n2n\persistence\meta\structure\common\TableAdapter;
+use n2n\persistence\meta\structure\ColumnFactory;
+use n2n\persistence\meta\structure\Table;
 
 class MysqlTable extends TableAdapter {
 	
@@ -36,10 +38,16 @@ class MysqlTable extends TableAdapter {
 	 */
 	private $columnFactory;
 	
-	public function copy($newTableName = null) {
-		if (is_null($newTableName)) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\Table::copy()
+	 * @return Table
+	 */
+	public function copy(string $newTableName = null): Table {
+		if (null === $newTableName) {
 			$newTableName = $this->getName();
 		}
+		
 		$newTable = new MysqlTable($newTableName);
 		
 		$newTable->applyColumnsFrom($this);
@@ -48,9 +56,11 @@ class MysqlTable extends TableAdapter {
 	}
 	
 	/**
-	 * @return MysqlColumnFactory
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\Table::createColumnFactory()
+	 * @return ColumnFactory
 	 */
-	public function createColumnFactory() {
+	public function createColumnFactory(): ColumnFactory {
 		if (!($this->columnFactory)) {
 			$this->columnFactory = new MysqlColumnFactory($this);
 		}
@@ -60,5 +70,4 @@ class MysqlTable extends TableAdapter {
 	public function generatePrimaryKeyName() {
 		return self::KEY_NAME_PRIMARY;
 	}
-
 }
