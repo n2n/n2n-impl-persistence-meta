@@ -23,19 +23,13 @@ namespace n2n\impl\persistence\meta\oracle\management;
 
 
 use n2n\impl\persistence\meta\oracle\OracleCreateStatementBuilder;
-
-use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
-
-use n2n\persistence\meta\structure\common\CreateMetaEntityRequest;
-
 use n2n\persistence\Pdo;
+use n2n\persistence\meta\structure\common\CreateMetaEntityRequestAdapter;
 
-class OracleCreateMetaEntityRequest extends ChangeRequestAdapter implements CreateMetaEntityRequest {
-	
+class OracleCreateMetaEntityRequest extends CreateMetaEntityRequestAdapter {
 	public function execute(Pdo $dbh) {
 		$createStatementBuilder = new OracleCreateStatementBuilder($dbh);
 		$createStatementBuilder->setMetaEntity($this->getMetaEntity());
 		$createStatementBuilder->createMetaEntity();
 	}
-	
 }

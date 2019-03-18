@@ -70,7 +70,7 @@ class MysqlCreateStatementBuilder {
 		}
 	}
 	
-	public function createSqlStatements($replace = false, $formatted = false) {
+	public function createSqlStatements(bool $replace = false, bool $formatted = false) {
 		$sqlStatements = array();
 		$sql = '';
 		
@@ -81,13 +81,14 @@ class MysqlCreateStatementBuilder {
 		
 		if ($metaEntity instanceof View) {
 			if ($replace) {
-				$sqlStatements[] = 'DROP VIEW IF EXISTS ' . $this->dbh->quoteField($metaEntity->getName()) . ';';
+				$sqlStatements[] = 'DROP VIEW IF EXISTS ' . $this->dbh->quote($metaEntity->getName()) . ';';
 			}
 			$sqlStatements[] = 'CREATE VIEW ' . $this->dbh->quoteField($metaEntity->getName()) . ' AS ' . $metaEntity->getQuery() . ';';
 		} elseif ($metaEntity instanceof Table) {
 			if ($replace) {
 				$sqlStatements[] = 'DROP TABLE IF EXISTS ' . $this->dbh->quoteField($this->metaEntity->getName()) . ';';
 			}
+			
 			$sql = 'CREATE TABLE ' . $this->dbh->quoteField($this->metaEntity->getName()) . ' ( ';
 			$first = true;
 			foreach ($metaEntity->getColumns() as $column) {
@@ -105,10 +106,11 @@ class MysqlCreateStatementBuilder {
 			//Primary Key
 			$primaryKey = $metaEntity->getPrimaryKey();
 			if ($primaryKey) {
+				$sql .= ', ';
 				if ($formatted) {
 					$sql .= PHP_EOL . "\t";
 				}
-				$sql .= ', PRIMARY KEY (';
+				$sql .= 'PRIMARY KEY (';
 				$first = true;
 				foreach ($primaryKey->getColumns() as $column) {
 					if (!$first) {
@@ -127,7 +129,6 @@ class MysqlCreateStatementBuilder {
 			
 			//Default Charset, engine and collation
 			
-			
 			$sqlStatements[] = $sql;
 			$indexes = $metaEntity->getIndexes();
 			foreach ($indexes as $index) {
@@ -136,6 +137,7 @@ class MysqlCreateStatementBuilder {
 						. $indexStatementStringBuilder->generateCreateStatementString($index) . ';';
 			}
 		}
+		
 		return $sqlStatements;
 	}
 	

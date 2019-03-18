@@ -29,7 +29,7 @@ abstract class DialectAdapter implements Dialect {
 	 * Quotes the like wildcard chars
 	 * @param string $pattern
 	 */
-	public function escapeLikePattern($pattern) {
+	public function escapeLikePattern(string $pattern): string {
 		$esc = $this->getLikeEscapeCharacter();
 		return str_replace(array($esc, QueryComparator::LIKE_WILDCARD_MANY_CHARS,
 				QueryComparator::LIKE_WILDCARD_ONE_CHAR),
@@ -40,7 +40,7 @@ abstract class DialectAdapter implements Dialect {
 	 * Returns the escape character used in {@link Dialect::escapeLikePattern()}.
 	 * @return string
 	 */
-	public function getLikeEscapeCharacter() {
+	public function getLikeEscapeCharacter(): string {
 		return self::DEFAULT_ESCAPING_CHARACTER;
 	}
 }

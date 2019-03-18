@@ -24,6 +24,9 @@ namespace n2n\impl\persistence\meta\mysql;
 use n2n\persistence\meta\structure\common\CommonView;
 
 use n2n\persistence\meta\structure\MetaEntityFactory;
+use n2n\persistence\meta\Database;
+use n2n\persistence\meta\structure\Table;
+use n2n\persistence\meta\structure\View;
 
 class MysqlMetaEntityFactory implements MetaEntityFactory {
 	private $database;
@@ -32,17 +35,32 @@ class MysqlMetaEntityFactory implements MetaEntityFactory {
 		$this->database = $database;
 	}
 	
-	public function getDatabase() {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\MetaEntityFactory::getDatabase()
+	 * @return Database
+	 */
+	public function getDatabase(): Database {
 		return $this->database;
 	}
 	
-	public function createTable($name) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\MetaEntityFactory::createTable()
+	 * @return Table
+	 */
+	public function createTable(string $name): Table {
 		$metaEntity = new MysqlTable($name);
 		$this->database->addMetaEntity($metaEntity);
 		return $metaEntity;
 	}
 	
-	public function createView($name, $query) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\MetaEntityFactory::createView()
+	 * @return View
+	 */
+	public function createView(string $name, string $query): View {
 		$metaEntity = new CommonView($name, $query);
 		$this->database->addMetaEntity($metaEntity);
 		return $metaEntity;

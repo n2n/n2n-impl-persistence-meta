@@ -28,6 +28,15 @@ use n2n\persistence\meta\structure\common\CommonFloatingPointColumn;
 use n2n\persistence\meta\structure\common\CommonEnumColumn;
 use n2n\persistence\meta\structure\common\CommonStringColumn;
 use n2n\persistence\meta\structure\common\CommonTextColumn;
+use n2n\persistence\meta\structure\Table;
+use n2n\persistence\meta\structure\BinaryColumn;
+use n2n\persistence\meta\structure\IntegerColumn;
+use n2n\persistence\meta\structure\FixedPointColumn;
+use n2n\persistence\meta\structure\FloatingPointColumn;
+use n2n\persistence\meta\structure\DateTimeColumn;
+use n2n\persistence\meta\structure\EnumColumn;
+use n2n\persistence\meta\structure\StringColumn;
+use n2n\persistence\meta\structure\TextColumn;
 
 class PgsqlColumnFactory implements ColumnFactory {
 	/**
@@ -50,88 +59,97 @@ class PgsqlColumnFactory implements ColumnFactory {
 	}
 
 	/**
-	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta.ColumnFactory::getTable()
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::getTable()
+	 * @return Table
 	 */
-	public function getTable() {
+	public function getTable(): Table {
 		return $this->table;
 	}
 
 	/**
-	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta.ColumnFactory::createBinaryColumn()
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::createBinaryColumn()
+	 * @return BinaryColumn
 	 */
-	public function createBinaryColumn($name, $size) {
+	public function createBinaryColumn(string $name, int $size): BinaryColumn {
 		$binaryColumn = new CommonBinaryColumn($name, $size);
 		$this->table->addColumn($binaryColumn);
 		return $binaryColumn;
 	}
 
 	/**
-	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta.ColumnFactory::createIntegerColumn()
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::createIntegerColumn()
+	 * @return IntegerColumn
 	 */
-	public function createIntegerColumn($name, $size, $signed = true) {
+	public function createIntegerColumn(string $name, int $size, bool $signed = true): IntegerColumn {
 		$integerColumn = new PgsqlIntegerColumn($name, $size, $signed);
 		$this->table->addColumn($integerColumn);
 		return $integerColumn;
 	}
 
 	/**
-	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta.ColumnFactory::createFixedPointColumn()
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::createFixedPointColumn()
+	 * @return FixedPointColumn
 	 */
-	public function createFixedPointColumn($name, $numIntegerDigits, $numDecimalDigits) {
+	public function createFixedPointColumn(string $name, int $numIntegerDigits, int $numDecimalDigits): FixedPointColumn {
 		$fixedPointColumn = new CommonFixedPointColumn($name, $numIntegerDigits, $numDecimalDigits);
 		$this->table->addColumn($fixedPointColumn);
 		return $fixedPointColumn;
 	}
 
 	/**
-	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta.ColumnFactory::createFloatingPointColumn()
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::createFloatingPointColumn()
+	 * @return FloatingPointColumn
 	 */
-	public function createFloatingPointColumn($name, $size) {
+	public function createFloatingPointColumn(string $name, int $size): FloatingPointColumn {
 		$floatingPointColumn = new CommonFloatingPointColumn($name, $size);
 		$this->table->addColumn($floatingPointColumn);
 		return $floatingPointColumn;
 	}
 
 	/**
-	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta.ColumnFactory::createDateTimeColumn()
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::createDateTimeColumn()
+	 * @return DateTimeColumn
 	 */
-	public function createDateTimeColumn($name, $dateAvailable = true, $timeAvailable = true) {
+	public function createDateTimeColumn(string $name, bool $dateAvailable = true, bool $timeAvailable = true): DateTimeColumn {
 		$dateTimeColumn = new PgsqlDateTimeColumn($name, $dateAvailable, $timeAvailable);
 		$this->table->addColumn($dateTimeColumn);
 		return $dateTimeColumn;
 	}
 
 	/**
-	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta.ColumnFactory::createEnumColumn()
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::createEnumColumn()
+	 * @return EnumColumn
 	 */
-	public function createEnumColumn($name, array $values) {
+	public function createEnumColumn(string $name, array $values): EnumColumn {
 		$enumColumn = new CommonEnumColumn($name, $values);
 		$this->table->addColumn($enumColumn);
 		return $enumColumn;
 	}
 
 	/**
-	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta.ColumnFactory::createStringColumn()
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::createStringColumn()
+	 * @return StringColumn
 	 */
-	public function createStringColumn($name, $length, $charset = null) {
+	public function createStringColumn(string $name, int $length, string $charset = null): StringColumn {
 		$stringColumn = new CommonStringColumn($name, $length, $charset);
 		$this->table->addColumn($stringColumn);
 		return $stringColumn;
 	}
 
 	/**
-	 * (non-PHPdoc)
-	 * @see n2n\persistence\meta.ColumnFactory::createTextColumn()
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\ColumnFactory::createTextColumn()
+	 * @return TextColumn
 	 */
-	public function createTextColumn($name, $size, $charset = null) {
+	public function createTextColumn(string $name, int $size, string $charset = null): TextColumn {
 		$textColumn = new CommonTextColumn($name, $size, $charset);
 		$this->table->addColumn($textColumn);
 		return $textColumn;

@@ -21,104 +21,31 @@
  */
 namespace n2n\impl\persistence\meta\sqlite;
 
-use n2n\impl\persistence\meta\sqlite\management\SqliteDropMetaEntityRequest;
-use n2n\impl\persistence\meta\sqlite\management\SqliteCreateMetaEntityRequest;
-use n2n\impl\persistence\meta\sqlite\management\SqliteAlterMetaEntityRequest;
 use n2n\persistence\meta\structure\common\DatabaseAdapter;
-use n2n\persistence\meta\structure\MetaEntity;
-use n2n\persistence\Pdo;
-use n2n\persistence\meta\structure\Backuper;
 
 class SqliteDatabase extends DatabaseAdapter {
-
-	
 	const RESERVED_NAME_PREFIX = 'sqlite_';
-	
-	/**
-	 * @var SqliteMetaEntityBuilder
-	 */
-	private $metaEntityBuilder;
+	const FIXED_DATABASE_NAME = 'main';
 	
 	/**
 	 * @var SqliteMetaEntityFactory
 	 */
 	private $metaEntityFactory;
-	
 	private $charset;
-	
 	private $attrs;
 	
-	public function __construct(Pdo $dbh) {
-		parent::__construct($dbh);
-		$this->metaEntityBuilder = new SqliteMetaEntityBuilder($dbh, $this);
-		$this->metaEntityFactory = new SqliteMetaEntityFactory($this);
-	}
-	
-	public function getName() {		
-		return 'main';
-	} 
-	
-	public function getCharset() {
-		if (!($this->charset)) {
-			$sql = 'pragma ' . $this->dbh->quoteField($this->getName()) . '.encoding';
-			$statement = $this->dbh->prepare($sql);
-			$statement->execute();
-			$result = $statement->fetch(Pdo::FETCH_ASSOC);
-			$this->charset = $result['encoding'];
-		}
-		
-		return $this->charset;
-	}
-	
-	public function getAttrs() {
-		if (!($this->attrs)) {
-			$sql = 'SHOW VARIABLES';
-			$statement = $this->dbh->prepare($sql);
-			$statement->execute(array(':TABLE_SCHEMA' => $this->getName()));
-			$results = $statement->fetchAll(Pdo::FETCH_ASSOC);
-			$this->attrs = $results;
-		}
-		return $this->attrs;
+	public function __construct($charset, $metaEntities, $attrs) {
+		parent::__construct(self::FIXED_DATABASE_NAME, $charset, $metaEntities, $attrs);
 	}
 	
 	/* (non-PHPdoc)
 	 * @see n2n\persistence\meta\structure\column.DatabaseAdapter::createMetaEntityFactory()
 	 */
 	public function createMetaEntityFactory() {
-		return $this->metaEntityFactory;
-	}
-	
-	public function createAlterMetaEntityRequest(MetaEntity $metaEntity) {
-		return new SqliteAlterMetaEntityRequest($metaEntity);
-	}
-	
-	public function createCreateMetaEntityRequest(MetaEntity $metaEntity) {
-		return new SqliteCreateMetaEntityRequest($metaEntity);
-	}
-	
-	public function createDropMetaEntityRequest(MetaEntity $metaEntity) {
-		return new SqliteDropMetaEntityRequest($metaEntity);
-	}
-	
-	/**
-	* @return Backuper
-	*/
-	public function createBackuper(array $metaEnities = null) {
-		return new SqliteBackuper($this->dbh, $this, $metaEnities);
-	}
-	
-	protected function getPersistedMetaEntities() {
-		$metaEntities = array();
-		$sql = 'SELECT * FROM ' . $this->dbh->quoteField($this->getName()) . '.sqlite_master WHERE type in (:type_table, :type_view) AND  '
-				. $this->dbh->quoteField('name') . 'NOT LIKE :reserved_names';
-		$statement = $this->dbh->prepare($sql);
-		$statement->execute(
-				array(':type_table' => SqliteMetaEntityBuilder::TYPE_TABLE, 
-						':type_view' => SqliteMetaEntityBuilder::TYPE_VIEW,
-						':reserved_names' => self::RESERVED_NAME_PREFIX . '%'));
-		while (null != ($result =  $statement->fetch(Pdo::FETCH_ASSOC))) {
-			$metaEntities[$result['name']] = $this->metaEntityBuilder->createMetaEntity($result['name']);
+		if (null === $this->metaEntityFactory) {
+			$this->metaEntityFactory = new SqliteMetaEntityFactory($this);
 		}
-		return $metaEntities;
+		
+		return $this->metaEntityFactory;
 	}
 }

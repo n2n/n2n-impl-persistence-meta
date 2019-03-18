@@ -28,6 +28,7 @@ use n2n\persistence\meta\data\QueryConstant;
 use n2n\persistence\meta\data\QueryColumn;
 use n2n\persistence\Pdo;
 use n2n\util\ex\IllegalStateException;
+use n2n\persistence\meta\structure\IndexType;
 
 class MysqlBackuper extends BackuperAdapter {
 
@@ -41,10 +42,28 @@ class MysqlBackuper extends BackuperAdapter {
 		$this->getOutputStream()->write($this->getHeader());
 
 		$metaEntities = $this->getMetaEntities();
-		if (is_null($metaEntities)) {
+		if (null === $metaEntities) {
 			$metaEntities = $this->database->getMetaEntities();
 		}
 
+		//remove all foreign key constraints first
+		if ($this->isBackupStructureEnabled()) {
+			$indexStatementStringBuilder = new MysqlIndexStatementStringBuilder($this->dbh);
+			$sqlStatements = [];
+			foreach ($metaEntities as $metaEntity) {
+				if (!$metaEntity instanceof Table) continue;
+				
+				foreach ($metaEntity->getIndexes() as $index) {
+					if ($index->getType() !== IndexType::FOREIGN) continue;
+					$sqlStatements[] = $indexStatementStringBuilder->generateDropStatementString($index, true) . ';';
+				}
+			}
+			
+			if (!empty($sqlStatements)) {
+				$this->getOutputStream()->write(implode(PHP_EOL, $sqlStatements) . PHP_EOL . PHP_EOL);
+			}
+		}
+		
 		$createStatementBuilder = new MysqlCreateStatementBuilder($this->dbh);
 		foreach ($metaEntities as $metaEntity) {
 			

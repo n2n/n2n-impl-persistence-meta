@@ -44,6 +44,15 @@ class SqliteDialect extends DialectAdapter {
 		// nothing todo
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::createMetaManager()
+	 * @return MetaManager
+	 */
+	public function createMetaManager(Pdo $dbh): MetaManager {
+		return new MysqlMetaManager($dbh);
+	}
+	
 	/** 
 	 * @return SqliteDatabase
 	 */

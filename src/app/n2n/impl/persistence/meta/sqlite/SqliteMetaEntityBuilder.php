@@ -28,6 +28,10 @@ use n2n\persistence\meta\structure\common\CommonView;
 use n2n\persistence\meta\structure\IndexType;
 
 use n2n\persistence\Pdo;
+use n2n\persistence\meta\Database;
+use n2n\util\type\CastUtils;
+use n2n\persistence\meta\structure\common\MetaEntityAdapter;
+use n2n\persistence\meta\structure\Table;
 
 class SqliteMetaEntityBuilder {
 	
@@ -45,25 +49,34 @@ class SqliteMetaEntityBuilder {
 	 */
 	private $database;
 	
-	public function __construct(Pdo $dbh, SQLiteDatabase $database) {
+	public function __construct(Pdo $dbh) {
 		$this->dbh = $dbh;
-		$this->database = $database;
+	}
+	
+	public function createMetaEntityFromDatabase(Database $database, string $name) {
+		$metaEntity = $this->createMetaEntity($database->getName(), $name);
+		CastUtils::assertTrue($metaEntity instanceof MetaEntityAdapter);
+		$metaEntity->setDatabase($database);
+		
+		if ($metaEntity instanceof Table) {
+			$this->applyIndexesForTable($database->getName(), $metaEntity);
+		}
+		
+		return $metaEntity;
 	}
 	
 	/**
 	 * @param string $name
 	 * @return \n2n\persistence\meta\structure\MetaEntity
 	 */
-	public function createMetaEntity($name) {
+	public function createMetaEntity(string $dbName, string $name) {
 		
 		$metaEntity = null;
 		
-		$sql = 'SELECT * FROM ' . $this->dbh->quoteField($this->database->getName()) . '.sqlite_master WHERE type in (:type_table, :type_view) AND name = :name';
+		$sql = 'SELECT * FROM ' . $this->dbh->quoteField($name) . '.sqlite_master WHERE type in (:type_table, :type_view) AND name = :name';
 		$statement = $this->dbh->prepare($sql);
-		$statement->execute(
-				array(':type_table' => self::TYPE_TABLE, 
-						':type_view' => self::TYPE_VIEW, 
-						':name' => $name));
+		$statement->execute([':type_table' => self::TYPE_TABLE, 
+				':type_view' => self::TYPE_VIEW, ':name' => $name]);
 		$result = $statement->fetch(Pdo::FETCH_ASSOC);
 		
 		$tableType = $result['type'];
@@ -71,8 +84,7 @@ class SqliteMetaEntityBuilder {
 		switch ($tableType) {
 			case self::TYPE_TABLE:
 				$table = new SqliteTable($name);
-				$table->setColumns($this->getColumnsForTable($table));
-				$table->setIndexes($this->getIndexesForTable($table));
+				$table->setColumns($this->getColumnsForTable($dbName, $table));
 				$metaEntity = $table;
 				break;
 			case self::TYPE_VIEW:
@@ -80,15 +92,16 @@ class SqliteMetaEntityBuilder {
 				$metaEntity = $view;
 				break;
 		}
+		
 		$metaEntity->setAttrs($result);
 		$metaEntity->setDatabase($this->database);
 		$metaEntity->registerChangeListener($this->database);
 		return $metaEntity;
 	}
 	
-	private function getColumnsForTable(SqliteTable $table) {
+	private function getColumnsForTable(string $dbName, SqliteTable $table) {
 		$columns = array();
-		$sql = 'PRAGMA ' . $this->dbh->quoteField($this->database->getName()) 
+		$sql = 'PRAGMA ' . $this->dbh->quoteField($dbName) 
 				. '.table_info(' . $this->dbh->quoteField($table->getName()) . ')';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
@@ -115,7 +128,7 @@ class SqliteMetaEntityBuilder {
 			} else {
 				$column = new SqliteFixedPointColumn($row['name']);
 			}
-			$column->setNullAllowed(!($row['notnull']));
+			$column->setNullAllowed(!$row['notnull']);
 			$column->setDefaultValue($row['dflt_value']);
 			$column->setAttrs($row);
 			$columns[$row['name']] = $column;
@@ -125,15 +138,15 @@ class SqliteMetaEntityBuilder {
 				(!(is_null($generatedIdentifierColumnName)))) {
 			$this->dbh->getMetaData()->getDialect()->applyIdentifierGeneratorToColumn($this->dbh, $columns[$generatedIdentifierColumnName]);
 		}
+		
 		return $columns;
 	}
 	
-	private function getIndexesForTable(SqliteTable $table) {
-		
+	public function applyIndexesForTable(string $dbName, SqliteTable $table) {
 		$primaryColumns = false;
 		$indexes = array();
 		$columns = $table->getColumns();
-		$sql = 'PRAGMA ' . $this->dbh->quoteField($this->database->getName()) 
+		$sql = 'PRAGMA ' . $this->dbh->quoteField($dbName) 
 					. '.index_list(' . $this->dbh->quoteField($table->getName()) . ')';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
@@ -170,6 +183,7 @@ class SqliteMetaEntityBuilder {
 			$indexes[$name] = $index;
 			
 		}
+		
 		//get the primary key information informations
 		$sql = 'PRAGMA ' . $this->dbh->quoteField($this->database->getName())
 		. '.table_info(' . $this->dbh->quoteField($table->getName()) . ')';
@@ -181,10 +195,12 @@ class SqliteMetaEntityBuilder {
 				$indexColumns[$row['name']] = $columns[$row['name']];
 			}
 		}
+		
 		if (count($indexColumns)) {
 			$indexes[$table->generatePrimaryKeyName()] = new CommonIndex($table, $table->generatePrimaryKeyName(), IndexType::PRIMARY, $indexColumns);
-		}	
-		return $indexes;
+		}
+		
+		$table->setIndexes($indexes);
 	}
 	
 	/**

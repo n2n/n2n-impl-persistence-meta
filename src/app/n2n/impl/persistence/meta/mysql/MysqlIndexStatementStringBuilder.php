@@ -56,13 +56,27 @@ class MysqlIndexStatementStringBuilder {
 				case (IndexType::INDEX) :
 					$statementString .= 'INDEX ' . $this->dbh->quoteField($index->getName());
 					break;
+				case (IndexType::FOREIGN) :
+					$statementString .= 'CONSTRAINT ' . $this->dbh->quoteField($index->getName()) . ' FOREIGN KEY';
+					break;
 			}
 		}
 		
-		$statementString .=  ' (';
+		$statementString .= $this->buildColumnsString($index->getColumns());
+		
+		if ($index->getType() === IndexType::FOREIGN) {
+			$statementString .= ' REFERENCES ' . $this->dbh->quoteField($index->getRefTable()->getName()) 
+					. $this->buildColumnsString($index->getRefColumns());
+		}
 	
+		return $statementString;
+	}
+	
+	private function buildColumnsString(array $columns) {
+		$statementString =  ' (';
+		
 		$first = true;
-		foreach ($index->getColumns() as $column) {
+		foreach ($columns as $column) {
 			if (!$first) {
 				$statementString .= ', ';
 			} else {
@@ -70,19 +84,22 @@ class MysqlIndexStatementStringBuilder {
 			}
 			$statementString .= $this->dbh->quoteField($column->getName());
 		}
-	
-		$statementString .= ')';
-	
-		return $statementString;
+		
+		return $statementString . ')';
 	}
 	
-	public function generateDropStatementString(Index $index) {
+	public function generateDropStatementString(Index $index, bool $checkExistance = false) {
+		$dropStatementSTring =  'ALTER TABLE ' . $this->dbh->quoteField($index->getTable()->getName()) . ' DROP ';
+		
 		switch ($index->getType()) {
 			case (IndexType::PRIMARY) :
-				return 'PRIMARY KEY';
+				return $dropStatementSTring . 'PRIMARY KEY';
 			case (IndexType::UNIQUE) :
 			case (IndexType::INDEX) :
-				return 'INDEX ' . $this->dbh->quoteField($index->getName());
+				return $dropStatementSTring . $this->dbh->quoteField($index->getName());
+			case (IndexType::FOREIGN) :
+				return $dropStatementSTring. 'FOREIGN KEY ' . ($checkExistance ? 'IF EXISTS ' : '') 
+						.  $this->dbh->quoteField($index->getName());
 		}
 	}
 }

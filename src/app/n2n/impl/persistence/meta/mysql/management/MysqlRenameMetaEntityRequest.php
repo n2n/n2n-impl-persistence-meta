@@ -19,28 +19,13 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\impl\persistence\meta\mysql;
+namespace n2n\impl\persistence\meta\mysql\management;
 
-use n2n\persistence\meta\structure\common\DatabaseAdapter;
-use n2n\persistence\meta\structure\MetaEntityFactory;
+use n2n\persistence\Pdo;
+use n2n\persistence\meta\structure\common\RenameMetaEntityRequestAdapter;
 
-class MysqlDatabase extends DatabaseAdapter {
-	
-	/**
-	 * @var MysqlMetaEntityFactory
-	 */
-	private $metaEntityFactory;
-	
-	/**
-	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\Database::createMetaEntityFactory()
-	 * @return MetaEntityFactory
-	 */
-	public function createMetaEntityFactory(): MetaEntityFactory {
-		if (null === $this->metaEntityFactory) {
-			$this->metaEntityFactory = new MysqlMetaEntityFactory($this);
-		}
-		
-		return $this->metaEntityFactory;
+class MysqlRenameMetaEntityRequest extends RenameMetaEntityRequestAdapter  {
+	public function execute(Pdo $dbh) {
+		$dbh->exec('RENAME TABLE ' . $dbh->quoteField($this->oldName) . ' TO ' . $dbh->quoteField($this->newName));
 	}
 }
