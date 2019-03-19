@@ -23,9 +23,18 @@ namespace n2n\impl\persistence\meta\sqlite\management;
 
 use n2n\persistence\Pdo;
 use n2n\persistence\meta\structure\common\RenameMetaEntityRequestAdapter;
+use n2n\persistence\meta\structure\Table;
+use n2n\persistence\meta\structure\View;
 
 class SqliteRenameMetaEntityRequest extends RenameMetaEntityRequestAdapter  {
 	public function execute(Pdo $dbh) {
-		$dbh->exec('RENAME TABLE ' . $dbh->quoteField($this->oldName) . ' TO ' . $dbh->quoteField($this->newName));
+		$metaEntity = $this->getMetaEntity();
+		if ($metaEntity instanceof Table) {
+			$dbh->exec('ALTER TABLE ' . $dbh->quoteField($this->oldName) . 'RENAME TO ' . $dbh->quoteField($this->newName));
+		} elseif ($metaEntity instanceof View) {
+			$dbh->exec('DROP VIEW ' . $dbh->quoteField($this->oldName));
+			$dbh->exec('CREATE VIEW ' . $dbh->quoteField($this->newName) . ' AS ' . $metaEntity->getQuery());
+			
+		}
 	}
 }

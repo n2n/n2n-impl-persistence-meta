@@ -83,7 +83,8 @@ class MssqlAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter {
 			}
 			
 			foreach ($metaEntity->getIndexes() as $index) {
-				if ($persistedTable->containsIndexName($index->getName())) continue;
+				if ($persistedTable->containsIndexName($index->getName()) 
+						&& $persistedTable->getIndexByName($index->getName())->equals($index)) continue;
 				
 				$dbh->exec($indexStatementStringBuilder->generateCreateStatementStringForIndex($index));
 			}

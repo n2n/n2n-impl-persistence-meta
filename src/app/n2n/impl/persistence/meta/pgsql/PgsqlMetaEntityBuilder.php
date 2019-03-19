@@ -51,13 +51,13 @@ class PgsqlMetaEntityBuilder {
 		$metaEntity->setDatabase($database);
 		
 		if ($metaEntity instanceof Table) {
-			$this->applyIndexesForTablename($database->getName(), $metaEntity);
+			$this->applyIndexesForTable($database->getName(), $metaEntity);
 		}
 		
 		return $metaEntity;
 	}
 
-	public function createMetaEntity(string $dbName, $name) {
+	public function createMetaEntity(string $dbName, string $name) {
 		$stmt = $this->dbh->prepare('SELECT * FROM information_schema.tables WHERE table_catalog = ? AND table_name = ?');
 		$stmt->execute(array($dbName, $name));
 		$result = $stmt->fetch(Pdo::FETCH_ASSOC);
@@ -71,12 +71,12 @@ class PgsqlMetaEntityBuilder {
 				$result = $stmt->fetch(Pdo::FETCH_ASSOC);
 
 				$metaEntity = new CommonView($name, $result['view_definition']);
-				$metaEntity->setAttrs($result['view_definition']);
+				$metaEntity->setAttrs($result);
 
 				break;
 			case self::TABLE_TYPE_BASE_TABLE:
 				$metaEntity = new PgsqlTable($name);
-				$metaEntity->setColumns($this->getColumnsForTablename($name));
+				$metaEntity->setColumns($this->getColumnsForTablename($dbName, $name));
 				break;
 		}
 
@@ -173,9 +173,9 @@ class PgsqlMetaEntityBuilder {
 					$column = new PgsqlDefaultColumn($row['column_name']);
 					break;
 			}
-				
+			
 			$column->setNullAllowed($row['is_nullable'] == 'YES' ? true : false);
-			$column->setDefaultValue($row['column_default']);
+			$column->setDefaultValue($this->parseDefaultValue($row['column_default']));
 			if (0 === strpos($row['column_default'], 'nextval')) {
 				$column->setValueGenerated(true);
 			}
@@ -185,8 +185,15 @@ class PgsqlMetaEntityBuilder {
 		}
 		return $columns;
 	}
+	
+	private function parseDefaultValue(string $default = null) {
+		$matches = [];
+		if (null === $default || !preg_match('/^\'(.*)\':.*/', $default, $matches)) return $default;
+		
+		return $matches[1];
+	}
 
-	public function applyIndexesForTablename(string $dbName, Table $table) {
+	public function applyIndexesForTable(string $dbName, Table $table) {
 		$stmtPrimary = $this->dbh->prepare('
 			SELECT istc.constraint_name AS indname, istc.constraint_type AS indtype,
 				ARRAY (
@@ -201,7 +208,7 @@ class PgsqlMetaEntityBuilder {
 		$stmtPrimaryArray = $stmtPrimary->fetchAll(Pdo::FETCH_ASSOC);
 
 		$sql = '
-			SELECT i.relname AS indname, \'INDEX\' AS indtype,
+			SELECT i.relname AS indname, \'index\' AS indtype,
 				ARRAY(
 					SELECT pg_get_indexdef(idx.indexrelid, k + 1, true)
 					FROM generate_subscripts(idx.indkey, 1) as k
@@ -216,9 +223,27 @@ class PgsqlMetaEntityBuilder {
 
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute($executeArray);
-		$stmtArray = $stmt->fetchAll(Pdo::FETCH_ASSOC);
+		$stmtIndex = $stmt->fetchAll(Pdo::FETCH_ASSOC);
 
-		foreach (array_merge($stmtPrimaryArray, $stmtArray) as $index) {
+		$sql = '
+			SELECT i.relname AS indname, \'unique\' AS indtype,
+				ARRAY(
+					SELECT pg_get_indexdef(idx.indexrelid, k + 1, true)
+					FROM generate_subscripts(idx.indkey, 1) as k
+					ORDER BY k
+				) AS indcolumns
+			FROM pg_index AS idx
+				JOIN pg_class AS i ON i.oid = idx.indexrelid
+				JOIN pg_am AS am ON i.relam = am.oid
+			WHERE TEXT(idx.indrelid::regclass) = ?
+				 AND idx.indisprimary != ? AND idx.indisunique = ? ';
+		$executeArray = array($table->getName(), 't', 't');
+
+		$stmt = $this->dbh->prepare($sql);
+		$stmt->execute($executeArray);
+		$stmtUnique = $stmt->fetchAll(Pdo::FETCH_ASSOC);
+
+		foreach (array_merge($stmtPrimaryArray, $stmtIndex, $stmtUnique) as $index) {
 			$table->createIndex($this->toMetaIndexType($index['indtype']),
 				explode(',', substr($index['indcolumns'], 1, -1)), $index['indname']);
 		}

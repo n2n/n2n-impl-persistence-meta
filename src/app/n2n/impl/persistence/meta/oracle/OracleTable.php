@@ -22,6 +22,8 @@
 namespace n2n\impl\persistence\meta\oracle;
 
 use n2n\persistence\meta\structure\common\TableAdapter;
+use n2n\persistence\meta\structure\ColumnFactory;
+use n2n\persistence\meta\structure\Table;
 
 class OracleTable extends TableAdapter {
 	
@@ -29,7 +31,12 @@ class OracleTable extends TableAdapter {
 	
 	private $columnFactory;
 	
-	public function copy($newTableName = null) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\Table::copy()
+	 * @return Table
+	 */
+	public function copy(string $newTableName = null): Table {
 		if (is_null($newTableName)) {
 			$newTableName = $this->getName();
 		}
@@ -43,8 +50,9 @@ class OracleTable extends TableAdapter {
 	/**
 	 * {@inheritDoc}
 	 * @see \n2n\persistence\meta\structure\Table::createColumnFactory()
+	 * @return ColumnFactory
 	 */
-	public function createColumnFactory() {
+	public function createColumnFactory(): ColumnFactory {
 		if (!($this->columnFactory)) {
 			$this->columnFactory = new OracleColumnFactory($this);
 		}
@@ -53,5 +61,9 @@ class OracleTable extends TableAdapter {
 
 	public function generatePrimaryKeyName() {
 		return self::KEY_NAME_PRIMARY;
+	}
+	
+	public function isForeignKeyAvailable() {
+		return false;
 	}
 }

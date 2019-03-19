@@ -2,11 +2,11 @@
 namespace n2n\impl\persistence\meta\pgsql\management;
 
 use n2n\persistence\Pdo;
-use n2n\persistence\meta\structure\common\ChangeRequestAdapter;
 use n2n\persistence\meta\structure\Table;
 use n2n\persistence\meta\structure\View;
+use n2n\persistence\meta\structure\common\DropMetaEntityRequestAdapter;
 
-class PgsqlDropMetaEntityRequest extends ChangeRequestAdapter {
+class PgsqlDropMetaEntityRequest extends DropMetaEntityRequestAdapter {
 
 	public function execute(Pdo $dbh) {
 		$metaEntity = $this->getMetaEntity();

@@ -69,14 +69,14 @@ class MysqlAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter  {
 			}
 			
 			foreach ($persistedTable->getIndexes() as $persistedIndex) {
-				$persistedIndex->getName();
 				if ($metaEntity->containsIndexName($persistedIndex->getName()) 
 						&& $persistedIndex->equals($metaEntity->getIndexByName($persistedIndex->getName()))) continue;
 				$dbh->exec($indexStatementStringBuilder->generateDropStatementString($persistedIndex));
 			}
 			
 			foreach ($metaEntity->getIndexes() as $index) {
-				if ($persistedTable->containsIndexName($index->getName())) continue;
+				if ($persistedTable->containsIndexName($index->getName()) 
+						&& $persistedTable->getIndexByName($index->getName())->equals($index)) continue;
 				
 				$dbh->exec('ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName()) . ' ADD ' 
 						. $indexStatementStringBuilder->generateCreateStatementString($index));

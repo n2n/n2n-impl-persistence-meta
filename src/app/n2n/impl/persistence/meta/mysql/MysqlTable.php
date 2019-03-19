@@ -70,4 +70,5 @@ class MysqlTable extends TableAdapter {
 	public function generatePrimaryKeyName() {
 		return self::KEY_NAME_PRIMARY;
 	}
+
 }

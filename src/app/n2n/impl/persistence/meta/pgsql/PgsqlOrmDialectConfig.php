@@ -39,6 +39,7 @@ class PgsqlOrmDialectConfig implements OrmDialectConfig {
 			throw new \InvalidArgumentException($e->getMessage(), 0, $e);
 		}
 	}
+	
 	/**
 	 * @param \DateTime $dateTime
 	 * @return string
@@ -47,6 +48,7 @@ class PgsqlOrmDialectConfig implements OrmDialectConfig {
 		if (null === $dateTime) return null;
 		return DateUtils::formatDateTime($dateTime, \DateTime::ISO8601);
 	}
+	
 	/**
 	 * @return string
 	 */

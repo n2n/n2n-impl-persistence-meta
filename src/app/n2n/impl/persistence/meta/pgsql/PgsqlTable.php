@@ -23,11 +23,18 @@ namespace n2n\impl\persistence\meta\pgsql;
 
 use n2n\persistence\meta\structure\common\TableAdapter;
 use n2n\util\StringUtils;
+use n2n\persistence\meta\structure\ColumnFactory;
+use n2n\persistence\meta\structure\Table;
 
 class PgsqlTable extends TableAdapter {
 	private $columnFactory;
 
-	public function createColumnFactory() {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\Table::createColumnFactory()
+	 * @return ColumnFactory
+	 */
+	public function createColumnFactory(): ColumnFactory {
 		if (!($this->columnFactory)) {
 			$this->columnFactory = new PgsqlColumnFactory($this);
 		}
@@ -38,11 +45,13 @@ class PgsqlTable extends TableAdapter {
 	public function generatePrimaryKeyName() {
 		return StringUtils::hyphenated($this->getName()) . '_primary';
 	}
+
 	/**
 	 * {@inheritDoc}
 	 * @see \n2n\persistence\meta\structure\Table::copy()
+	 * @return Table
 	 */
-	public function copy($newTableName = null) {
+	public function copy(string $newTableName = null): Table {
 		if (is_null($newTableName)) {
 			$newTableName = $this->getName();
 		}
@@ -53,5 +62,7 @@ class PgsqlTable extends TableAdapter {
 		return $newTable;
 	}
 	
-
+	public function isForeignKeyAvailable() {
+		return false;
+	}
 }

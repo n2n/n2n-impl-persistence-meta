@@ -19,36 +19,24 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\impl\persistence\meta\sqlite;
+namespace n2n\impl\persistence\meta\pgsql\management;
 
-use n2n\persistence\meta\structure\common\DatabaseAdapter;
-use n2n\persistence\meta\structure\MetaEntityFactory;
+use n2n\persistence\Pdo;
+use n2n\persistence\meta\structure\common\RenameMetaEntityRequestAdapter;
+use n2n\persistence\meta\structure\View;
+use n2n\persistence\meta\structure\Table;
 
-class SqliteDatabase extends DatabaseAdapter {
-	const RESERVED_NAME_PREFIX = 'sqlite_';
-	const FIXED_DATABASE_NAME = 'main';
-	
-	/**
-	 * @var SqliteMetaEntityFactory
-	 */
-	private $metaEntityFactory;
-	private $charset;
-	private $attrs;
-	
-	public function __construct($charset, $metaEntities, $attrs) {
-		parent::__construct(self::FIXED_DATABASE_NAME, $charset, $metaEntities, $attrs);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\Database::createMetaEntityFactory()
-	 * @return MetaEntityFactory
-	 */
-	public function createMetaEntityFactory(): MetaEntityFactory {
-		if (null === $this->metaEntityFactory) {
-			$this->metaEntityFactory = new SqliteMetaEntityFactory($this);
+class PgsqlRenameMetaEntityRequest extends RenameMetaEntityRequestAdapter  {
+	public function execute(Pdo $dbh) {
+		$metaEntity = $this->getMetaEntity();
+		if ($metaEntity instanceof View) {
+			$dbh->exec('ALTER VIEW ' . $dbh->quoteField($this->oldName) . ' RENAME TO ' . $dbh->quoteField($this->newName));
+			return;
 		}
 		
-		return $this->metaEntityFactory;
+		if ($metaEntity instanceof Table) {
+			$dbh->exec('RENAME TABLE ' . $dbh->quoteField($this->oldName) . ' TO ' . $dbh->quoteField($this->newName));
+			return;
+		}
 	}
 }

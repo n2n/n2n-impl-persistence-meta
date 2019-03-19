@@ -32,6 +32,7 @@ use n2n\persistence\meta\Database;
 use n2n\util\type\CastUtils;
 use n2n\persistence\meta\structure\common\MetaEntityAdapter;
 use n2n\persistence\meta\structure\Table;
+use n2n\persistence\meta\structure\MetaEntity;
 
 class SqliteMetaEntityBuilder {
 	
@@ -43,11 +44,6 @@ class SqliteMetaEntityBuilder {
 	 * @var Pdo
 	 */
 	private $dbh;
-	
-	/**
-	 * @var SQLiteDatabase
-	 */
-	private $database;
 	
 	public function __construct(Pdo $dbh) {
 		$this->dbh = $dbh;
@@ -67,13 +63,13 @@ class SqliteMetaEntityBuilder {
 	
 	/**
 	 * @param string $name
-	 * @return \n2n\persistence\meta\structure\MetaEntity
+	 * @return MetaEntity
 	 */
 	public function createMetaEntity(string $dbName, string $name) {
 		
 		$metaEntity = null;
 		
-		$sql = 'SELECT * FROM ' . $this->dbh->quoteField($name) . '.sqlite_master WHERE type in (:type_table, :type_view) AND name = :name';
+		$sql = 'SELECT * FROM ' . $this->dbh->quoteField($dbName) . '.sqlite_master WHERE type in (:type_table, :type_view) AND name = :name';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute([':type_table' => self::TYPE_TABLE, 
 				':type_view' => self::TYPE_VIEW, ':name' => $name]);
@@ -94,8 +90,6 @@ class SqliteMetaEntityBuilder {
 		}
 		
 		$metaEntity->setAttrs($result);
-		$metaEntity->setDatabase($this->database);
-		$metaEntity->registerChangeListener($this->database);
 		return $metaEntity;
 	}
 	
@@ -156,7 +150,7 @@ class SqliteMetaEntityBuilder {
 			if (!($result['unique'])) {
 				$type = IndexType::INDEX;
 			} else {
-				$indexSql = 'SELECT * FROM ' . $this->dbh->quoteField($this->database->getName()) . '.sqlite_master WHERE name = :name';
+				$indexSql = 'SELECT * FROM ' . $this->dbh->quoteField($dbName) . '.sqlite_master WHERE name = :name';
 				$indexStatement = $this->dbh->prepare($indexSql);
 				$indexStatement->execute(array(':name' => $result['name']));
 				$indexResult = $indexStatement->fetch(Pdo::FETCH_ASSOC);
@@ -170,34 +164,43 @@ class SqliteMetaEntityBuilder {
 			}
 	
 			$indexColumns = array();
-			$columnsSql = 'PRAGMA ' . $this->dbh->quoteField($this->database->getName()) 
+			$columnsSql = 'PRAGMA ' . $this->dbh->quoteField($dbName) 
 					. '.index_info(' . $this->dbh->quoteField($result['name']) . ')';
 			$columnsStatement = $this->dbh->prepare($columnsSql);
 			$columnsStatement->execute();
 			$columnsResults = $columnsStatement->fetchAll(Pdo::FETCH_ASSOC);
 			foreach ($columnsResults as $columnResult) {
-				$indexColumns[$columnResult['name']] = $columns[$columnResult['name']];
+				$indexColumns[] = $table->getColumnByName($columnResult['name']);
 			}
 			$index = new CommonIndex($table, $name, $type, $indexColumns);
 			$index->setAttrs($result);
-			$indexes[$name] = $index;
-			
+			$indexes[] = $index;
 		}
 		
-		//get the primary key information informations
-		$sql = 'PRAGMA ' . $this->dbh->quoteField($this->database->getName())
-		. '.table_info(' . $this->dbh->quoteField($table->getName()) . ')';
+		//get the primary key information
+		$sql = 'PRAGMA ' . $this->dbh->quoteField($dbName)
+				. '.table_info(' . $this->dbh->quoteField($table->getName()) . ')';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
 		$indexColumns = array();
 		while (null != ($row = $statement->fetch(PDO::FETCH_ASSOC))) {
 			if ($row['pk']) {
-				$indexColumns[$row['name']] = $columns[$row['name']];
+				$indexColumns[] = $table->getColumnByName($row['name']);
 			}
 		}
 		
 		if (count($indexColumns)) {
-			$indexes[$table->generatePrimaryKeyName()] = new CommonIndex($table, $table->generatePrimaryKeyName(), IndexType::PRIMARY, $indexColumns);
+			$indexes[] = new CommonIndex($table, $table->generatePrimaryKeyName(), IndexType::PRIMARY, $indexColumns);
+		}
+		
+		//get the foreign key information
+		$sql = 'PRAGMA ' . $this->dbh->quoteField($dbName)
+				. '.foreign_key_list(' . $this->dbh->quoteField($table->getName()) . ')';
+		$statement = $this->dbh->prepare($sql);
+		$statement->execute();
+		while (null != ($row = $statement->fetch(PDO::FETCH_ASSOC))) {
+			$indexes[] = $table->createIndex(IndexType::FOREIGN, [$row['from']],  'fkey_' . $row['from'] . '_' . $row['table'] . $row['to'], 
+					$table->getDatabase()->getMetaEntityByName($row['table']), [$row['to']]);
 		}
 		
 		$table->setIndexes($indexes);

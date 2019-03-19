@@ -12,7 +12,6 @@ use n2n\persistence\meta\structure\DateTimeColumn;
 use n2n\persistence\meta\structure\BinaryColumn;
 use n2n\persistence\meta\structure\IntegerColumn;
 use n2n\persistence\meta\structure\Column;
-use n2n\reflection\ReflectionUtils;
 use n2n\persistence\meta\structure\EnumColumn;
 
 class PgsqlColumnStatementFragmentBuilder {
@@ -26,12 +25,12 @@ class PgsqlColumnStatementFragmentBuilder {
 	}
 	
 	public function buildDropColumnStatement(Column $column) {
-		$quotedEntityName = $this->pdo->quoteField($column->getTable());
-		$quotedColumnName = $this->pdo->quote($column->getName());
+		$quotedEntityName = $this->pdo->quoteField($column->getTable()->getName());
+		$quotedColumnName = $this->pdo->quoteField($column->getName());
 		
 		$sql = 'ALTER TABLE ' . $quotedEntityName . ' DROP COLUMN ' . $quotedColumnName . ';';
 		
-		if (Column instanceof EnumColumn) {
+		if ($column instanceof EnumColumn) {
 			$sql .= $this->enumStatementBuilder->buildDropEnumTypeStatement($column);
 		}
 		
@@ -39,17 +38,17 @@ class PgsqlColumnStatementFragmentBuilder {
 	}
 	
 	public function buildAddColumnStatement(Column $column) {
-		$quotedEntityName = $this->pdo->quoteField($column->getTable());
+		$quotedEntityName = $this->pdo->quoteField($column->getTable()->getName());
 		
 		return 'ALTER TABLE ' . $quotedEntityName . ' ADD COLUMN ' .
 				$this->generateColumnFragment($column) . ';';
 	}
 	
 	public function buildAlterColumnStatement(Column $column, Column $originalColumn) {
-		$quotedEntityName = $this->pdo->quoteField($column->getTable());
+		$quotedEntityName = $this->pdo->quoteField($column->getTable()->getName());
 		$quotedColumnName = $this->pdo->quote($column->getName());
 		
-		if (ReflectionUtils::isClassA($originalColumn, $column)) {
+		if ($column->equalsType($originalColumn)) {
 			$sql = '';
 			if ($column instanceof EnumColumn) {
 				$sql .= $this->enumStatementBuilder->containsEnumType($column) 
@@ -154,14 +153,13 @@ class PgsqlColumnStatementFragmentBuilder {
 		if ($column instanceof TextColumn) {
 			return 'TEXT';
 		}
-
-		if (($attrs = $column->getAttrs())
-				&& isset($attrs['data_type']) ) {
-			return $attrs['data_type'];
-		}
 		
 		if ($column instanceof EnumColumn) {
 			return $this->enumStatementBuilder->buildEnumColumnName($column);
+		}
+
+		if (($attrs = $column->getAttrs()) && isset($attrs['data_type']) ) {
+			return $attrs['data_type'];
 		}
 		
 		return null;

@@ -66,6 +66,7 @@ class MysqlMetaEntityBuilder {
 		$metaEntity = $this->createMetaEntity($database->getName(), $name);
 		CastUtils::assertTrue($metaEntity instanceof MetaEntityAdapter);
 		$metaEntity->setDatabase($database);
+		$metaEntity->registerChangeListener($database);
 		if ($metaEntity instanceof Table) {
 			$this->applyIndexesForTable($database->getName(), $metaEntity);
 		}
@@ -94,9 +95,9 @@ class MysqlMetaEntityBuilder {
 				$characterSetStatement = $this->dbh->prepare('SHOW COLLATION LIKE :COLLATION');
 				$characterSetStatement->execute(array(':COLLATION' => $result[MysqlTable::ATTRS_TABLE_COLLATION]));
 				if (null != ($characterSetResult = $characterSetStatement->fetch(Pdo::FETCH_ASSOC))) {
-					$table->setAttrs(array_merge(array(MysqlTable::ATTRS_DEFAULT_CHARSET => $characterSetResult['Charset']), $table->getAttrs()));
+					$table->setAttrs(array_merge(array(MysqlTable::ATTRS_DEFAULT_CHARSET => $characterSetResult['Charset']), 
+							$table->getAttrs()));
 				}
-				
 				
 				$metaEntity = $table;
 				if ($applyIndexes) {

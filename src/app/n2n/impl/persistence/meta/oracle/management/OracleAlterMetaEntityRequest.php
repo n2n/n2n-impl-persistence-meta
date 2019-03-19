@@ -42,11 +42,14 @@ class OracleAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter  {
 		if ($metaEntity instanceof Table) {
 			$columnStatementStringBuilder = new OracleColumnStatementStringBuilder($dbh);
 			$indexStatementStringBuilder = new OracleIndexStatementStringBuilder($dbh);
-			$metaEntityBuilder = new OracleMetaEntityBuilder($dbh, $this->getMetaEntity()->getDatabase());
+			$metaEntityBuilder = new OracleMetaEntityBuilder($dbh);
 			//columns to Add
 			$columns = $metaEntity->getColumns();
-			$persistedTable =  $metaEntityBuilder->createMetaEntityFromDatabase($metaEntity->getDatabase(),
+			
+			$persistedTable = $metaEntityBuilder->createTableFromDatabase($metaEntity->getDatabase(), 
 					$metaEntity->getName());
+			$metaEntityBuilder->applyIndexesForTable($persistedTable);
+			
 			CastUtils::assertTrue($persistedTable instanceof Table);
 			$persistedColumns = $persistedTable->getColumns();
 
@@ -75,7 +78,8 @@ class OracleAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter  {
 			}
 			
 			foreach ($metaEntity->getIndexes() as $index) {
-				if ($persistedTable->containsIndexName($index->getName())) continue;
+				if ($persistedTable->containsIndexName($index->getName())
+						&& $persistedTable->getIndexByName($index->getName())->equals($index)) continue;
 				
 				$dbh->exec($indexStatementStringBuilder->generateCreateStatementString($this->getMetaEntity(), $index));
 			}

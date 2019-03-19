@@ -80,12 +80,12 @@ class PgsqlCreateStatementBuilder {
 			}
 				
 			$this->sqlStatements[] = 'CREATE VIEW ' . $quotedMetaEntityName . ' AS '
-					. $this->pdo->quote($metaEntity->getQuery());
+					. $metaEntity->getQuery();
 						
-					return $this->sqlStatements;
+			return $this->sqlStatements;
 		}
 
-		if ($metaEntity instanceof PgsqlTable) {
+		if ($metaEntity instanceof Table) {
 			if ($replace) {
 				$this->sqlStatements[] = 'DROP TABLE IF EXISTS ' . $quotedMetaEntityName . '; ';
 			}
@@ -93,9 +93,9 @@ class PgsqlCreateStatementBuilder {
 			$this->sqlStatements[] = 'CREATE TABLE ' . $quotedMetaEntityName . ' ('
 					. implode(', ', $this->buildColumnSqlFragments($formatted)) . ');';
 						
-					$this->buildIndexesSql($replace, $formatted);
-						
-					return array_merge($this->enumTypeSqlStatements, $this->sqlStatements);
+			$this->buildIndexesSql($replace, $formatted);
+			
+			return array_merge($this->enumTypeSqlStatements, $this->sqlStatements);
 		}
 
 		throw new IllegalStateException('Inavlid meta entity given. Given type is "' . get_class($this->metaEntity));

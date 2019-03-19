@@ -31,13 +31,20 @@ use n2n\persistence\meta\data\common\CommonSelectStatementBuilder;
 use n2n\persistence\meta\data\common\CommonUpdateStatementBuilder;
 use n2n\persistence\meta\data\common\CommonInsertStatementBuilder;
 use n2n\persistence\meta\data\common\CommonDeleteStatementBuilder;
+use n2n\persistence\meta\data\SelectStatementBuilder;
+use n2n\persistence\meta\data\UpdateStatementBuilder;
+use n2n\persistence\meta\data\InsertStatementBuilder;
+use n2n\persistence\meta\data\DeleteStatementBuilder;
+use n2n\persistence\meta\data\Importer;
+use n2n\persistence\meta\OrmDialectConfig;
+use n2n\persistence\meta\MetaManager;
 
 class PgsqlDialect extends DialectAdapter {
 	public function __construct() {}
 	/**
 	 * @return string
 	 */
-	public function getName() {
+	public function getName(): string {
 		return 'Pgsql';
 	}
 	
@@ -51,75 +58,83 @@ class PgsqlDialect extends DialectAdapter {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\Dialect::createMetaDatabase()
+	 * @see \n2n\persistence\meta\Dialect::createMetaManager()
+	 * @return MetaManager
 	 */
-	public function createMetaDatabase(Pdo $dbh) {
-		return new PgsqlDatabase($dbh);
+	public function createMetaManager(Pdo $dbh): MetaManager {
+		return new PgsqlMetaManager($dbh);
 	}
+	
 	/**
 	 *
 	 * @param String $str
 	 */
-	public function quoteField($str) {
+	public function quoteField(string $str): string {
 		return '"' . str_replace('"', '', (string) $str) . '"';
 	}
 
-	public function escapeLikePattern($pattern) {
+	public function escapeLikePattern(string $pattern): string {
 		return str_replace(array('\\', '%', '_'), array('\\\\', '\\%', '\\_'), $pattern);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 * @see \n2n\persistence\meta\Dialect::createSelectStatementBuilder()
+	 * @return SelectStatementBuilder
 	 */
-	public function createSelectStatementBuilder(Pdo $dbh) {
+	public function createSelectStatementBuilder(Pdo $dbh): SelectStatementBuilder {
 		return new CommonSelectStatementBuilder($dbh);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 * @see \n2n\persistence\meta\Dialect::createUpdateStatementBuilder()
+	 * @return UpdateStatementBuilder
 	 */
-	public function createUpdateStatementBuilder(Pdo $dbh) {
+	public function createUpdateStatementBuilder(Pdo $dbh): UpdateStatementBuilder {
 		return new CommonUpdateStatementBuilder($dbh);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 * @see \n2n\persistence\meta\Dialect::createInsertStatementBuilder()
+	 * @return InsertStatementBuilder
 	 */
-	public function createInsertStatementBuilder(Pdo $dbh) {
+	public function createInsertStatementBuilder(Pdo $dbh): InsertStatementBuilder {
 		return new CommonInsertStatementBuilder($dbh);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 * @see \n2n\persistence\meta\Dialect::createDeleteStatementBuilder()
+	 * @return DeleteStatementBuilder
 	 */
-	public function createDeleteStatementBuilder(Pdo $dbh) {
+	public function createDeleteStatementBuilder(Pdo $dbh): DeleteStatementBuilder {
 		return new CommonDeleteStatementBuilder($dbh);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 * @see \n2n\persistence\meta\Dialect::createImporter()
+	 * @return Importer
 	 */
-	public function createImporter(Pdo $dbh, InputStream $inputStream) {
+	public function createImporter(Pdo $dbh, InputStream $inputStream): Importer {
 		return new PgsqlImporter($dbh, $inputStream);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 * @see \n2n\persistence\meta\Dialect::getOrmDialectConfig()
+	 * @return OrmDialectConfig
 	 */
-	public function getOrmDialectConfig() {
+	public function getOrmDialectConfig(): OrmDialectConfig {
 		return new PgsqlOrmDialectConfig();
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function isLastInsertIdSupported() {
+	public function isLastInsertIdSupported(): bool {
 		return true;
 	}
 
@@ -127,7 +142,7 @@ class PgsqlDialect extends DialectAdapter {
 	 * @param string $sequenceName
 	 * @return mixed
 	 */
-	public function generateSequenceValue(Pdo $dbh, $sequenceName) {
+	public function generateSequenceValue(Pdo $dbh, string $sequenceName): ?string {
 		$stmt = $dbh->prepare('SELECT nextval(?) AS sequence_value');
 		$stmt->execute(array($sequenceName));
 		$result = $stmt->fetch(Pdo::FETCH_ASSOC);
@@ -141,7 +156,7 @@ class PgsqlDialect extends DialectAdapter {
 	/**
 	 * @param Column $column
 	 */
-	public function applyIdentifierGeneratorToColumn(Pdo $dbh, Column $column, $sequenceName) {
+	public function applyIdentifierGeneratorToColumn(Pdo $dbh, Column $column, string $sequenceName) {
 		if (!($column instanceof PgsqlIntegerColumn)) {
 			throw new InvalidColumnAttributesException('Invalid generated identifier column "' . $column->getName()
 					. 'Column  must be of type "n2n\impl\persistence\meta\pgsql\PgsqlIntegerColumn, "' . get_class($column) . '" given. ');

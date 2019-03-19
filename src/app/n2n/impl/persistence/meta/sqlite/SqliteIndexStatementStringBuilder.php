@@ -39,6 +39,8 @@ class SqliteIndexStatementStringBuilder {
 		switch ($index->getType()) {
 			case (IndexType::PRIMARY) :
 				throw new \InvalidArgumentException('Sqlite does not allow to create primary keys manually');
+			case (IndexType::FOREIGN) :
+				throw new \InvalidArgumentException('Sqlite does not allow to create foreign keys manually');
 			case (IndexType::UNIQUE) :
 				$statementString .= ' UNIQUE';
 		}
