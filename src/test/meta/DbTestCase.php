@@ -133,7 +133,8 @@ abstract class DbTestCase extends TestCase {
 		}
 		
 		$table = $this->createTable('table', true);
-		$this->flush(true);
+		$this->flush($reload);
+	
 		$table = $this->getMetaEntityByName('table');
 		
 		$this->assertTrue($table instanceof Table);
@@ -144,8 +145,7 @@ abstract class DbTestCase extends TestCase {
 		$this->checkComptusch();
 		
 		$this->createOther($reload);
-		$this->flush($reload);
-//		$this->checkOther($enumAvailable, $mediumAvailable);
+		
 	}
 	
 	public function createComptusch() {

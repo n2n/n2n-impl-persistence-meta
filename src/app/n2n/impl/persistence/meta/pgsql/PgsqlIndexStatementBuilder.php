@@ -24,6 +24,7 @@ class PgsqlIndexStatementBuilder {
 		
 		switch ($index->getType()) {
 			case IndexType::PRIMARY:
+			case IndexType::FOREIGN:
 				return ' ALTER TABLE ' . $quotedTableName . ' DROP CONSTRAINT ' . $quotedIndexName . ';';
 			default:
 				return ' DROP INDEX ' . $quotedIndexName . ';';
@@ -36,18 +37,26 @@ class PgsqlIndexStatementBuilder {
 		
 		if ($index->getType() === IndexType::PRIMARY) {
 			return ' ALTER TABLE ' . $quotedTableName . 'ADD CONSTRAINT ' . $quotedIndexName . ' PRIMARY KEY ' 
-					. $this->buildColumnsFragment($index) . ';';
+					. $this->buildColumnsFragment($index->getColumns()) . ';';
 		}
 		
+		
+		if ($index->getType() === IndexType::FOREIGN) {
+			return ' ALTER TABLE ' . $quotedTableName . 'ADD CONSTRAINT ' . $quotedIndexName . ' FOREIGN KEY ' 
+					. $this->buildColumnsFragment($index->getColumns()) . ' REFERENCES ' . $this->pdo->quoteField($index->getRefTable()->getName())
+					. ' ' . $this->buildColumnsFragment($index->getRefColumns()) . ';';
+		}
+		
+		
 		return ' CREATE ' . ($index->getType() === IndexType::UNIQUE ?  'UNIQUE ' : '') 
-				. 'INDEX ' . $quotedIndexName . ' ON ' . $quotedTableName . $this->buildColumnsFragment($index) . ';';
+				. 'INDEX ' . $quotedIndexName . ' ON ' . $quotedTableName . $this->buildColumnsFragment($index->getColumns()) . ';';
 	}
 	
-	private function buildColumnsFragment(Index $index) {
+	private function buildColumnsFragment(array $columns) {
 		$s =  ' (';
 		
 		$first = true;
-		foreach ($index->getColumns() as $column) {
+		foreach ($columns as $column) {
 			if (!$first) {
 				$s .= ', ';
 			} else {

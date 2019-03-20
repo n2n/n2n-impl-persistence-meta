@@ -34,7 +34,7 @@ class PgsqlTest extends DbTestCase {
 	}
 	
 	function areForeignKeysAvailable() {
-		return false;
+		return true;
 	}
 	
 	function isCharsetAvailable() {

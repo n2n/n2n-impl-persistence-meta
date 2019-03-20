@@ -47,6 +47,7 @@ use n2n\persistence\Pdo;
 use n2n\util\type\CastUtils;
 use n2n\persistence\meta\Database;
 use n2n\persistence\meta\structure\common\MetaEntityAdapter;
+use n2n\persistence\meta\structure\common\ForeignIndex;
 
 class MysqlMetaEntityBuilder {
 	
@@ -217,10 +218,10 @@ class MysqlMetaEntityBuilder {
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
 		$results = $statement->fetchAll(Pdo::FETCH_ASSOC);
-		
+		$indexes = [];
 		foreach ($results as $result) {
 			$indexName = $result['Key_name'];
-			if ($table->containsIndexName($indexName)) continue;
+			if (isset($indexes[$indexName])) continue;
 	
 			$type = null;
 			if ($result['Key_name'] == MysqlTable::KEY_NAME_PRIMARY) {
@@ -274,10 +275,17 @@ class MysqlMetaEntityBuilder {
 						$refColumnNames[] = $fkResultEntry['REFERENCED_COLUMN_NAME'];
 					}
 				}
-			} 
-			$index = $table->createIndex($type, $columnNames, $indexName, $refTable, $refColumnNames);
-			CastUtils::assertTrue($index instanceof CommonIndex);
+			}
+			$index = null;
+			if ($type !== IndexType::FOREIGN) {
+				$index = CommonIndex::createFromColumnNames($table, $indexName, $type, $columnNames);
+			} else {
+				$index = ForeignIndex::createFromColumnNames($table, $indexName, $columnNames, $refTable, $refColumnNames);
+			}
 			$index->setAttrs($result);
+			$indexes[$indexName] = $index;
 		}
+		
+		$table->setIndexes($indexes);
 	}
 }

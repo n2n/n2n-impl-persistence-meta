@@ -46,7 +46,8 @@ class OracleAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter  {
 			//columns to Add
 			$columns = $metaEntity->getColumns();
 			
-			$persistedTable = $metaEntityBuilder->createTableFromDatabase($metaEntity->getDatabase(), 
+			$persistedTable = $metaEntityBuilder->createTableFromDatabase(
+					$dbh->getMetaData()->getMetaManager()->createDatabase(), 
 					$metaEntity->getName());
 			$metaEntityBuilder->applyIndexesForTable($persistedTable);
 			

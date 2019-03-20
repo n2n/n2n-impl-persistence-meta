@@ -24,7 +24,7 @@ class PgsqlAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter {
 		$database = $metaEntity->getDataBase();
 		$columnStatementStringBuilder = new PgsqlColumnStatementFragmentBuilder($dbh);
 		$indexStatementStringBuilder = new PgsqlIndexStatementBuilder($dbh);
-		$metaEntityBuilder = new PgsqlMetaEntityBuilder($dbh, $database);
+		$metaEntityBuilder = new PgsqlMetaEntityBuilder($dbh);
 		
 		if ($metaEntity instanceof Table) {
 			//columns to Add
@@ -32,8 +32,8 @@ class PgsqlAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter {
 			
 			//columns to Add
 			$columns = $metaEntity->getColumns();
-			$persistedTable = $metaEntityBuilder->createMetaEntityFromDatabase($database, 
-					$this->getMetaEntity()->getName());
+			$persistedTable = $metaEntityBuilder->createMetaEntityFromDatabase(
+					$dbh->getMetaData()->getMetaManager()->createDatabase(), $this->getMetaEntity()->getName());
 			$persistedColumns = $persistedTable->getColumns();
 			$sql = '';
 			

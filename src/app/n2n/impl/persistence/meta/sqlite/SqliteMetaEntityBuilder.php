@@ -33,6 +33,7 @@ use n2n\util\type\CastUtils;
 use n2n\persistence\meta\structure\common\MetaEntityAdapter;
 use n2n\persistence\meta\structure\Table;
 use n2n\persistence\meta\structure\MetaEntity;
+use n2n\persistence\meta\structure\common\ForeignIndex;
 
 class SqliteMetaEntityBuilder {
 	
@@ -199,8 +200,8 @@ class SqliteMetaEntityBuilder {
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
 		while (null != ($row = $statement->fetch(PDO::FETCH_ASSOC))) {
-			$indexes[] = $table->createIndex(IndexType::FOREIGN, [$row['from']],  'fkey_' . $row['from'] . '_' . $row['table'] . $row['to'], 
-					$table->getDatabase()->getMetaEntityByName($row['table']), [$row['to']]);
+			$indexes[] = ForeignIndex::createFromColumnNames($table, $row['from'] . '_' . $row['table'] . $row['to'], 
+					[$row['from']], $table->getDatabase()->getMetaEntityByName($row['table']), [$row['to']]);
 		}
 		
 		$table->setIndexes($indexes);

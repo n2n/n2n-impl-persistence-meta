@@ -42,11 +42,12 @@ class MysqlAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter  {
 			$dbh->exec('ALTER VIEW ' . $dbh->quoteField($metaEntity->getName()) . ' AS ' . $metaEntity->getQuery());
 			return;
 		}
+		
 		if ($metaEntity instanceof Table) {
 			//columns to Add
 			$columns = $metaEntity->getColumns();
-			$persistedTable = $metaEntityBuilder->createMetaEntityFromDatabase($metaEntity->getDatabase(), 
-					$metaEntity->getName());
+			$persistedTable = $metaEntityBuilder->createMetaEntityFromDatabase(
+					$dbh->getMetaData()->getMetaManager()->createDatabase(), $metaEntity->getName());
 			CastUtils::assertTrue($persistedTable instanceof Table);
 			$persistedColumns = $persistedTable->getColumns();
 

@@ -63,6 +63,6 @@ class PgsqlTable extends TableAdapter {
 	}
 	
 	public function isForeignKeyAvailable() {
-		return false;
+		return true;
 	}
 }

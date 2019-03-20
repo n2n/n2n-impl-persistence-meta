@@ -49,7 +49,7 @@ class MssqlAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter {
 			//columns to Add
 			$columns = $metaEntity->getColumns();
 			
-			$persistedTable = $metaEntityBuilder->createMetaEntityFromDatabase($metaEntity->getDatabase(),
+			$persistedTable = $metaEntityBuilder->createMetaEntityFromDatabase($dbh->getMetaData()->getMetaManager()->createDatabase(),
 					$metaEntity->getName());
 			CastUtils::assertTrue($persistedTable instanceof Table);
 			$persistedColumns = $persistedTable->getColumns();

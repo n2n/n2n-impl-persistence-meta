@@ -247,5 +247,28 @@ class PgsqlMetaEntityBuilder {
 			$table->createIndex($this->toMetaIndexType($index['indtype']),
 				explode(',', substr($index['indcolumns'], 1, -1)), $index['indname']);
 		}
+
+		//Foreign Keys
+		$sql = 'SELECT c.conname AS name,
+						(string_to_array((string_to_array(pg_get_constraintdef(c.oid), \'(\'))[2],\')\'))[1] AS "column_names",
+    					c.confrelid::regclass::text AS "foreign_table_name",
+						(string_to_array((string_to_array(pg_get_constraintdef(c.oid),\'(\'))[3],\')\'))[1] AS "foreign_column_names"
+				FROM pg_constraint AS c
+				JOIN pg_namespace AS n ON n.oid = c.connamespace
+				WHERE c.contype = ?
+    				AND n.nspname = ?
+					AND TEXT(c.conrelid::regclass) = ?';
+		$executeArray = array('f', 'public', $table->getName());
+
+		$stmt = $this->dbh->prepare($sql);
+		$stmt->execute($executeArray);
+		$stmtForeign = $stmt->fetchAll(Pdo::FETCH_ASSOC);
+
+		foreach ($stmtForeign as $index) {
+			$table->createIndex(IndexType::FOREIGN,
+					explode(', ', $index['column_names']), $index['name'], 
+					$table->getDatabase()->getMetaEntityByName($index['foreign_table_name']),
+					explode(', ', $index['foreign_column_names']));
+		}
 	}
 }
