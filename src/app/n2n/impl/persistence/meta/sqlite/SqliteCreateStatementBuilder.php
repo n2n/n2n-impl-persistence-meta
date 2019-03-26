@@ -26,6 +26,9 @@ use n2n\persistence\meta\structure\Table;
 use n2n\persistence\meta\structure\MetaEntity;
 use n2n\persistence\meta\structure\IndexType;
 use n2n\persistence\Pdo;
+use n2n\persistence\meta\structure\Column;
+use n2n\util\type\CastUtils;
+use n2n\persistence\meta\structure\Index;
 
 class SqliteCreateStatementBuilder {
 	
@@ -108,18 +111,20 @@ class SqliteCreateStatementBuilder {
 				if ($formatted) {
 					$sql .= PHP_EOL . "\t";
 				}
-				$sql .= ', PRIMARY KEY (';
-				$first = true;
-				foreach ($primaryKey->getColumns() as $column) {
-					if (!$first) {
-						$sql .= ', ';
-					} else {
-						$first = false;
-					}
-					$sql .= $this->dbh->quoteField($column->getName());
-				}
-				$sql .= ')';
+				$sql .= ', PRIMARY KEY ' . $this->buildColumnsString($primaryKey->getColumns());
 			}
+			
+			$indexes = $metaEntity->getIndexes();
+			foreach ($indexes as $index) {
+				CastUtils::assertTrue($index instanceof Index);
+				if ($index->getType() != IndexType::FOREIGN) continue;
+				if ($formatted) {
+					$sql .= PHP_EOL . "\t";
+				}
+				$sql .= ', FOREIGN KEY' . $this->buildColumnsString($index->getColumns()) . ' REFERENCES ' 
+						. $index->getRefTable()->getName() . $this->buildColumnsString($index->getRefColumns());
+			}
+			
 			if ($formatted) {
 				$sql .= PHP_EOL;
 			}
@@ -127,13 +132,28 @@ class SqliteCreateStatementBuilder {
 	
 			$sqlStatements[] = $sql;
 	
-			$indexes = $metaEntity->getIndexes();
 			foreach ($indexes as $index) {
-				if ($index->getType() == IndexType::PRIMARY) continue;
+				if ($index->getType() == IndexType::PRIMARY || $index->getType() == IndexType::FOREIGN) continue;
+				
 				$sqlStatements[] = $indexStatementStringBuilder->generateCreateStatementString($index) . ';';
 			}
 		}
 		
 		return $sqlStatements;
+	}
+	
+	private function buildColumnsString(array $columns) {
+		$str = '(';
+		$first = true;
+		foreach ($columns as $column) {
+			CastUtils::assertTrue($column instanceof Column);
+			if (!$first) {
+				$str .= ', ';
+			} else {
+				$first = false;
+			}
+			$str .= $this->dbh->quoteField($column->getName());
+		}
+		return $str . ')';
 	}
 }

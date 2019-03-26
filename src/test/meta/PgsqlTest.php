@@ -1,11 +1,10 @@
 <?php
 namespace meta;
 
-class MysqlTest extends DbTestCase {
-
+class PgsqlTest extends DbTestCase {
 	public function __construct($name = null, array $data = [], $dataName = '') {
 		parent::__construct($name, $data, $dataName);
-		$this->setPersistenceUnitName('mysql');
+		$this->setPersistenceUnitName('pgsql');
 	}
 	
 	public function testView() {
@@ -14,8 +13,8 @@ class MysqlTest extends DbTestCase {
 	}
 	
 	public function testTable() {
-		$this->tableTest(true, true, true);
-		$this->tableTest(false, true, true);
+		$this->tableTest(true);
+		$this->tableTest(false);
 	}
 	
 	public function isEnumAvailable() {
@@ -39,6 +38,6 @@ class MysqlTest extends DbTestCase {
 	}
 	
 	function isCharsetAvailable() {
-		return true;
+		return false;
 	}
 }

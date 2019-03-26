@@ -42,11 +42,12 @@ class MysqlAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter  {
 			$dbh->exec('ALTER VIEW ' . $dbh->quoteField($metaEntity->getName()) . ' AS ' . $metaEntity->getQuery());
 			return;
 		}
+		
 		if ($metaEntity instanceof Table) {
 			//columns to Add
 			$columns = $metaEntity->getColumns();
-			$persistedTable = $metaEntityBuilder->createMetaEntityFromDatabase($metaEntity->getDatabase(), 
-					$metaEntity->getName());
+			$persistedTable = $metaEntityBuilder->createMetaEntityFromDatabase(
+					$dbh->getMetaData()->getMetaManager()->createDatabase(), $metaEntity->getName());
 			CastUtils::assertTrue($persistedTable instanceof Table);
 			$persistedColumns = $persistedTable->getColumns();
 
@@ -69,14 +70,14 @@ class MysqlAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter  {
 			}
 			
 			foreach ($persistedTable->getIndexes() as $persistedIndex) {
-				$persistedIndex->getName();
 				if ($metaEntity->containsIndexName($persistedIndex->getName()) 
 						&& $persistedIndex->equals($metaEntity->getIndexByName($persistedIndex->getName()))) continue;
 				$dbh->exec($indexStatementStringBuilder->generateDropStatementString($persistedIndex));
 			}
 			
 			foreach ($metaEntity->getIndexes() as $index) {
-				if ($persistedTable->containsIndexName($index->getName())) continue;
+				if ($persistedTable->containsIndexName($index->getName()) 
+						&& $persistedTable->getIndexByName($index->getName())->equals($index)) continue;
 				
 				$dbh->exec('ALTER TABLE ' . $dbh->quoteField($this->getMetaEntity()->getName()) . ' ADD ' 
 						. $indexStatementStringBuilder->generateCreateStatementString($index));

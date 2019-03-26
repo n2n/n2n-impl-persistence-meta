@@ -43,6 +43,8 @@ use n2n\persistence\meta\structure\IndexType;
 
 use n2n\persistence\Pdo;
 use n2n\util\type\CastUtils;
+use n2n\persistence\meta\Database;
+use n2n\persistence\meta\structure\common\TableAdapter;
 
 class OracleMetaEntityBuilder {
 	
@@ -55,18 +57,11 @@ class OracleMetaEntityBuilder {
 	 */
 	private $dbh;
 	
-	/**
-	 * @var OracleDatabase
-	 */
-	private $database;
-	
-	public function __construct(Pdo $dbh, OracleDatabase $database) {
+	public function __construct(Pdo $dbh) {
 		$this->dbh = $dbh;
-		$this->database = $database;
 	}
 	
-	
-	public function createView($name) {
+	public function createView(string $name) {
 		$view = null;
 		$statement = $this->dbh->prepare('SELECT * FROM user_views WHERE view_name = :view_name');
 		$statement->execute(array(':view_name' => $name));
@@ -74,16 +69,24 @@ class OracleMetaEntityBuilder {
 		if ($result) {
 			$view = new CommonView($name, $result['TEXT']);
 			$view->setAttrs($result);
-			$view->setDatabase($this->database);
-			$view->registerChangeListener($this->database);
 		}
 		return $view;
 	}
+	
+	public function createTableFromDatabase(Database $database, string $name) {
+		$metaEntity = $this->createTable($database->getName(), $name);
+		CastUtils::assertTrue($metaEntity instanceof TableAdapter);
+		$metaEntity->setDatabase($database);
+		$this->applyIndexesForTable($database->getName(), $metaEntity);
+		
+		return $metaEntity;
+	}
+	
 	/**
 	 * @param string $name
 	 * @return \n2n\persistence\meta\structure\MetaEntity
 	 */
-	public function createTable($name) {
+	public function createTable(string $name) {
 		$table = null;
 		//First check for tables
 		$statement = $this->dbh->prepare('SELECT * FROM user_tables WHERE tablespace_name = :users AND table_name = :table_name');
@@ -93,11 +96,7 @@ class OracleMetaEntityBuilder {
 		if ($result) {
 			$table = new OracleTable($name);
 			$table->setColumns($this->getColumnsForTable($table));
-			$table->setIndexes($this->getIndexesForTable($table));
 			$table->setAttrs($result);
-
-			$table->setDatabase($this->database);
-			$table->registerChangeListener($this->database);
 		}
 		return $table;
 	}
@@ -199,7 +198,7 @@ class OracleMetaEntityBuilder {
 		return $columns;
 	}
 	
-	private function getIndexesForTable(Table $table) {
+	public function applyIndexesForTable(Table $table) {
 		CastUtils::assertTrue($table instanceof OracleTable);
 		$indexes = array();
 		$columns = $table->getColumns();
@@ -255,6 +254,6 @@ class OracleMetaEntityBuilder {
 			}
 		}
 		
- 		return $indexes;
+		$table->setIndexes($indexes);
 	}
 }

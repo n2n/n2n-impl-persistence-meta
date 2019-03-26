@@ -21,117 +21,22 @@
  */
 namespace n2n\impl\persistence\meta\oracle;
 
-use n2n\impl\persistence\meta\oracle\management\OracleDropMetaEntityRequest;
-
-use n2n\impl\persistence\meta\oracle\management\OracleCreateMetaEntityRequest;
-
-use n2n\impl\persistence\meta\oracle\management\OracleAlterMetaEntityRequest;
-
-use n2n\persistence\meta\structure\MetaEntity;
-
-use n2n\persistence\Pdo;
-
 use n2n\persistence\meta\structure\common\DatabaseAdapter;
+use n2n\persistence\meta\structure\MetaEntityFactory;
 
 class OracleDatabase extends DatabaseAdapter {
 	
-	/**
-	 * @var OracleMetaEntityBuilder
-	 */
 	private $metaEntityFactory;
-	private $metaEntityBuilder;
 	
-	private $charset;
-	private $name;
-	private $attrs;
-	
-	public function __construct(Pdo $dbh) {
-		parent::__construct($dbh);
-		$this->metaEntityBuilder = new OracleMetaEntityBuilder($dbh, $this);
-	}
-	
-	public function getName() {
-		if (!($this->name)) {
-			$sql = 'SELECT SYS_CONTEXT(\'userenv\',\'instance_name\') AS NAME FROM DUAL';
-			$statement = $this->dbh->prepare($sql);
-			$statement->execute();
-			$result = $statement->fetch(Pdo::FETCH_ASSOC);
-			$this->name = $result['NAME'];
-		}		
-		return $this->name;
-	} 
-	
-	public function getCharset() {
-		if (!($this->charset)) {
-			$sql = 'SELECT * FROM NLS_DATABASE_PARAMETERS  WHERE PARAMETER = \'NLS_CHARACTERSET\'';
-			$statement = $this->dbh->prepare($sql);
-			$statement->execute();
-			$result = $statement->fetch(Pdo::FETCH_ASSOC);
-			$this->charset = $result['VALUE'];
-		}
-		return $this->charset;
-	}
-	
-	public function getAttrs() {
-		if (!($this->attrs)) {
-			$sql = 'SELECT * FROM product_component_version';
-			$statement = $this->dbh->prepare($sql);
-			$statement->execute(array(':TABLE_SCHEMA' => $this->getName()));
-			$results = $statement->fetchAll(Pdo::FETCH_ASSOC);
-			$this->attrs = $results;
-		}
-		return $this->attrs;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 * @see \n2n\persistence\meta\Database::createMetaEntityFactory()
+	 * @return MetaEntityFactory
 	 */
-	public function createMetaEntityFactory() {
+	public function createMetaEntityFactory(): MetaEntityFactory {
 		if (!(isset($this->metaEntityFactory))) {
 			$this->metaEntityFactory = new OracleMetaEntityFactory($this);
 		}
 		return $this->metaEntityFactory;
 	}
-	
-	public function createAlterMetaEntityRequest(MetaEntity $metaEntity) {
-		return new OracleAlterMetaEntityRequest($metaEntity);
-	}
-	
-	public function createCreateMetaEntityRequest(MetaEntity $metaEntity) {
-		return new OracleCreateMetaEntityRequest($metaEntity);
-	}
-	
-	public function createDropMetaEntityRequest(MetaEntity $metaEntity) {
-		return new OracleDropMetaEntityRequest($metaEntity);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\Database::createBackuper()
-	 */
-	public function createBackuper(array $metaEnities = null) {
-		return new OracleBackuper($this->dbh, $this, $metaEnities);
-	}
-	
-	protected function getPersistedMetaEntities() {
-		$metaEntities = array();
-		//First check for tables
-		$statement = $this->dbh->prepare('SELECT * FROM user_tables WHERE tablespace_name = :users');
-		$statement->execute(array(':users' => 'USERS'));
-		
-		while (null != ($result =  $statement->fetch(Pdo::FETCH_ASSOC))) {
-			$metaEntities[$result['TABLE_NAME']] = $this->metaEntityBuilder->createTable($result['TABLE_NAME']);
-		}
-		
-		//Then for tables
-		$statement = $this->dbh->prepare('SELECT * FROM user_views');
-		$statement->execute();
-		
-		while (null != ($result = $statement->fetch(Pdo::FETCH_ASSOC))) {
-			$metaEntities[$result['VIEW_NAME']] = $this->metaEntityBuilder->createView($result['VIEW_NAME']);
-		}
-		return $metaEntities;
-	}
-	
 }

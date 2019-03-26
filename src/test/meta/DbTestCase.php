@@ -17,8 +17,9 @@ use n2n\persistence\meta\structure\DateTimeColumn;
 use n2n\persistence\meta\structure\FloatingPointColumn;
 use n2n\persistence\meta\structure\StringColumn;
 use Other;
+use n2n\persistence\meta\structure\View;
 
-class DbTestCase extends TestCase {
+abstract class DbTestCase extends TestCase {
 	
 	private $pdo;
 	private $metaData;
@@ -104,19 +105,19 @@ class DbTestCase extends TestCase {
 			$this->removeMetaEntityByName('hello3');
 		}
 		
-		$query = 'SELECT `TABLE_CATALOG` FROM information_schema.`TABLES`';
+		$query = 'SELECT 1';
 		$view = $this->createView('hello2', $query);
 		
 		$this->flush($reload);
-		
 		$view = $this->getDatabase()->getMetaEntityByName('hello2');
+		$this->assertTrue($view instanceof View);
 		
 		$view->setName('hello3');
 		$this->flush($reload);
 		$this->assertTrue($this->getDatabase()->containsMetaEntityName('hello3'));
 	}
 	
-	public function tableTest(bool $reload, bool $enumAvailable, bool $mediumAvailable) {
+	public function tableTest(bool $reload) {
 		
 		$database = $this->getDatabase();
 		if ($database->containsMetaEntityName('table')) {
@@ -132,22 +133,22 @@ class DbTestCase extends TestCase {
 		}
 		
 		$table = $this->createTable('table', true);
-		$this->flush(true);
+		$this->flush($reload);
+	
 		$table = $this->getMetaEntityByName('table');
 		
 		$this->assertTrue($table instanceof Table);
 		$this->assertTrue($table->getPrimaryKey() !== null);
 		
-		$this->createComptusch($enumAvailable, $mediumAvailable);
+		$this->createComptusch();
 		$this->flush($reload);
-		$this->checkComptusch($enumAvailable, $mediumAvailable);
+		$this->checkComptusch();
 		
-		$this->createOther($reload, $enumAvailable, $mediumAvailable);
-		$this->flush($reload);
-//		$this->checkOther($enumAvailable, $mediumAvailable);
+		$this->createOther($reload);
+		
 	}
 	
-	public function createComptusch(bool $enumAvailable, bool $mediumAvailable) {
+	public function createComptusch() {
 		$table = $this->createTable('comptusch', true);
 		
 		$this->assertTrue($table instanceof Table);
@@ -160,20 +161,25 @@ class DbTestCase extends TestCase {
 			$enumColumn = $columnFactory->createEnumColumn('enum', array('a', 'b'));
 			$enumColumn->setDefaultValue('a');
 			$enumColumn->setNullAllowed(true);
-			$this->assertTrue($enumAvailable);
+			$this->assertTrue($this->isEnumAvailable());
 		} catch (UnavailableTypeException $e) {
-			$this->assertTrue(!$enumAvailable);
+			$this->assertTrue(!$this->isEnumAvailable());
 		}
 		
 		$columnFactory->createBinaryColumn('binary', 408);
 		$columnFactory->createDateTimeColumn('dateTime', true, true);
-		$columnFactory->createTextColumn('text', 5000, 'utf8');
+		try {
+			$columnFactory->createTextColumn('text', 5000, 'utf8');
+			$this->assertTrue($this->isTextAvailable());
+		} catch (UnavailableTypeException $e) {
+			$this->assertTrue(!$this->isTextAvailable());
+		}
 		
 		try {
 			$columnFactory->createTextColumn('medium_text', MysqlSize::SIZE_MEDIUM_TEXT);
-			$this->assertTrue($mediumAvailable);
+			$this->assertTrue($this->isMediumAvailable());
 		} catch (UnavailableTypeException $e) {
-			$this->assertTrue(!$mediumAvailable);
+			$this->assertTrue(!$this->isMediumAvailable());
 		}
 		
 		$columnFactory->createFixedPointColumn('fixed_point', 10, 3);
@@ -184,80 +190,115 @@ class DbTestCase extends TestCase {
 		$table->createIndex(IndexType::UNIQUE, array('long'), 'hello_index');
 	}
 	
-	public function checkComptusch(bool $enumAvailable, bool $mediumAvailable) {
+	public function checkComptusch() {
 		$comptusch = $this->getMetaEntityByName('comptusch');
 		$this->assertTrue($comptusch instanceof Table);
 		
 		$longColumn = $comptusch->getColumnByName('long');
 		$this->assertTrue($longColumn instanceof IntegerColumn);
-		$this->assertTrue($longColumn->getSize() === Size::LONG);
-		$this->assertTrue($longColumn->isSigned());
+
+		if ($this->isColumnDetailAvailable()) {
+			$this->assertTrue($longColumn->getSize() === Size::LONG);
+			$this->assertTrue($longColumn->isSigned());
+		}
 		
 		$mediumColumn = $comptusch->getColumnByName('medium');
 		$this->assertTrue($mediumColumn instanceof IntegerColumn);
-		$this->assertTrue($mediumColumn->getSize() === Size::MEDIUM);
-		$this->assertTrue($mediumColumn->isSigned());
+		if ($this->isColumnDetailAvailable()) {
+			$this->assertTrue($mediumColumn->getSize() >= Size::MEDIUM);
+			$this->assertTrue($mediumColumn->isSigned());
+		}
 		
 		$shortColumn = $comptusch->getColumnByName('short');
 		$this->assertTrue($shortColumn instanceof IntegerColumn);
-		$this->assertTrue($shortColumn->getSize() === Size::SHORT);
-		$this->assertTrue($shortColumn->isSigned());
+		if ($this->isColumnDetailAvailable()) {
+			$this->assertTrue($shortColumn->getSize() >= Size::SHORT);
+			$this->assertTrue($shortColumn->isSigned());
+		}
 		
-		if ($enumAvailable) {
+		if ($this->isEnumAvailable()) {
 			$enumColumn = $comptusch->getColumnByName('enum');
 			$this->assertTrue($enumColumn instanceof EnumColumn);
 			
-			$this->assertTrue($enumColumn->getValues() == ['a', 'b']);
-			$this->assertTrue($enumColumn->getDefaultValue() == 'a');
-			$this->assertTrue($enumColumn->isNullAllowed());
+			if ($this->isColumnDetailAvailable()) {
+				$this->assertTrue($enumColumn->getValues() == ['a', 'b']);
+				$this->assertTrue($enumColumn->getDefaultValue() == 'a');
+				$this->assertTrue($enumColumn->isNullAllowed());
+			}
 		}
 
 		$binaryColumn = $comptusch->getColumnByName('binary');
 		$this->assertTrue($binaryColumn instanceof BinaryColumn);
-		$this->assertTrue($binaryColumn->getSize() === 408);
+		if ($this->isColumnDetailAvailable()) {
+			$this->assertTrue($binaryColumn->getSize() >= 408);
+		}
 		
 		$dateTimeColumn = $comptusch->getColumnByName('dateTime');
 		$this->assertTrue($dateTimeColumn instanceof DateTimeColumn);
-		$this->assertTrue($dateTimeColumn->isDateAvailable());
-		$this->assertTrue($dateTimeColumn->isTimeAvailable());
+		if ($this->isColumnDetailAvailable()) {
+			$this->assertTrue($dateTimeColumn->isDateAvailable());
+			$this->assertTrue($dateTimeColumn->isTimeAvailable());
+		}
 		
-		$textColumn = $comptusch->getColumnByName('text');
-		$this->assertTrue($textColumn instanceof TextColumn);
-		$this->assertTrue($textColumn->getSize() >= 5000);
-		$this->assertTrue($textColumn->getCharset() === 'utf8');
+		if ($this->isTextAvailable()) {
+			$textColumn = $comptusch->getColumnByName('text');
+			$this->assertTrue($textColumn instanceof TextColumn);
+			
+			if ($this->isColumnDetailAvailable()) {
+				$this->assertTrue($textColumn->getSize() >= 5000);
+				if ($this->isCharsetAvailable()) {
+					$this->assertTrue($textColumn->getCharset() === 'utf8');
+				}
+			}
+		}
 		
-		if ($mediumAvailable) {
+		if ($this->isMediumAvailable()) {
 			$mediumColumn = $comptusch->getColumnByName('medium_text');
 			$this->assertTrue($mediumColumn instanceof TextColumn);
-			$this->assertTrue($mediumColumn->getSize() >= MysqlSize::SIZE_MEDIUM_TEXT);
+			if ($this->isColumnDetailAvailable()) {
+				$this->assertTrue($mediumColumn->getSize() >= MysqlSize::SIZE_MEDIUM_TEXT);
+			}
 		}
 		
 		$fixedPointColumn = $comptusch->getColumnByName('fixed_point');
 		$this->assertTrue($fixedPointColumn instanceof FixedPointColumn);
-		$this->assertTrue($fixedPointColumn->getNumIntegerDigits() === 10);
-		$this->assertTrue($fixedPointColumn->getNumDecimalDigits() === 3);
+		
+		if ($this->isColumnDetailAvailable()) {
+			$this->assertTrue($fixedPointColumn->getNumIntegerDigits() === 10);
+			$this->assertTrue($fixedPointColumn->getNumDecimalDigits() === 3);
+		}
 		
 		$floatColumn = $comptusch->getColumnByName('float');
 		$this->assertTrue($floatColumn instanceof FloatingPointColumn);
-		$this->assertTrue($floatColumn->getSize() >= Size::DOUBLE);
+		if ($this->isColumnDetailAvailable()) {
+			$this->assertTrue($floatColumn->getSize() >= Size::DOUBLE);
+		}
 		
 		$stringColumn = $comptusch->getColumnByName('hello');
 		$this->assertTrue($stringColumn instanceof StringColumn);
-		$this->assertTrue($stringColumn->getLength() >= 100);
+		if ($this->isColumnDetailAvailable()) {
+			$this->assertTrue($stringColumn->getLength() >= 100);
+		}
 		
 		$bumsIndex = $comptusch->getIndexByName('bums');
 		$this->assertTrue($bumsIndex->getType() === IndexType::INDEX);
-		$this->assertTrue(count($bumsIndex->getColumns()) === 2);
-		$this->assertTrue($bumsIndex->containsColumnName('long'));
-		$this->assertTrue($bumsIndex->containsColumnName('medium'));
+		
+		if ($this->isColumnDetailAvailable()) {
+			$this->assertTrue(count($bumsIndex->getColumns()) === 2);
+			$this->assertTrue($bumsIndex->containsColumnName('long'));
+			$this->assertTrue($bumsIndex->containsColumnName('medium'));
+		}
 		
 		$helloIndex = $comptusch->getIndexByName('hello_index');
-		$this->assertTrue($helloIndex->getType() === IndexType::UNIQUE);
-		$this->assertTrue(count($helloIndex->getColumns()) === 1);
-		$this->assertTrue($helloIndex->containsColumnName('long'));
+		
+		if ($this->isColumnDetailAvailable()) {
+			$this->assertTrue($helloIndex->getType() === IndexType::UNIQUE);
+			$this->assertTrue(count($helloIndex->getColumns()) === 1);
+			$this->assertTrue($helloIndex->containsColumnName('long'));
+		}
 	}
 	
-	private function createOther(bool $reload, bool $enumAvailable, bool $mediumAvailable) {
+	private function createOther(bool $reload) {
 		$comptusch = $this->getMetaEntityByName('comptusch');
 		$this->assertTrue($comptusch instanceof Table);
 		
@@ -268,7 +309,12 @@ class DbTestCase extends TestCase {
 		$this->assertTrue(count($otherTable->getIndexes()) === 1);
 		
 		$otherTable->createColumnFactory()->createIntegerColumn('f_key', Size::INTEGER);
-		$otherTable->createIndex(IndexType::FOREIGN, ['f_key'], 'f_key_comptusch', $comptusch, ['id']);
+		try {
+			$otherTable->createIndex(IndexType::FOREIGN, ['f_key'], 'f_key_comptusch', $comptusch, ['id']);
+			$this->assertTrue($this->areForeignKeysAvailable());
+		} catch (UnavailableTypeException $e) {
+			$this->assertTrue(!$this->areForeignKeysAvailable());
+		}
 		
 		$this->getDatabase()->addMetaEntity($otherTable);
 		
@@ -278,17 +324,24 @@ class DbTestCase extends TestCase {
 		$this->assertTrue($otherTable instanceof Table);
 		
 		$indexes = $otherTable->getIndexes();
-		$this->assertTrue(count($indexes) === 2);
+		$this->assertTrue(count($indexes) === ($this->areForeignKeysAvailable() ? 2 : 1));
 		
-		$fKey = $otherTable->getIndexByName('f_key_comptusch');
-		$this->assertTrue($fKey->getType() === IndexType::FOREIGN);
-		$this->assertTrue($fKey->containsColumnName('f_key'));
-		$this->assertTrue($fKey->getRefTable()->getName() === 'comptusch');
-		$this->assertTrue(count($fKey->getRefColumns()) === 1);
-		$this->assertTrue($fKey->containsRefColumnName('id'));
+		if ($this->areForeignKeysAvailable()) {
+			$fKey = null;
+			foreach ($otherTable->getIndexes() as $index) {
+				if ($index->getType() !== IndexType::FOREIGN) continue;
+				$this->assertTrue(null === $fKey);
+				$fKey = $index;
+			}
+			$this->assertTrue($fKey->getType() === IndexType::FOREIGN);
+			$this->assertTrue($fKey->containsColumnName('f_key'));
+			$this->assertTrue($fKey->getRefTable()->getName() === 'comptusch');
+			$this->assertTrue(count($fKey->getRefColumns()) === 1);
+			$this->assertTrue($fKey->containsRefColumnName('id'));
+		}
 		
 		$otherTable->createColumnFactory()->createBinaryColumn('varbinary_other', 401);
-		if ($mediumAvailable) {
+		if ($this->isMediumAvailable()) {
 			$otherTable->removeColumnByName('medium_text');
 		}
 		
@@ -310,4 +363,11 @@ class DbTestCase extends TestCase {
 	public function removeMetaEntityByName(string $name) {
 		return $this->getDatabase()->removeMetaEntityByName($name);
 	}
+	
+	abstract function isEnumAvailable();
+	abstract function isMediumAvailable();
+	abstract function isTextAvailable();
+	abstract function isColumnDetailAvailable();
+	abstract function areForeignKeysAvailable();
+	abstract function isCharsetAvailable();
 }

@@ -22,6 +22,8 @@
 namespace n2n\impl\persistence\meta\mssql;
 
 use n2n\persistence\meta\structure\common\TableAdapter;
+use n2n\persistence\meta\structure\Table;
+use n2n\persistence\meta\structure\ColumnFactory;
 
 class MssqlTable extends TableAdapter {
 	const PREFIX_PRIMARY_KEY = 'PK_';
@@ -31,7 +33,12 @@ class MssqlTable extends TableAdapter {
 	 */
 	private $columnFactory;
 	
-	public function copy($newTableName = null) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\Table::copy()
+	 * @return Table
+	 */
+	public function copy(string $newTableName = null): Table {
 		if (is_null($newTableName)) {
 			$newTableName = $this->getName();
 		}
@@ -43,9 +50,9 @@ class MssqlTable extends TableAdapter {
 	}
 	
 	/** 
-	 * @return MssqlColumnFactory
+	 * @return ColumnFactory
 	 */
-	public function createColumnFactory() {
+	public function createColumnFactory(): ColumnFactory {
 		if (!($this->columnFactory)) {
 			$this->columnFactory = new MssqlColumnFactory($this);
 		}
@@ -58,5 +65,8 @@ class MssqlTable extends TableAdapter {
 	public function generatePrimaryKeyName() {
 		return self::PREFIX_PRIMARY_KEY . $this->getName();
 	}
-
+	
+	public function isForeignKeyAvailable() {
+		return false;
+	}
 }

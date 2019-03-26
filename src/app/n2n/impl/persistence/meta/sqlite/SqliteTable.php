@@ -22,6 +22,8 @@
 namespace n2n\impl\persistence\meta\sqlite;
 
 use n2n\persistence\meta\structure\common\TableAdapter;
+use n2n\persistence\meta\structure\Table;
+use n2n\persistence\meta\structure\ColumnFactory;
 
 class SqliteTable extends TableAdapter {
 	
@@ -32,7 +34,12 @@ class SqliteTable extends TableAdapter {
 	 */
 	private $columnFactory;
 	
-	public function copy($newTableName = null) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\Table::copy()
+	 * @return Table
+	 */
+	public function copy(string $newTableName = null): Table {
 		if (is_null($newTableName)) {
 			$newTableName = $this->getName();
 		}
@@ -44,7 +51,12 @@ class SqliteTable extends TableAdapter {
 		return $newTable;
 	}
 	
-	public function createColumnFactory() {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\structure\Table::createColumnFactory()
+	 * @return ColumnFactory
+	 */
+	public function createColumnFactory(): ColumnFactory {
 		if (!($this->columnFactory)) {
 			$this->columnFactory = new SqliteColumnFactory($this);
 		}

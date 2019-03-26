@@ -31,12 +31,19 @@ use n2n\persistence\meta\structure\Column;
 use n2n\persistence\Pdo;
 use n2n\impl\persistence\meta\DialectAdapter;
 use n2n\persistence\PersistenceUnitConfig;
+use n2n\persistence\meta\data\SelectStatementBuilder;
+use n2n\persistence\meta\data\UpdateStatementBuilder;
+use n2n\persistence\meta\data\InsertStatementBuilder;
+use n2n\persistence\meta\data\DeleteStatementBuilder;
+use n2n\persistence\meta\OrmDialectConfig;
+use n2n\persistence\meta\data\Importer;
+use n2n\persistence\meta\MetaManager;
 
 class OracleDialect extends DialectAdapter {
 	
 	public function __construct() {}
 	
-	public function getName() {
+	public function getName(): string {
 		return 'Oracle';
 	}
 	
@@ -47,14 +54,19 @@ class OracleDialect extends DialectAdapter {
 		$dbh->exec('ALTER SESSION SET NLS_TIMESTAMP_TZ_FORMAT = ' . $dbh->quote('YYYY-MM-DD HH:MI:SS.FF TZH:TZM'));
 	}
 	
-	public function createMetaDatabase(Pdo $dbh) {
-		return new OracleDatabase($dbh);
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::createMetaManager()
+	 * @return MetaManager
+	 */
+	public function createMetaManager(Pdo $dbh): MetaManager {
+		return new OracleMetaManager($dbh);
 	}
 	/**
 	 *
 	 * @param string $str
 	 */
-	public function quoteField($str) {
+	public function quoteField(string $str): string {
 		return '"' . str_replace('"', '""', (string) $str) . '"';
 		return $str;
 	}
@@ -62,32 +74,53 @@ class OracleDialect extends DialectAdapter {
 	/**
 	 * {@inheritDoc}
 	 * @see \n2n\persistence\meta\Dialect::createSelectStatementBuilder()
+	 * @return SelectStatementBuilder
 	 */
-	public function createSelectStatementBuilder(Pdo $dbh) {
+	public function createSelectStatementBuilder(Pdo $dbh): SelectStatementBuilder {
 		return new CommonSelectStatementBuilder($dbh, new OracleQueryFragmentBuilderFactory($dbh));
 	}
 	
-	public function createUpdateStatementBuilder(Pdo $dbh) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::createUpdateStatementBuilder()
+	 * @return UpdateStatementBuilder
+	 */
+	public function createUpdateStatementBuilder(Pdo $dbh): UpdateStatementBuilder {
 		return new CommonUpdateStatementBuilder($dbh, new OracleQueryFragmentBuilderFactory($dbh));
 	}
 	
-	public function createInsertStatementBuilder(Pdo $dbh) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::createInsertStatementBuilder()
+	 * @return InsertStatementBuilder
+	 */
+	public function createInsertStatementBuilder(Pdo $dbh): InsertStatementBuilder {
 		return new CommonInsertStatementBuilder($dbh, new OracleQueryFragmentBuilderFactory($dbh));
 	}
 	
-	public function createDeleteStatementBuilder(Pdo $dbh) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::createDeleteStatementBuilder()
+	 * @return DeleteStatementBuilder
+	 */
+	public function createDeleteStatementBuilder(Pdo $dbh): DeleteStatementBuilder {
 		return new CommonDeleteStatementBuilder($dbh, new OracleQueryFragmentBuilderFactory($dbh));
 	}
 	
-	public function getOrmDialectConfig() {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::getOrmDialectConfig()
+	 * @return OrmDialectConfig
+	 */
+	public function getOrmDialectConfig(): OrmDialectConfig {
 		return new OracleOrmDialectConfig();
 	}
 
-	public function isLastInsertIdSupported() {
+	public function isLastInsertIdSupported(): bool {
 		return false;
 	}
 	
-	public function generateSequenceValue(Pdo $dbh, $sequenceName) {
+	public function generateSequenceValue(Pdo $dbh, string $sequenceName) {
 		$statement = $dbh->prepare('SELECT ' . $dbh->quoteField($sequenceName) . '.NEXTVAL AS NEXT_INSERT_ID FROM DUAL');
 		$statement->execute();
 		if (null != ($result = $statement->fetch(Pdo::FETCH_ASSOC))) {
@@ -97,18 +130,27 @@ class OracleDialect extends DialectAdapter {
 		throw new \InvalidArgumentException('Invalid sequence name "' . $sequenceName . '"');
 	}
 	
-	public function applyIdentifierGeneratorToColumn(Pdo $dbh, Column $column, $sequenceName) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::applyIdentifierGeneratorToColumn()
+	 */
+	public function applyIdentifierGeneratorToColumn(Pdo $dbh, Column $column, string $sequenceName) {
 		$dbh = N2N::getPdoPool()->getPdo();
 		$statement = $dbh->prepare('SELECT COUNT(SEQUENCE_NAME) as NUM_SEQUENCES FROM USER_SEQUENCES WHERE SEQUENCE_NAME = :SEQUENCE_NAME');
 		$statement->execute(array(':SEQUENCE_NAME' => $sequenceName));
 		$result = $statement->fetch(Pdo::FETCH_ASSOC);
-		if(intval($result['NUM_SEQUENCES']) == 0) {
+		if (intval($result['NUM_SEQUENCES']) == 0) {
 			$dbh->exec('CREATE SEQUENCE ' . $dbh->quoteField($sequenceName));
 		}
 	}
 	
 	
-	public function createImporter(Pdo $dbh, InputStream $inputStream) {
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\persistence\meta\Dialect::createImporter()
+	 * @return Importer
+	 */
+	public function createImporter(Pdo $dbh, InputStream $inputStream): Importer {
 		return new OracleImporter($dbh, $inputStream);
 	}
 }

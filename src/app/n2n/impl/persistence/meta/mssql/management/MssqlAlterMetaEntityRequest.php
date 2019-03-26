@@ -49,7 +49,7 @@ class MssqlAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter {
 			//columns to Add
 			$columns = $metaEntity->getColumns();
 			
-			$persistedTable = $metaEntityBuilder->createMetaEntityFromDatabase($metaEntity->getDatabase(),
+			$persistedTable = $metaEntityBuilder->createMetaEntityFromDatabase($dbh->getMetaData()->getMetaManager()->createDatabase(),
 					$metaEntity->getName());
 			CastUtils::assertTrue($persistedTable instanceof Table);
 			$persistedColumns = $persistedTable->getColumns();
@@ -83,7 +83,8 @@ class MssqlAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter {
 			}
 			
 			foreach ($metaEntity->getIndexes() as $index) {
-				if ($persistedTable->containsIndexName($index->getName())) continue;
+				if ($persistedTable->containsIndexName($index->getName()) 
+						&& $persistedTable->getIndexByName($index->getName())->equals($index)) continue;
 				
 				$dbh->exec($indexStatementStringBuilder->generateCreateStatementStringForIndex($index));
 			}

@@ -48,7 +48,7 @@ class SqliteAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter {
 		if ($metaEntity instanceof Table) {
 			//columns to Add
 			$columns = $metaEntity->getColumns();
-			$persistedTable = $metaEntityBuilder->createMetaEntityFromDatabase($metaEntity->getDatabase(),
+			$persistedTable = $metaEntityBuilder->createMetaEntityFromDatabase($dbh->getMetaData()->getMetaManager()->createDatabase(),
 					$metaEntity->getName());
 			CastUtils::assertTrue($persistedTable instanceof Table);
 			
@@ -56,12 +56,13 @@ class SqliteAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter {
 			$createStatementBuilder = new SqliteCreateStatementBuilder($dbh);
 			$copyColumns = array();
 			$tempTableName =  'temp_' . $this->getMetaEntity()->getName();
+			$dbh->exec('DROP TABLE IF EXISTS ' . $tempTableName);
 			
 			//Drop old indexes that we don't have duplicate Index Names
 			foreach ($persistedTable->getIndexes() as $index) {
-				if ($index->getType() != IndexType::PRIMARY) {
-					$dbh->exec($indexStatementStringBuilder->generateDropStatementString($index));
-				}
+				if ($index->getType() == IndexType::PRIMARY || $index->getType() == IndexType::FOREIGN) continue;
+
+				$dbh->exec($indexStatementStringBuilder->generateDropStatementString($index));
 			}
 			
 			$dbh->exec('ALTER TABLE ' . $metaEntity->getName() . ' RENAME TO ' . $tempTableName );
@@ -70,9 +71,9 @@ class SqliteAlterMetaEntityRequest extends AlterMetaEntityRequestAdapter {
 			$createStatementBuilder->createMetaEntity();
 			
 			foreach ($columns as $column) {
-				if (isset($persistedColumns[$column->getName()])) {
-					$copyColumns[] = $dbh->quoteField($column->getName()); 
-				}
+				if (!$persistedTable->containsColumnName($column->getName())) continue;
+				
+				$copyColumns[] = $dbh->quoteField($column->getName()); 
 			}
 			
 			$dbh->exec('INSERT INTO ' . $metaEntity->getName() . '('. implode(',',$copyColumns) . ') SELECT ' 
