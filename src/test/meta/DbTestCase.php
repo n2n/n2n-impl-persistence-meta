@@ -16,7 +16,6 @@ use n2n\persistence\meta\structure\FixedPointColumn;
 use n2n\persistence\meta\structure\DateTimeColumn;
 use n2n\persistence\meta\structure\FloatingPointColumn;
 use n2n\persistence\meta\structure\StringColumn;
-use Other;
 use n2n\persistence\meta\structure\View;
 
 abstract class DbTestCase extends TestCase {
