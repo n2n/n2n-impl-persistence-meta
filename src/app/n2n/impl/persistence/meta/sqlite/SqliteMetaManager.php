@@ -27,13 +27,10 @@ use n2n\persistence\meta\structure\Table;
 use n2n\persistence\meta\structure\common\MetaManagerAdapter;
 use n2n\persistence\meta\structure\common\DatabaseAdapter;
 use n2n\persistence\meta\structure\MetaEntity;
-use n2n\impl\persistence\meta\sqlite\SqliteMetaEntityBuilder;
-use n2n\impl\persistence\meta\sqlite\SqliteBackuper;
 use n2n\impl\persistence\meta\sqlite\management\SqliteAlterMetaEntityRequest;
 use n2n\impl\persistence\meta\sqlite\management\SqliteCreateMetaEntityRequest;
 use n2n\impl\persistence\meta\sqlite\management\SqliteDropMetaEntityRequest;
 use n2n\impl\persistence\meta\sqlite\management\SqliteRenameMetaEntityRequest;
-use n2n\impl\persistence\meta\sqlite\SqliteDatabase;
 
 class SqliteMetaManager extends MetaManagerAdapter {
 	private $metaEntityBuilder;
