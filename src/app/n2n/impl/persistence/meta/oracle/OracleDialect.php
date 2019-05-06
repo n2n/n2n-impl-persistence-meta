@@ -120,7 +120,7 @@ class OracleDialect extends DialectAdapter {
 		return false;
 	}
 	
-	public function generateSequenceValue(Pdo $dbh, string $sequenceName) {
+	public function generateSequenceValue(Pdo $dbh, string $sequenceName): ?string {
 		$statement = $dbh->prepare('SELECT ' . $dbh->quoteField($sequenceName) . '.NEXTVAL AS NEXT_INSERT_ID FROM DUAL');
 		$statement->execute();
 		if (null != ($result = $statement->fetch(Pdo::FETCH_ASSOC))) {

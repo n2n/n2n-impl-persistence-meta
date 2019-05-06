@@ -123,7 +123,7 @@ class MysqlDialect extends DialectAdapter {
 		return true;
 	}
 	
-	public function generateSequenceValue(Pdo $dbh, $sequenceName): ?string {
+	public function generateSequenceValue(Pdo $dbh, string $sequenceName): ?string {
 		return null;
 	}
 	
