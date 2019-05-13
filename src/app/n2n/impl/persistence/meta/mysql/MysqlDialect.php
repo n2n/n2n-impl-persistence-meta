@@ -52,7 +52,7 @@ class MysqlDialect extends DialectAdapter {
 	}
 	
 	public function initializeConnection(Pdo $dbh, PersistenceUnitConfig $dataSourceConfiguration) {
-		$dbh->exec('SET NAMES ' . $dbh->quote(N2N::CHARSET_MIN)); 
+		$dbh->exec('SET NAMES utf8mb4'); 
 		$dbh->exec('SET SESSION TRANSACTION ISOLATION LEVEL ' . $dataSourceConfiguration->getTransactionIsolationLevel());
 		$dbh->exec('SET SESSION sql_mode = \'STRICT_ALL_TABLES\'');
 	}
