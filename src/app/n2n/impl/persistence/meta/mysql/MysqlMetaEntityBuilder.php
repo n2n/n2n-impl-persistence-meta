@@ -48,6 +48,7 @@ use n2n\util\type\CastUtils;
 use n2n\persistence\meta\Database;
 use n2n\persistence\meta\structure\common\MetaEntityAdapter;
 use n2n\persistence\meta\structure\common\ForeignIndex;
+use n2n\util\StringUtils;
 
 class MysqlMetaEntityBuilder {
 	
@@ -200,12 +201,22 @@ class MysqlMetaEntityBuilder {
 				default:
 					$column = new MysqlDefaultColumn($row['COLUMN_NAME']);
 			}
+			
 			$column->setNullAllowed($row['IS_NULLABLE'] == 'YES');
 			if ($this->columnDefaultUnsetPossible) {
-				if ($row['COLUMN_DEFAULT'] === null) {
+				$columnDefault = $row['COLUMN_DEFAULT'];
+				if ($columnDefault === null) {
 					$column->setDefaultValueAvailable(false);
 				} else {
-					$column->setDefaultValue($this->dbh->quote($row['COLUMN_DEFAULT']));
+					if ($columnDefault === 'NULL') {
+						$column->setDefaultValue(null);
+					} else {
+						if (StringUtils::startsWith('\'', $columnDefault) && StringUtils::endsWith('\'', $columnDefault)) {
+							$column->setDefaultValue(mb_substr($row['COLUMN_DEFAULT'], 1, -1));
+						} else {
+							$column->setDefaultValue(($row['COLUMN_DEFAULT']));
+						}
+					}
 				}
 			} else {
 				$column->setDefaultValue($row['COLUMN_DEFAULT']);
