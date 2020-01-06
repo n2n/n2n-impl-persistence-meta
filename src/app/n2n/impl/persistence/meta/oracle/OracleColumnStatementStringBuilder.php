@@ -63,8 +63,16 @@ class OracleColumnStatementStringBuilder {
 			$statementString .= ' NOT NULL';
 		}
 		
-		if (null !== ($defaultValue = $column->getDefaultValue())) {
-			$statementString .= ' DEFAULT ' . $this->dbh->quote($defaultValue) ;
+		$defaultValue = $column->getDefaultValue();
+		if ($column->isDefaultValueAvailable() && (null !== $defaultValue || $column->isNullAllowed())) {
+			$statementString .= ' DEFAULT ';
+			if (null === $defaultValue) {
+				$statementString .= 'NULL';
+			} elseif (is_numeric($defaultValue)) {
+				$statementString .= $defaultValue;
+			} else {
+				$statementString .= $this->dbh->quote($defaultValue) ;
+			}
 		}
 		
 		return $statementString;

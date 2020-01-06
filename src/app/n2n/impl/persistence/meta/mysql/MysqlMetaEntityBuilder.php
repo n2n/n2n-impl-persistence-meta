@@ -48,6 +48,7 @@ use n2n\util\type\CastUtils;
 use n2n\persistence\meta\Database;
 use n2n\persistence\meta\structure\common\MetaEntityAdapter;
 use n2n\persistence\meta\structure\common\ForeignIndex;
+use n2n\util\StringUtils;
 
 class MysqlMetaEntityBuilder {
 	
@@ -58,9 +59,12 @@ class MysqlMetaEntityBuilder {
 	 * @var Pdo
 	 */
 	private $dbh;
+	private $columnDefaultUnsetPossible = false;
 	
 	public function __construct(Pdo $dbh) {
 		$this->dbh = $dbh;
+		
+		$this->applyColumnDefaultUnsetPossible();
 	}
 	
 	public function createMetaEntityFromDatabase(Database $database, string $name) {
@@ -197,17 +201,52 @@ class MysqlMetaEntityBuilder {
 				default:
 					$column = new MysqlDefaultColumn($row['COLUMN_NAME']);
 			}
+			
 			$column->setNullAllowed($row['IS_NULLABLE'] == 'YES');
-			$column->setDefaultValue($row['COLUMN_DEFAULT']);
+			if ($this->columnDefaultUnsetPossible) {
+				$columnDefault = $row['COLUMN_DEFAULT'];
+				if ($columnDefault === null) {
+					$column->setDefaultValueAvailable(false);
+				} else {
+					if ($columnDefault === 'NULL') {
+						$column->setDefaultValue(null);
+					} else {
+						if (StringUtils::startsWith('\'', $columnDefault) && StringUtils::endsWith('\'', $columnDefault)) {
+							$column->setDefaultValue(mb_substr($row['COLUMN_DEFAULT'], 1, -1));
+						} else {
+							$column->setDefaultValue(($row['COLUMN_DEFAULT']));
+						}
+					}
+				}
+			} else {
+				$column->setDefaultValue($row['COLUMN_DEFAULT']);
+			}
 			
 			if (is_numeric(strpos($row['EXTRA'], 'auto_increment'))) {
 				$this->dbh->getMetaData()->getDialect()->applyIdentifierGeneratorToColumn($this->dbh, $column);
 			}
+			
 			$column->setAttrs($row);
 			$columns[$row['COLUMN_NAME']] = $column;
 		}
 		return $columns;
 	}
+	
+	
+	private function applyColumnDefaultUnsetPossible() {
+		$stmt = $this->dbh->prepare('SELECT VERSION() AS version');
+		$stmt->execute();
+		
+		$matches = [];
+		if (!preg_match('/(\d+)\.(\d+)\.\d+\-MariaDB/', $stmt->fetch(PDO::FETCH_ASSOC)['version'], $matches)) {
+			$this->columnDefaultUnsetPossible = false;
+			return;
+		}
+		
+		$this->columnDefaultUnsetPossible = $matches[1] >= 10 && $matches[2] >= 2;
+	}
+	
+	
 	
 	private function parseOptions($columnType) {
 		return explode(',', preg_replace('/(^enum\(|\)$|\')/', '', $columnType));
