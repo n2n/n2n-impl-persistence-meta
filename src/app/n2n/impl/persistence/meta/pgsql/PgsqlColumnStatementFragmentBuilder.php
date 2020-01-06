@@ -87,8 +87,8 @@ class PgsqlColumnStatementFragmentBuilder {
 			$statementString .= ' NOT NULL';
 		}
 		
-		if (null !== ($defaultValue = $column->getDefaultValue())) {
-			$statementString .= ($this->inAlterMode ? ' SET ': ' ') . 'DEFAULT ' . $this->pdo->quote($defaultValue);
+		if ($column->isDefaultValueAvailable()) {
+			$statementString .= ($this->inAlterMode ? ' SET ': ' ') . 'DEFAULT ' . $this->pdo->quote($column->getDefaultValue());
 		}
 		
 		return $statementString;

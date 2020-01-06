@@ -51,9 +51,10 @@ class SqliteColumnStatementStringBuilder {
 			$statementString .= ' NOT NULL';
 		}
 		
-		if (null !== ($defaultValue = $column->getDefaultValue())) {
-			$statementString .= ' DEFAULT ' . $this->dbh->quote($defaultValue) ;
+		if ($column->isDefaultValueAvailable()) {
+			$statementString .= ' DEFAULT ' . $this->dbh->quote($column->getDefaultValue()) ;
 		}
+		
 		return $statementString;
 	}
 	
