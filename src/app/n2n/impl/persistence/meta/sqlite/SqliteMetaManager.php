@@ -113,8 +113,6 @@ class SqliteMetaManager extends MetaManagerAdapter {
 		$statement->execute();
 		$result = $statement->fetch(Pdo::FETCH_ASSOC);
 		
-		var_dump($name);
-		
 		return $result[$name];
 	}
 	
