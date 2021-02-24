@@ -103,7 +103,7 @@ class MysqlMetaManager extends MetaManagerAdapter {
 	private function determineDbAttrs(string $dbName) {
 		$sql = 'SHOW VARIABLES';
 		$statement = $this->dbh->prepare($sql);
-		$statement->execute(array(':TABLE_SCHEMA' => $dbName));
+		$statement->execute();
 		$results = $statement->fetchAll(Pdo::FETCH_ASSOC);
 		return $results;
 	}
