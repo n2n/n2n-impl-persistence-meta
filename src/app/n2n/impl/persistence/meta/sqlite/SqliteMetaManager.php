@@ -91,19 +91,19 @@ class SqliteMetaManager extends MetaManagerAdapter {
 	private function determineDbAttrs() {
 		return ['auto_vacuum' => $this->getPragma('auto_vacuum'),
 				'cache_size' => $this->getPragma('cache_size'),
-				'case_sensitive_like' => $this->getPragma('case_sensitive_like'),
+	//			'case_sensitive_like' => $this->getPragma('case_sensitive_like'),
 				'count_changes' => $this->getPragma('count_changes'),
-				'default_synchronous' => $this->getPragma('default_synchronous'),
+	//			'default_synchronous' => $this->getPragma('default_synchronous'),
 				'empty_result_callbacks' => $this->getPragma('empty_result_callbacks'),
 				'full_column_names' => $this->getPragma('full_column_names'),
 				'fullfsync' => $this->getPragma('fullfsync'),
-				'legacy_file_format' => $this->getPragma('legacy_file_format'),
+	//			'legacy_file_format' => $this->getPragma('legacy_file_format'),
 				'page_size' => $this->getPragma('page_size'),
 				'read_uncommitted' => $this->getPragma('read_uncommitted'),
 				'short_column_names' => $this->getPragma('short_column_names'),
 				'synchronous' => $this->getPragma('synchronous'),
 				'temp_store' => $this->getPragma('temp_store'),
-				'temp_store_directory' => $this->getPragma('temp_store_directory'),
+	//			'temp_store_directory' => $this->getPragma('temp_store_directory'),
 		];
 	}
 	
@@ -112,6 +112,7 @@ class SqliteMetaManager extends MetaManagerAdapter {
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
 		$result = $statement->fetch(Pdo::FETCH_ASSOC);
+		
 		return $result[$name];
 	}
 	
