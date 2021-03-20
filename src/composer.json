@@ -4,19 +4,19 @@
     "prefer-stable": true,
     "require": {
         "php": ">=7.0",
-        "n2n/n2n-io": "master-dev",
-        "n2n/n2n-reflection": "master-dev",
-        "n2n/n2n-util": "master-dev"
+        "n2n/n2n-io": "^7.2.33",
+        "n2n/n2n-reflection": "^7.2.33",
+        "n2n/n2n-util": "^7.2.33"
     },
 	"require-dev" : {
-        "n2n/n2n-io": "master-dev",
-        "n2n/n2n-l10n": "master-dev",
+        "n2n/n2n-io": "^7.2.33",
+        "n2n/n2n-l10n": "^7.2.33",
         "n2n/n2n-persistence": "master-dev",
-        "n2n/n2n-reflection": "master-dev",
-        "n2n/n2n-util": "master-dev",
+        "n2n/n2n-reflection": "^7.2.33",
+        "n2n/n2n-util": "^7.2.33",
         "n2n/n2n-test": "master-dev",
         "n2n/n2n": "master-dev",
-        "n2n/n2n-web": "master-dev",
+        "n2n/n2n-web": "^7.2.33",
 		"phpunit/phpunit" : "^7.5"
 	}
 }
