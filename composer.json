@@ -19,7 +19,7 @@
 		"n2n/n2n-io" : "^7.2.33",
 		"n2n/n2n-l10n" : "^7.2.33",
 		"n2n/n2n-persistence" : "^7.2.33",
-		"n2n/n2n-relection" : "^7.2.33",
+		"n2n/n2n-reflection" : "^7.2.33",
 		"n2n/n2n-util" : "^7.2.33"
 	},
 	"autoload" : {
