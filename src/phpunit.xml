@@ -1,5 +1,5 @@
 <!DOCTYPE xml>
-<phpunit bootstrap="test/bootstrap.php">
+<phpunit bootstrap="vendor/autoload.php">
 	<testsuites>
 	    <testsuite name="Holeradio">
 	      <directory>test</directory>
