@@ -12,7 +12,7 @@ set_include_path(implode(PATH_SEPARATOR, array($appPath, $vendorPath, $testPath,
 define('N2N_STAGE', 'test');
 require __DIR__ . '/../vendor/autoload.php';
 
-TypeLoader::register(true,
+n2n\core\TypeLoader::register(true,
 		require __DIR__ . '/../vendor/composer/autoload_psr4.php',
 		require __DIR__ . '/../vendor/composer/autoload_classmap.php');
 
