@@ -111,4 +111,8 @@ class MysqlBackuper extends BackuperAdapter {
 		}
 		$this->getOutputStream()->flush();
 	}
+	
+	protected function getHeader() {
+		return parent::getHeader()  . "/*!40101 SET NAMES utf8mb4 */;" . PHP_EOL . PHP_EOL;
+	}
 }
