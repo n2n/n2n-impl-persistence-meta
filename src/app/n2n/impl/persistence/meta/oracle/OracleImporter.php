@@ -22,7 +22,7 @@
 namespace n2n\impl\persistence\meta\oracle;
 
 use n2n\util\ex\IllegalStateException;
-use n2n\io\InputStream;
+use n2n\util\io\stream\InputStream;
 use n2n\persistence\Pdo;
 
 class OracleImporter /* implements Importer */ {
@@ -36,13 +36,13 @@ class OracleImporter /* implements Importer */ {
 	private $dbh;
 	
 	/**
-	 * @var \n2n\io\InputStream
+	 * @var \n2n\util\io\stream\InputStream
 	 */
 	private $inputStream;
 	
 	/**
 	 * @param \n2n\persistence\Pdo $dbh
-	 * @param \n2n\io\InputStream $inputStream
+	 * @param \n2n\util\io\stream\InputStream $inputStream
 	 */
 	public function __construct(Pdo $dbh, InputStream $inputStream) {
 		$this->dbh = $dbh;

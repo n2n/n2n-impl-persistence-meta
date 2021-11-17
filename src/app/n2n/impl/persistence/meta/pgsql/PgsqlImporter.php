@@ -21,7 +21,7 @@
  */
 namespace n2n\impl\persistence\meta\pgsql;
 
-use n2n\io\InputStream;
+use n2n\util\io\stream\InputStream;
 
 use n2n\persistence\Pdo;
 

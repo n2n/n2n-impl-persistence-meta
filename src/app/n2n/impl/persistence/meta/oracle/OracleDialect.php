@@ -21,7 +21,7 @@
  */
 namespace n2n\impl\persistence\meta\oracle;
 
-use n2n\io\InputStream;
+use n2n\util\io\stream\InputStream;
 use n2n\core\N2N;
 use n2n\persistence\meta\data\common\CommonDeleteStatementBuilder;
 use n2n\persistence\meta\data\common\CommonInsertStatementBuilder;

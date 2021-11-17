@@ -21,7 +21,7 @@
  */
 namespace n2n\impl\persistence\meta\sqlite;
 
-use n2n\io\InputStream;
+use n2n\util\io\stream\InputStream;
 use n2n\persistence\meta\data\common\CommonInsertStatementBuilder;
 use n2n\persistence\meta\data\common\CommonUpdateStatementBuilder;
 use n2n\persistence\meta\data\common\CommonDeleteStatementBuilder;

@@ -21,7 +21,7 @@
  */
 namespace n2n\impl\persistence\meta\pgsql;
 
-use n2n\io\InputStream;
+use n2n\util\io\stream\InputStream;
 use n2n\persistence\meta\structure\Column;
 use n2n\persistence\Pdo;
 use n2n\impl\persistence\meta\DialectAdapter;
