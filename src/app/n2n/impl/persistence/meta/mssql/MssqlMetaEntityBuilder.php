@@ -106,7 +106,7 @@ class MssqlMetaEntityBuilder {
 		$stmt = $this->dbh->prepare('SELECT * FROM INFORMATION_SCHEMA.[COLUMNS] WHERE TABLE_CATALOG = :TABLE_CATALOG AND TABLE_NAME = :TABLE_NAME');
 		$stmt->execute(array(':TABLE_CATALOG' => $dbName, ':TABLE_NAME' => $table->getName()));
 
-		while (null != ($row = $stmt->fetch(PDO::FETCH_ASSOC))) {
+		while (null != ($row = $stmt->fetch(\PDO::FETCH_ASSOC))) {
 			$column = null;
 			switch ($row['DATA_TYPE']) {
 				case 'int':

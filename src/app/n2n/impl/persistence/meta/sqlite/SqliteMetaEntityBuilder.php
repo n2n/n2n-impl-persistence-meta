@@ -102,7 +102,7 @@ class SqliteMetaEntityBuilder {
 		$statement->execute();
 		$numPrimaryKeyColumns = 0;
 		$generatedIdentifierColumnName = null;
-		while (null != ($row = $statement->fetch(PDO::FETCH_ASSOC))) {
+		while (null != ($row = $statement->fetch(\PDO::FETCH_ASSOC))) {
 			if ($row['pk']) {
 				$numPrimaryKeyColumns++;
 			} 
@@ -184,7 +184,7 @@ class SqliteMetaEntityBuilder {
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
 		$indexColumns = array();
-		while (null != ($row = $statement->fetch(PDO::FETCH_ASSOC))) {
+		while (null != ($row = $statement->fetch(\PDO::FETCH_ASSOC))) {
 			if ($row['pk']) {
 				$indexColumns[] = $table->getColumnByName($row['name']);
 			}
@@ -199,7 +199,7 @@ class SqliteMetaEntityBuilder {
 				. '.foreign_key_list(' . $this->dbh->quoteField($table->getName()) . ')';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
-		while (null != ($row = $statement->fetch(PDO::FETCH_ASSOC))) {
+		while (null != ($row = $statement->fetch(\PDO::FETCH_ASSOC))) {
 			$indexes[] = ForeignIndex::createFromColumnNames($table, $row['from'] . '_' . $row['table'] . $row['to'], 
 					[$row['from']], $table->getDatabase()->getMetaEntityByName($row['table']), [$row['to']]);
 		}

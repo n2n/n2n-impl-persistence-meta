@@ -107,7 +107,7 @@ class OracleMetaEntityBuilder {
 		$stmt = $this->dbh->prepare('SELECT * FROM user_tab_columns WHERE TABLE_NAME = :TABLE_NAME');
 		$stmt->execute(array(':TABLE_NAME' => $table->getName()));
 			
-		while (null != ($row = $stmt->fetch(PDO::FETCH_ASSOC))) {
+		while (null != ($row = $stmt->fetch(\PDO::FETCH_ASSOC))) {
 			$column = null;
 			switch ($row['DATA_TYPE']) {
 				case 'NUMBER':

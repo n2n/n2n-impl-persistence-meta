@@ -129,7 +129,7 @@ class MysqlMetaEntityBuilder {
 		$stmt = $this->dbh->prepare('SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = :TABLE_SCHEMA AND TABLE_NAME = :TABLE_NAME');
 		$stmt->execute(array(':TABLE_SCHEMA' => $dbName, ':TABLE_NAME' => $table->getName()));
 			
-		while (null != ($row = $stmt->fetch(PDO::FETCH_ASSOC))) {
+		while (null != ($row = $stmt->fetch(\PDO::FETCH_ASSOC))) {
 			$column = null;
 			switch ($row['DATA_TYPE']) {
 				case 'int':
@@ -238,7 +238,7 @@ class MysqlMetaEntityBuilder {
 		$stmt->execute();
 		
 		$matches = [];
-		if (!preg_match('/(\d+)\.(\d+)\.\d+\-MariaDB/', $stmt->fetch(PDO::FETCH_ASSOC)['version'], $matches)) {
+		if (!preg_match('/(\d+)\.(\d+)\.\d+\-MariaDB/', $stmt->fetch(\PDO::FETCH_ASSOC)['version'], $matches)) {
 			$this->columnDefaultUnsetPossible = false;
 			return;
 		}
