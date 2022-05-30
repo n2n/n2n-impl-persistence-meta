@@ -74,7 +74,7 @@ class MssqlMetaEntityBuilder {
 		$sql = 'SELECT * FROM information_schema.' . $this->dbh->quoteField('TABLES') . ' WHERE TABLE_CATALOG = :TABLE_CATALOG AND TABLE_NAME = :TABLE_NAME;';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute(array(':TABLE_CATALOG' => $dbName, ':TABLE_NAME' => $name));
-		$result = $statement->fetch(Pdo::FETCH_ASSOC);
+		$result = $statement->fetch(\PDO::FETCH_ASSOC);
 		
 		$tableType = $result['TABLE_TYPE'];
 		switch ($tableType) {
@@ -89,7 +89,7 @@ class MssqlMetaEntityBuilder {
 				$viewSql = 'SELECT * FROM information_schema.' . $this->dbh->quoteField('VIEWS') . ' WHERE TABLE_CATALOG = :TABLE_CATALOG AND TABLE_NAME = :TABLE_NAME;';
 				$viewStatement = $this->dbh->prepare($viewSql);
 				$viewStatement->execute(array(':TABLE_CATALOG' => $dbName, ':TABLE_NAME' => $name));
-				$viewResult = $viewStatement->fetch(Pdo::FETCH_ASSOC);
+				$viewResult = $viewStatement->fetch(\PDO::FETCH_ASSOC);
 					
 				$view = new CommonView($name, $this->parseViewCreateStatement($viewResult['VIEW_DEFINITION']));
 				$view->setAttrs($viewResult);
@@ -190,7 +190,7 @@ class MssqlMetaEntityBuilder {
 			$giSql = 'SELECT is_identity, is_computed FROM sys.columns c WHERE c.object_id = OBJECT_ID(:table_name) AND c.name = :column_name';
 			$giStatement = $this->dbh->prepare($giSql);
 			$giStatement->execute(array(':table_name' => $table->getName(), ':column_name' => $row['COLUMN_NAME']));
-			$giResult = $giStatement->fetch(Pdo::FETCH_ASSOC);
+			$giResult = $giStatement->fetch(\PDO::FETCH_ASSOC);
 			if ((bool) $giResult['is_identity'] || (bool) $giResult['is_computed']) {
 				$column->setValueGenerated(true);
 				if ($giResult['is_identity']) {
@@ -199,7 +199,7 @@ class MssqlMetaEntityBuilder {
 					$computedSql = 'SELECT definition FROM sys.computed_columns c WHERE c.object_id = OBJECT_ID(:table_name) AND c.name = :column_name';
 					$computedStatement = $this->dbh->prepare($computedSql);
 					$computedStatement->execute(array(':table_name' => $table->getName(), ':column_name' => $row['COLUMN_NAME']));
-					$computedResult = $computedStatement->fetch(Pdo::FETCH_ASSOC);
+					$computedResult = $computedStatement->fetch(\PDO::FETCH_ASSOC);
 					$column->setAttrs(array_merge($column->getAttrs(), array(MssqlColumnStatementStringBuilder::ATTR_NAME_COMPUTED_VALUE => $computedResult['definition'])));
 				}
 			}
@@ -219,7 +219,7 @@ class MssqlMetaEntityBuilder {
 				. $this->dbh->quoteField('type_desc') . '!= :heap';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute(array(':table_name' => $table->getName(), ':heap' => self::INDEX_TYPE_DESC_HEAP));
-		$results = $statement->fetchAll(Pdo::FETCH_ASSOC);
+		$results = $statement->fetchAll(\PDO::FETCH_ASSOC);
 		foreach ($results as $result) {
 			
 			if (array_key_exists($result['name'], $indexes)) continue;
@@ -233,7 +233,7 @@ class MssqlMetaEntityBuilder {
 										AND i.name = :index_name';
 			$columnsStatement = $this->dbh->prepare($columnsSql);
 			$columnsStatement->execute(array(':table_name' => $table->getName(), ':index_name' => $result['name']));
-			$columnsResults = $columnsStatement->fetchAll(Pdo::FETCH_ASSOC);
+			$columnsResults = $columnsStatement->fetchAll(\PDO::FETCH_ASSOC);
 			foreach ($columnsResults as $columnResult) {
 				$indexColumns[$columnResult['name']] = $columns[$columnResult['name']];
 			}
@@ -253,7 +253,7 @@ class MssqlMetaEntityBuilder {
 //							WHERE object_id = OBJECT_ID(:table_name)';
 //		$statement = $this->dbh->prepare($sql);
 //		$statement->execute(array(':table_name' => $this->getName()));
-//		if ($statement->fetch(Pdo::FETCH_ASSOC)){
+//		if ($statement->fetch(\PDO::FETCH_ASSOC)){
 //			$name = MssqlIndex::FULLTEXT_INDEX_NAME . $this->getName();
 //			$this->indexes[$name] = new MssqlIndex($this, $this->dbh, $name, $result, false, false, true);
 //		}

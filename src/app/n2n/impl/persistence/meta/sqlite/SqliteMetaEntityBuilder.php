@@ -74,7 +74,7 @@ class SqliteMetaEntityBuilder {
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute([':type_table' => self::TYPE_TABLE, 
 				':type_view' => self::TYPE_VIEW, ':name' => $name]);
-		$result = $statement->fetch(Pdo::FETCH_ASSOC);
+		$result = $statement->fetch(\PDO::FETCH_ASSOC);
 		
 		$tableType = $result['type'];
 		
@@ -145,7 +145,7 @@ class SqliteMetaEntityBuilder {
 					. '.index_list(' . $this->dbh->quoteField($table->getName()) . ')';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
-		while (null != ($result = $statement->fetch(Pdo::FETCH_ASSOC))) {
+		while (null != ($result = $statement->fetch(\PDO::FETCH_ASSOC))) {
 			$type = null;
 			$name = $result['name'];
 			if (!($result['unique'])) {
@@ -154,7 +154,7 @@ class SqliteMetaEntityBuilder {
 				$indexSql = 'SELECT * FROM ' . $this->dbh->quoteField($dbName) . '.sqlite_master WHERE name = :name';
 				$indexStatement = $this->dbh->prepare($indexSql);
 				$indexStatement->execute(array(':name' => $result['name']));
-				$indexResult = $indexStatement->fetch(Pdo::FETCH_ASSOC);
+				$indexResult = $indexStatement->fetch(\PDO::FETCH_ASSOC);
 				if (is_null($indexResult['sql'])) {
 					// there are different ways for sqlite to store the primary keys its not always in the indexList
 					// so we always get the Primary Key at the end
@@ -169,7 +169,7 @@ class SqliteMetaEntityBuilder {
 					. '.index_info(' . $this->dbh->quoteField($result['name']) . ')';
 			$columnsStatement = $this->dbh->prepare($columnsSql);
 			$columnsStatement->execute();
-			$columnsResults = $columnsStatement->fetchAll(Pdo::FETCH_ASSOC);
+			$columnsResults = $columnsStatement->fetchAll(\PDO::FETCH_ASSOC);
 			foreach ($columnsResults as $columnResult) {
 				$indexColumns[] = $table->getColumnByName($columnResult['name']);
 			}

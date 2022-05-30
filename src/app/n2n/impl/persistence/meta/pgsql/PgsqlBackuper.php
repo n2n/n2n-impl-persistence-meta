@@ -60,7 +60,7 @@ class PgsqlBackuper extends BackuperAdapter {
 				$selectStatementBuilder->addFrom(new QueryTable($metaEntity->getName()), null);
 				$stmt = $this->dbh->prepare($selectStatementBuilder->toSqlString());
 				$stmt->execute();
-				$result = $stmt->fetchAll(Pdo::FETCH_ASSOC);
+				$result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
 				if (count($result) === 1) {
 					foreach ($result as $row) {

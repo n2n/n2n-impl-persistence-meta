@@ -111,7 +111,7 @@ class SqliteMetaManager extends MetaManagerAdapter {
 		$sql = 'PRAGMA ' . $this->dbh->quoteField(SqliteDatabase::FIXED_DATABASE_NAME) . '.' . $name;
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
-		$result = $statement->fetch(Pdo::FETCH_ASSOC);
+		$result = $statement->fetch(\PDO::FETCH_ASSOC);
 		
 		return $result[$name];
 	}
@@ -126,7 +126,7 @@ class SqliteMetaManager extends MetaManagerAdapter {
 				[':type_table' => SqliteMetaEntityBuilder::TYPE_TABLE,
 						':type_view' => SqliteMetaEntityBuilder::TYPE_VIEW,
 						':reserved_names' => SqliteDatabase::RESERVED_NAME_PREFIX . '%']);
-		while (null != ($result =  $statement->fetch(Pdo::FETCH_ASSOC))) {
+		while (null != ($result =  $statement->fetch(\PDO::FETCH_ASSOC))) {
 			$metaEntities[$result['name']] = $this->metaEntityBuilder->createMetaEntity(
 					SqliteDatabase::FIXED_DATABASE_NAME, $result['name']);
 		}

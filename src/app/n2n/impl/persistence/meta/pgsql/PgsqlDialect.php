@@ -145,7 +145,7 @@ class PgsqlDialect extends DialectAdapter {
 	public function generateSequenceValue(Pdo $dbh, string $sequenceName): ?string {
 		$stmt = $dbh->prepare('SELECT nextval(?) AS sequence_value');
 		$stmt->execute(array($sequenceName));
-		$result = $stmt->fetch(Pdo::FETCH_ASSOC);
+		$result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
 		if (!is_null($result)) {
 			return $result['sequence_value'];

@@ -81,7 +81,7 @@ class MssqlBackuper extends BackuperAdapter {
 				$sql = $selectStatementBuilder->toSqlString();
 				$statement = $this->dbh->prepare($sql);
 				$statement->execute();
-				$results = $statement->fetchAll(Pdo::FETCH_ASSOC);
+				$results = $statement->fetchAll(\PDO::FETCH_ASSOC);
 				if ($hasIdentifierGenerator && count($results) > 0) {
 					$this->getOutputStream()->write('SET IDENTITY_INSERT ' . $this->dbh->quoteField($metaEntity->getName()) . ' ON;');
 				}

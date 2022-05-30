@@ -88,7 +88,7 @@ class MssqlMetaManager extends MetaManagerAdapter {
 		$sql = 'SELECT DB_NAME() as database_name';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
-		$result = $statement->fetch(Pdo::FETCH_ASSOC);
+		$result = $statement->fetch(\PDO::FETCH_ASSOC);
 		return $result['database_name'];
 	} 
 	
@@ -96,7 +96,7 @@ class MssqlMetaManager extends MetaManagerAdapter {
 		$sql = 'SELECT collation_name FROM sys.' . $this->dbh->quoteField('databases') . ' WHERE name = :name';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute(array(':name' => $dbName));
-		$result = $statement->fetch(Pdo::FETCH_ASSOC);
+		$result = $statement->fetch(\PDO::FETCH_ASSOC);
 		return $result['collation_name'];
 	}
 	
@@ -104,7 +104,7 @@ class MssqlMetaManager extends MetaManagerAdapter {
 		$sql = 'SELECT * from sys.' . $this->dbh->quoteField('databases') . ' where name = :name';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute(array(':name' => $dbName));
-		return $statement->fetch(Pdo::FETCH_ASSOC);
+		return $statement->fetch(\PDO::FETCH_ASSOC);
 	}
 	
 	private function getPersistedMetaEntities(string $dbName) {
@@ -112,7 +112,7 @@ class MssqlMetaManager extends MetaManagerAdapter {
 		$sql = 'SELECT * FROM information_schema.' . $this->dbh->quoteField('TABLES') . ' WHERE TABLE_CATALOG = :TABLE_CATALOG;';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute(array(':TABLE_CATALOG' => $dbName));
-		while (null != ($result = $statement->fetch(Pdo::FETCH_ASSOC))) {
+		while (null != ($result = $statement->fetch(\PDO::FETCH_ASSOC))) {
 			$metaEntities[$result['TABLE_NAME']] = $this->metaEntityBuilder->createMetaEntity($result['TABLE_NAME']);
 		}
 		return $metaEntities;

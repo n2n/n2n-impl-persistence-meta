@@ -85,7 +85,7 @@ class MysqlBackuper extends BackuperAdapter {
 				$sql = $selectStatementBuilder->toSqlString();
 				$statement = $this->dbh->prepare($sql);
 				$statement->execute();
-				$results = $statement->fetchAll(Pdo::FETCH_ASSOC);
+				$results = $statement->fetchAll(\PDO::FETCH_ASSOC);
 				foreach($results as $index => $row) {
 					if ($index % self::NUM_INSERT_STATMENTS === 0) {
 						if (!($index == 0)) {

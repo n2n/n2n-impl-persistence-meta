@@ -88,7 +88,7 @@ class MysqlMetaManager extends MetaManagerAdapter {
 		$sql = 'SELECT DATABASE() as name;';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
-		$result = $statement->fetch(Pdo::FETCH_ASSOC);
+		$result = $statement->fetch(\PDO::FETCH_ASSOC);
 		return $result['name'];
 	} 
 	
@@ -96,7 +96,7 @@ class MysqlMetaManager extends MetaManagerAdapter {
 		$sql = 'SHOW VARIABLES LIKE "character_set_database"';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
-		$result = $statement->fetch(Pdo::FETCH_ASSOC);
+		$result = $statement->fetch(\PDO::FETCH_ASSOC);
 		return $result['Value'];
 	}
 	
@@ -104,7 +104,7 @@ class MysqlMetaManager extends MetaManagerAdapter {
 		$sql = 'SHOW VARIABLES';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
-		$results = $statement->fetchAll(Pdo::FETCH_ASSOC);
+		$results = $statement->fetchAll(\PDO::FETCH_ASSOC);
 		return $results;
 	}
 	
@@ -114,7 +114,7 @@ class MysqlMetaManager extends MetaManagerAdapter {
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute(array(':TABLE_SCHEMA' => $dbName));
 		
-		while (null != ($result =  $statement->fetch(Pdo::FETCH_ASSOC))) {
+		while (null != ($result =  $statement->fetch(\PDO::FETCH_ASSOC))) {
 			$metaEntities[$result['TABLE_NAME']] = $this->metaEntityBuilder->createMetaEntity($dbName, $result['TABLE_NAME']);
 		}
 		

@@ -63,7 +63,7 @@ class SqliteBackuper extends BackuperAdapter {
 				$sql = $selectStatementBuilder->toSqlString();
 				$statement = $this->dbh->prepare($sql);
 				$statement->execute();
-				$results = $statement->fetchAll(Pdo::FETCH_ASSOC);
+				$results = $statement->fetchAll(\PDO::FETCH_ASSOC);
 				foreach($results as $row) {
 					$insertStatementBuilder = $this->dialect->createInsertStatementBuilder($this->dbh);
 					$insertStatementBuilder->setTable($metaEntity->getName());

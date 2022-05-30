@@ -87,7 +87,7 @@ class MysqlMetaEntityBuilder {
 		$metaEntity = null;
 		$statement = $this->dbh->prepare('SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = :TABLE_SCHEMA AND TABLE_NAME = :TABLE_NAME');
 		$statement->execute(array(':TABLE_SCHEMA' => $dbName, ':TABLE_NAME' => $name));
-		$result = $statement->fetch(Pdo::FETCH_ASSOC);
+		$result = $statement->fetch(\PDO::FETCH_ASSOC);
 		
 		$tableType = $result['TABLE_TYPE'];
 		switch ($tableType) {
@@ -99,7 +99,7 @@ class MysqlMetaEntityBuilder {
 				//get the default Charset
 				$characterSetStatement = $this->dbh->prepare('SHOW COLLATION LIKE :COLLATION');
 				$characterSetStatement->execute(array(':COLLATION' => $result[MysqlTable::ATTRS_TABLE_COLLATION]));
-				if (null != ($characterSetResult = $characterSetStatement->fetch(Pdo::FETCH_ASSOC))) {
+				if (null != ($characterSetResult = $characterSetStatement->fetch(\PDO::FETCH_ASSOC))) {
 					$table->setAttrs(array_merge(array(MysqlTable::ATTRS_DEFAULT_CHARSET => $characterSetResult['Charset']), 
 							$table->getAttrs()));
 				}
@@ -112,7 +112,7 @@ class MysqlMetaEntityBuilder {
 			case self::TABLE_TYPE_VIEW:
 				$viewStatement = $this->dbh->prepare('SELECT * FROM information_schema.VIEWS WHERE TABLE_SCHEMA = :TABLE_SCHEMA AND TABLE_NAME = :TABLE_NAME');
 				$viewStatement->execute(array(':TABLE_SCHEMA' => $dbName, ':TABLE_NAME' => $name));
-				$viewResult = $viewStatement->fetch(Pdo::FETCH_ASSOC);
+				$viewResult = $viewStatement->fetch(\PDO::FETCH_ASSOC);
 					
 				$view = new CommonView($name, $viewResult['VIEW_DEFINITION']);
 				$view->setAttrs($viewResult);
@@ -256,7 +256,7 @@ class MysqlMetaEntityBuilder {
 		$sql = 'SHOW INDEX FROM ' . $this->dbh->quoteField($table->getName()) . ' FROM ' . $this->dbh->quoteField($dbName) ;
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
-		$results = $statement->fetchAll(Pdo::FETCH_ASSOC);
+		$results = $statement->fetchAll(\PDO::FETCH_ASSOC);
 		$indexes = [];
 		foreach ($results as $result) {
 			$indexName = $result['Key_name'];
@@ -270,7 +270,7 @@ class MysqlMetaEntityBuilder {
 						. $this->dbh->quoteField($dbName) .  ' WHERE Key_name = :indexName';
 				$indexStatement = $this->dbh->prepare($indexSql);
 				$indexStatement->execute([':indexName' => $indexName]);
-				$indexResult = $indexStatement->fetch(Pdo::FETCH_ASSOC);
+				$indexResult = $indexStatement->fetch(\PDO::FETCH_ASSOC);
 				if ($indexResult['Index_type'] == MysqlTable::INDEX_TYPE_FULLTEXT) {
 					$type = IndexType::INDEX;
 				} elseif ($indexResult['Non_unique']) {
@@ -285,7 +285,7 @@ class MysqlMetaEntityBuilder {
 					. $this->dbh->quoteField($dbName) . ' WHERE Key_name = :Key_name';
 			$columnsStatement = $this->dbh->prepare($columnsSql);
 			$columnsStatement->execute(array(':Key_name' => $indexName));
-			$columnsResults = $columnsStatement->fetchAll(Pdo::FETCH_ASSOC);
+			$columnsResults = $columnsStatement->fetchAll(\PDO::FETCH_ASSOC);
 			foreach ($columnsResults as $columnResult) {
 				$columnNames[$columnResult['Column_name']] = $columnResult['Column_name'];
 			}
@@ -304,7 +304,7 @@ class MysqlMetaEntityBuilder {
 				$fkStatement = $this->dbh->prepare($fkSql);
 				$fkStatement->execute([':indexName' => $indexName, 
 						':tableName' => $table->getName(), ':dbName' => $dbName]);
-				$fkResult = $fkStatement->fetchAll(Pdo::FETCH_ASSOC);
+				$fkResult = $fkStatement->fetchAll(\PDO::FETCH_ASSOC);
 				if (count($fkResult) > 0) {
 					$type = IndexType::FOREIGN;
 					foreach ($fkResult as $fkResultEntry) {

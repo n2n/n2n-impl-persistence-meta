@@ -88,7 +88,7 @@ class OracleMetaManager extends MetaManagerAdapter {
 		$sql = 'SELECT SYS_CONTEXT(\'userenv\',\'instance_name\') AS NAME FROM DUAL';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
-		$result = $statement->fetch(Pdo::FETCH_ASSOC);
+		$result = $statement->fetch(\PDO::FETCH_ASSOC);
 		return $result['NAME'];
 	} 
 	
@@ -96,14 +96,14 @@ class OracleMetaManager extends MetaManagerAdapter {
 		$sql = 'SELECT * FROM NLS_DATABASE_PARAMETERS  WHERE PARAMETER = \'NLS_CHARACTERSET\'';
 		$statement = $this->dbh->prepare($sql);
 		$statement->execute();
-		$result = $statement->fetch(Pdo::FETCH_ASSOC);
+		$result = $statement->fetch(\PDO::FETCH_ASSOC);
 		return $result['VALUE'];
 	}
 	
 	private function determineDbAttrs(string $dbName) {
 		$sql = 'SELECT * FROM product_component_version';
 		$statement = $this->dbh->prepare($sql);
-		$results = $statement->fetchAll(Pdo::FETCH_ASSOC);
+		$results = $statement->fetchAll(\PDO::FETCH_ASSOC);
 		return $results;
 	}
 	
@@ -113,7 +113,7 @@ class OracleMetaManager extends MetaManagerAdapter {
 		$statement = $this->dbh->prepare('SELECT * FROM user_tables WHERE tablespace_name = :users');
 		$statement->execute(array(':users' => 'USERS'));
 		
-		while (null != ($result =  $statement->fetch(Pdo::FETCH_ASSOC))) {
+		while (null != ($result =  $statement->fetch(\PDO::FETCH_ASSOC))) {
 			$metaEntities[] = $this->metaEntityBuilder->createTable($result['TABLE_NAME']);
 		}
 		
@@ -121,7 +121,7 @@ class OracleMetaManager extends MetaManagerAdapter {
 		$statement = $this->dbh->prepare('SELECT * FROM user_views');
 		$statement->execute();
 		
-		while (null != ($result = $statement->fetch(Pdo::FETCH_ASSOC))) {
+		while (null != ($result = $statement->fetch(\PDO::FETCH_ASSOC))) {
 			$metaEntities[] = $this->metaEntityBuilder->createView($result['VIEW_NAME']);
 		}
 		return $metaEntities;

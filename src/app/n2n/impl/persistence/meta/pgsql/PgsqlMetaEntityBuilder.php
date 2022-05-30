@@ -60,7 +60,7 @@ class PgsqlMetaEntityBuilder {
 	public function createMetaEntity(string $dbName, string $name) {
 		$stmt = $this->dbh->prepare('SELECT * FROM information_schema.tables WHERE table_catalog = ? AND table_name = ?');
 		$stmt->execute(array($dbName, $name));
-		$result = $stmt->fetch(Pdo::FETCH_ASSOC);
+		$result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
 		$metaEntity = null;
 		switch ($result['table_type']) {
@@ -68,7 +68,7 @@ class PgsqlMetaEntityBuilder {
 
 				$stmt = $this->dbh->prepare('select view_definition from INFORMATION_SCHEMA.VIEWS where table_catalog = ? AND table_name = ?');
 				$stmt->execute(array($dbName, $name));
-				$result = $stmt->fetch(Pdo::FETCH_ASSOC);
+				$result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
 				$metaEntity = new CommonView($name, $result['view_definition']);
 				$metaEntity->setAttrs($result);
@@ -98,7 +98,7 @@ class PgsqlMetaEntityBuilder {
 		');
 
 		$stmt->execute(array($dbName, $name));
-		$result = $stmt->fetchAll(Pdo::FETCH_ASSOC);
+		$result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 		$columns = array();
 
 		foreach ($result as $row) {
@@ -137,7 +137,7 @@ class PgsqlMetaEntityBuilder {
 						AND (check_clause LIKE ? AND check_clause NOT LIKE ? AND check_clause NOT LIKE ?)
 					');
 					$stmtInteger->execute(array($dbName, '%' . $row['column_name'] . ' > 0%', '%' . $row['column_name'] . ' > 0% %OR%', '%OR% %' . $row['column_name'] . ' > 0%'));
-					$integerResult = $stmtInteger->fetchAll(Pdo::FETCH_ASSOC);
+					$integerResult = $stmtInteger->fetchAll(\PDO::FETCH_ASSOC);
 
 					$unsigned = true;
 					if (sizeof($integerResult)) $unsigned = false;
@@ -160,7 +160,7 @@ class PgsqlMetaEntityBuilder {
 								JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
 							WHERE t.typname = ?');
 					$stmt->execute(array($row['udt_name']));
-					$result = $stmt->fetchAll(Pdo::FETCH_ASSOC);
+					$result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
 					$values = array();
 					foreach ($result as $resultRow) {
@@ -205,7 +205,7 @@ class PgsqlMetaEntityBuilder {
 				JOIN pg_index AS idx ON istc.constraint_name = TEXT(idx.indexrelid::regclass)
 			WHERE istc.constraint_type != ? AND istc.table_name = ?;');
 		$stmtPrimary->execute(array('CHECK', $table->getName()));
-		$stmtPrimaryArray = $stmtPrimary->fetchAll(Pdo::FETCH_ASSOC);
+		$stmtPrimaryArray = $stmtPrimary->fetchAll(\PDO::FETCH_ASSOC);
 
 		$sql = '
 			SELECT i.relname AS indname, \'index\' AS indtype,
@@ -223,7 +223,7 @@ class PgsqlMetaEntityBuilder {
 
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute($executeArray);
-		$stmtIndex = $stmt->fetchAll(Pdo::FETCH_ASSOC);
+		$stmtIndex = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
 		$sql = '
 			SELECT i.relname AS indname, \'unique\' AS indtype,
@@ -241,7 +241,7 @@ class PgsqlMetaEntityBuilder {
 
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute($executeArray);
-		$stmtUnique = $stmt->fetchAll(Pdo::FETCH_ASSOC);
+		$stmtUnique = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
 		foreach (array_merge($stmtPrimaryArray, $stmtIndex, $stmtUnique) as $index) {
 			$table->createIndex($this->toMetaIndexType($index['indtype']),
@@ -262,7 +262,7 @@ class PgsqlMetaEntityBuilder {
 
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute($executeArray);
-		$stmtForeign = $stmt->fetchAll(Pdo::FETCH_ASSOC);
+		$stmtForeign = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
 		foreach ($stmtForeign as $index) {
 			$table->createIndex(IndexType::FOREIGN,

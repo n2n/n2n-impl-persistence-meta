@@ -65,7 +65,7 @@ class OracleMetaEntityBuilder {
 		$view = null;
 		$statement = $this->dbh->prepare('SELECT * FROM user_views WHERE view_name = :view_name');
 		$statement->execute(array(':view_name' => $name));
-		$result = $statement->fetch(Pdo::FETCH_ASSOC);
+		$result = $statement->fetch(\PDO::FETCH_ASSOC);
 		if ($result) {
 			$view = new CommonView($name, $result['TEXT']);
 			$view->setAttrs($result);
@@ -91,7 +91,7 @@ class OracleMetaEntityBuilder {
 		//First check for tables
 		$statement = $this->dbh->prepare('SELECT * FROM user_tables WHERE tablespace_name = :users AND table_name = :table_name');
 		$statement->execute(array(':users' => 'USERS', ':table_name' => $name));
-		$result = $statement->fetch(Pdo::FETCH_ASSOC);
+		$result = $statement->fetch(\PDO::FETCH_ASSOC);
 		
 		if ($result) {
 			$table = new OracleTable($name);
@@ -204,12 +204,12 @@ class OracleMetaEntityBuilder {
 		$columns = $table->getColumns();
 		$statement = $this->dbh->prepare('SELECT * FROM user_indexes WHERE INDEX_TYPE = :NORMAL AND GENERATED != :Y AND TABLE_NAME = :TABLE_NAME');
 		$statement->execute(array(':NORMAL' => 'NORMAL', ':Y' => 'Y' ,':TABLE_NAME' => $table->getName()));
-		$results = $statement->fetchAll(Pdo::FETCH_ASSOC);
+		$results = $statement->fetchAll(\PDO::FETCH_ASSOC);
 		foreach ($results as $result) {
 			$indexColumns = array();
 			$columnsStatement = $this->dbh->prepare('SELECT * FROM user_ind_columns WHERE INDEX_NAME = :INDEX_NAME');
 			$columnsStatement->execute(array(':INDEX_NAME' => $result['INDEX_NAME']));
-			$columnsResults = $columnsStatement->fetchAll(Pdo::FETCH_ASSOC);
+			$columnsResults = $columnsStatement->fetchAll(\PDO::FETCH_ASSOC);
 			foreach ($columnsResults as $columnResult) {
 				$indexColumns[$columnResult['COLUMN_NAME']] = $columns[$columnResult['COLUMN_NAME']];
 			}
@@ -220,7 +220,7 @@ class OracleMetaEntityBuilder {
 				//check the constraint
 				$constraintStatement = $this->dbh->prepare('SELECT * FROM user_constraints WHERE CONSTRAINT_NAME = :CONSTRAINT_NAME');
 				$constraintStatement->execute(array(':CONSTRAINT_NAME' => $result['INDEX_NAME']));
-				if (null != ($constraintResult = $constraintStatement->fetch(Pdo::FETCH_ASSOC))) {
+				if (null != ($constraintResult = $constraintStatement->fetch(\PDO::FETCH_ASSOC))) {
 					if ($constraintResult['CONSTRAINT_TYPE'] == self::CONSTRAINT_TYPE_PRIMARY) {
 						$type = IndexType::PRIMARY;
 						$name = $table->generatePrimaryKeyName();
@@ -239,12 +239,12 @@ class OracleMetaEntityBuilder {
 		//It is possible that the PK is not in the indexes (Another Index has the same constraints)
 		$statement = $this->dbh->prepare('SELECT * FROM user_constraints WHERE CONSTRAINT_TYPE = :P AND TABLE_NAME = :TABLE_NAME');
 		$statement->execute(array(':P' => self::CONSTRAINT_TYPE_PRIMARY ,':TABLE_NAME' => $table->getName()));
-		if (null != ($result = $statement->fetch(Pdo::FETCH_ASSOC))) {
+		if (null != ($result = $statement->fetch(\PDO::FETCH_ASSOC))) {
 			if (!array_key_exists($result['CONSTRAINT_NAME'], $indexes)) {
 				$indexColumns = array();
 				$columnsStatement = $this->dbh->prepare('SELECT * FROM user_cons_columns WHERE CONSTRAINT_NAME = :CONSTRAINT_NAME');
 				$columnsStatement->execute(array(':CONSTRAINT_NAME' => $result['CONSTRAINT_NAME']));
-				$columnsResults = $columnsStatement->fetchAll(Pdo::FETCH_ASSOC);
+				$columnsResults = $columnsStatement->fetchAll(\PDO::FETCH_ASSOC);
 				foreach ($columnsResults as $columnResult) {
 					$indexColumns[$columnResult['COLUMN_NAME']] = $columns[$columnResult['COLUMN_NAME']];
 				}

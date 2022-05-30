@@ -88,14 +88,14 @@ class PgsqlMetaManager extends MetaManagerAdapter {
 	private function determineDbName() {
 		$stmt = $this->dbh->prepare('SELECT CURRENT_DATABASE() AS name');
 		$stmt->execute();
-		$result = $stmt->fetch(Pdo::FETCH_ASSOC);
+		$result = $stmt->fetch(\PDO::FETCH_ASSOC);
 		return $result['name'];
 	} 
 	
 	private function determineDbCharset(string $dbName) {
 		$stmt = $this->dbh->prepare('SELECT PG_ENCODING_TO_CHAR(ENCODING) AS charset FROM pg_database WHERE datname = ?;');
 		$stmt->execute(array($dbName));
-		$result = $stmt->fetch(Pdo::FETCH_ASSOC);
+		$result = $stmt->fetch(\PDO::FETCH_ASSOC);
 		return $result['charset'];
 	}
 	
@@ -103,7 +103,7 @@ class PgsqlMetaManager extends MetaManagerAdapter {
 		$attrs = [];
 		$stmt = $this->dbh->prepare('SHOW ALL');
 		$stmt->execute();
-		$result = $stmt->fetchAll(Pdo::FETCH_ASSOC);
+		$result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 		
 		foreach ($result as $res) {
 			$attrs[$res['name']] = $res['setting'];
@@ -116,7 +116,7 @@ class PgsqlMetaManager extends MetaManagerAdapter {
 		$sql = 'SELECT table_name FROM information_schema.tables WHERE table_catalog = ? AND table_schema = ?';
 		$stmt = $this->dbh->prepare($sql);
 		$stmt->execute(array($dbName, self::TABLE_SCHEMA));
-		$result = $stmt->fetchAll(Pdo::FETCH_ASSOC);
+		$result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 		
 		$metaEntities = array();
 		foreach ($result as $row) {

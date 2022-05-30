@@ -33,7 +33,7 @@ class PgsqlEnumStatementBuilder {
 		$stmt = $this->pdo->prepare($sql);
 		$stmt->execute(array(self::buildEnumColumnName($column)));
 	
-		return count($stmt->fetchAll(Pdo::FETCH_ASSOC)) > 0;
+		return count($stmt->fetchAll(\PDO::FETCH_ASSOC)) > 0;
 	}
 	
 	public function buildEnumColumnName(CommonEnumColumn $column) {
