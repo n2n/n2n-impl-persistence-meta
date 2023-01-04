@@ -29,7 +29,7 @@ use n2n\persistence\meta\data\common\CommonDeleteStatementBuilder;
 use n2n\persistence\meta\data\common\CommonUpdateStatementBuilder;
 use n2n\persistence\meta\data\common\CommonSelectStatementBuilder;
 use n2n\persistence\meta\structure\Column;
-use n2n\persistence\PersistenceUnitConfig;
+use n2n\core\config\PersistenceUnitConfig;
 use n2n\persistence\Pdo;
 use n2n\impl\persistence\meta\DialectAdapter;
 use n2n\persistence\meta\data\SelectStatementBuilder;
