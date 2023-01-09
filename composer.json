@@ -9,7 +9,8 @@
 	],
 	"homepage" : "https://n2n.rocks/",
 	"license" : "LGPL-3.0-or-later",
-	"authors" : [{
+	"authors" : [
+    	{
 			"name" : "Thomas Günther",
 			"email" : "guenther@hnm.ch"
 		}
