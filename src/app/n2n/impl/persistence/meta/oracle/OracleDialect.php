@@ -46,12 +46,16 @@ class OracleDialect extends DialectAdapter {
 	public function getName(): string {
 		return 'Oracle';
 	}
-	
-	public function initializeConnection(Pdo $dbh, PersistenceUnitConfig $dataSourceConfiguration) {
-		$dbh->exec('SET TRANSACTION ISOLATION LEVEL ' . $dataSourceConfiguration->getTransactionIsolationLevel());
-		$dbh->exec('ALTER SESSION SET NLS_TIMESTAMP_FORMAT = ' . $dbh->quote('YYYY-MM-DD HH:MI:SS.FF'));
-		$dbh->exec('ALTER SESSION SET NLS_DATE_FORMAT = ' . $dbh->quote('YYYY-MM-DD'));
-		$dbh->exec('ALTER SESSION SET NLS_TIMESTAMP_TZ_FORMAT = ' . $dbh->quote('YYYY-MM-DD HH:MI:SS.FF TZH:TZM'));
+	public function createPDO(PersistenceUnitConfig $persistenceUnitConfig): \PDO {
+		$pdo = new \PDO($persistenceUnitConfig->getDsnUri(), $persistenceUnitConfig->getUser(),
+				$persistenceUnitConfig->getPassword());
+
+		$pdo->exec('SET TRANSACTION ISOLATION LEVEL ' . $persistenceUnitConfig->getTransactionIsolationLevel());
+		$pdo->exec('ALTER SESSION SET NLS_TIMESTAMP_FORMAT = ' . $pdo->quote('YYYY-MM-DD HH:MI:SS.FF'));
+		$pdo->exec('ALTER SESSION SET NLS_DATE_FORMAT = ' . $pdo->quote('YYYY-MM-DD'));
+		$pdo->exec('ALTER SESSION SET NLS_TIMESTAMP_TZ_FORMAT = ' . $pdo->quote('YYYY-MM-DD HH:MI:SS.FF TZH:TZM'));
+
+		return $pdo;
 	}
 	
 	/**

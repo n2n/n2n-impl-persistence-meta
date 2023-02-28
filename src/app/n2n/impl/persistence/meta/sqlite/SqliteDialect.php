@@ -46,9 +46,13 @@ class SqliteDialect extends DialectAdapter {
 	public function getName(): string {
 		return 'Sqlite';
 	}
-	
-	public function initializeConnection(Pdo $dbh, PersistenceUnitConfig $dataSourceConfiguration) {
-		$dbh->exec('PRAGMA foreign_keys=ON');
+	public function createPDO(PersistenceUnitConfig $persistenceUnitConfig): \PDO {
+		$pdo = new \PDO($persistenceUnitConfig->getDsnUri(), $persistenceUnitConfig->getUser(),
+				$persistenceUnitConfig->getPassword());
+
+		$pdo->exec('PRAGMA foreign_keys=ON');
+
+		return $pdo;
 	}
 	
 	/**

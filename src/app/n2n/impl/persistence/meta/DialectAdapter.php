@@ -43,4 +43,8 @@ abstract class DialectAdapter implements Dialect {
 	public function getLikeEscapeCharacter(): string {
 		return self::DEFAULT_ESCAPING_CHARACTER;
 	}
+
+
+
+
 }
