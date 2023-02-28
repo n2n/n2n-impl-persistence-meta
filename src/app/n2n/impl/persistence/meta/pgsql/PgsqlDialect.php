@@ -47,13 +47,10 @@ class PgsqlDialect extends DialectAdapter {
 	public function getName(): string {
 		return 'Pgsql';
 	}
-	
-	/**
-	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\Dialect::initializeConnection()
-	 */
-	public function initializeConnection(Pdo $dbh, PersistenceUnitConfig $data) {
 
+	public function createPDO(PersistenceUnitConfig $persistenceUnitConfig): \PDO {
+		return new \PDO($persistenceUnitConfig->getDsnUri(), $persistenceUnitConfig->getUser(),
+				$persistenceUnitConfig->getPassword());
 	}
 	
 	/**

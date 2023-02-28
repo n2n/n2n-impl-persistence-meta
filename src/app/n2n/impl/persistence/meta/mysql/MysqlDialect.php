@@ -49,11 +49,25 @@ class MysqlDialect extends DialectAdapter {
 	public function getName(): string {
 		return 'Mysql';
 	}
-	
-	public function initializeConnection(Pdo $dbh, PersistenceUnitConfig $dataSourceConfiguration) {
-		$dbh->exec('SET NAMES utf8mb4'); 
-		$dbh->exec('SET SESSION TRANSACTION ISOLATION LEVEL ' . $dataSourceConfiguration->getTransactionIsolationLevel());
-		$dbh->exec('SET SESSION sql_mode = \'STRICT_ALL_TABLES\'');
+
+	public function createPDO(PersistenceUnitConfig $persistenceUnitConfig): \PDO {
+		$options = [];
+
+		if (!$persistenceUnitConfig->isSslVerify()) {
+			$options[\PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+		}
+
+		if (null !== ($caPath = $persistenceUnitConfig->getSslCaCertificatePath())) {
+			$options[\PDO::MYSQL_ATTR_SSL_CA] = $caPath;
+		}
+
+		$pdo = new \PDO($persistenceUnitConfig->getDsnUri(), $persistenceUnitConfig->getUser(),
+				$persistenceUnitConfig->getPassword(), $options);
+		$pdo->exec('SET NAMES utf8mb4');
+		$pdo->exec('SET SESSION TRANSACTION ISOLATION LEVEL ' . $persistenceUnitConfig->getTransactionIsolationLevel());
+		$pdo->exec('SET SESSION sql_mode = \'STRICT_ALL_TABLES\'');
+
+		return $pdo;
 	}
 	
 	/**
