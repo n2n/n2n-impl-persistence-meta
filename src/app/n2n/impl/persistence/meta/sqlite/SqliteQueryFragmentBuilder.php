@@ -25,6 +25,7 @@ use n2n\persistence\meta\data\QueryFragmentBuilder;
 use n2n\persistence\Pdo;
 use n2n\persistence\meta\data\QueryComparator;
 use n2n\persistence\meta\Dialect;
+use n2n\persistence\meta\data\QueryFunction;
 
 class SqliteQueryFragmentBuilder implements QueryFragmentBuilder {
 	
@@ -102,6 +103,11 @@ class SqliteQueryFragmentBuilder implements QueryFragmentBuilder {
 	}
 	
 	public function openFunction($name) {
+		$name = match($name) {
+			QueryFunction::RAND => 'RANDOM',
+			default => $name
+		};
+
 		$this->sql .= ' ' . $name . '(';
 	}
 	
