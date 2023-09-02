@@ -50,8 +50,7 @@ class MssqlDialect extends DialectAdapter {
 	}
 	
 	public function createPDO(PersistenceUnitConfig $persistenceUnitConfig): \PDO {
-		$pdo = new \PDO($persistenceUnitConfig->getDsnUri(), $persistenceUnitConfig->getUser(),
-					$persistenceUnitConfig->getPassword());
+		$pdo = parent::createPDO($persistenceUnitConfig);
 
 		//collation is set automatically
 		$pdo->exec('SET TRANSACTION ISOLATION LEVEL ' . $persistenceUnitConfig->getTransactionIsolationLevel());
