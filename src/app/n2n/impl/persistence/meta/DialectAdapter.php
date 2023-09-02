@@ -23,6 +23,7 @@ namespace n2n\impl\persistence\meta;
 
 use n2n\persistence\meta\data\QueryComparator;
 use n2n\persistence\meta\Dialect;
+use n2n\core\config\PersistenceUnitConfig;
 
 abstract class DialectAdapter implements Dialect {
 	/**
@@ -44,7 +45,20 @@ abstract class DialectAdapter implements Dialect {
 		return self::DEFAULT_ESCAPING_CHARACTER;
 	}
 
+	public function createPDO(PersistenceUnitConfig $persistenceUnitConfig): \PDO {
+		$options = [\PDO::ATTR_PERSISTENT => $persistenceUnitConfig->isPersistent()];
 
+		if (!$persistenceUnitConfig->isSslVerify()) {
+			$options[\PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+		}
+
+		if (null !== ($caPath = $persistenceUnitConfig->getSslCaCertificatePath())) {
+			$options[\PDO::MYSQL_ATTR_SSL_CA] = $caPath;
+		}
+
+		return new \PDO($persistenceUnitConfig->getDsnUri(), $persistenceUnitConfig->getUser(),
+				$persistenceUnitConfig->getPassword(), $options);
+	}
 
 
 }

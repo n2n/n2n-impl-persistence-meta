@@ -49,8 +49,11 @@ class PgsqlDialect extends DialectAdapter {
 	}
 
 	public function createPDO(PersistenceUnitConfig $persistenceUnitConfig): \PDO {
-		return new \PDO($persistenceUnitConfig->getDsnUri(), $persistenceUnitConfig->getUser(),
-				$persistenceUnitConfig->getPassword());
+		$pdo = parent::createPDO($persistenceUnitConfig);
+
+		$pdo->exec('SET SESSION TRANSACTION ISOLATION LEVEL ' . $persistenceUnitConfig->getTransactionIsolationLevel());
+
+		return $pdo;
 	}
 	
 	/**

@@ -24,12 +24,13 @@
 		}
 	},
 	"require" : {
+        "ext-pdo": "*",
 		"n2n/n2n-io" : "~7.4",
 		"n2n/n2n-l10n" : "~7.4",
 		"n2n/n2n-persistence" : "~7.4",
 		"n2n/n2n-reflection" : "~7.4",
-		"n2n/n2n-util" : "~7.4"
-	},
+		"n2n/n2n-util" : "~7.4",
+    },
 	"autoload" : {
 		"psr-4" : {
 			"n2n\\impl\\persistence\\meta\\" : "src/app/n2n/impl/persistence/meta"

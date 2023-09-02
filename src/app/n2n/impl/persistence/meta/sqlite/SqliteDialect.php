@@ -47,8 +47,7 @@ class SqliteDialect extends DialectAdapter {
 		return 'Sqlite';
 	}
 	public function createPDO(PersistenceUnitConfig $persistenceUnitConfig): \PDO {
-		$pdo = new \PDO($persistenceUnitConfig->getDsnUri(), $persistenceUnitConfig->getUser(),
-				$persistenceUnitConfig->getPassword());
+		$pdo = parent::createPDO($persistenceUnitConfig);
 
 		$pdo->exec('PRAGMA foreign_keys=ON');
 

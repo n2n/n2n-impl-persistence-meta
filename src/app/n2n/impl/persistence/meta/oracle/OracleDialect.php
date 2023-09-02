@@ -47,8 +47,7 @@ class OracleDialect extends DialectAdapter {
 		return 'Oracle';
 	}
 	public function createPDO(PersistenceUnitConfig $persistenceUnitConfig): \PDO {
-		$pdo = new \PDO($persistenceUnitConfig->getDsnUri(), $persistenceUnitConfig->getUser(),
-				$persistenceUnitConfig->getPassword());
+		$pdo = parent::createPDO($persistenceUnitConfig);
 
 		$pdo->exec('SET TRANSACTION ISOLATION LEVEL ' . $persistenceUnitConfig->getTransactionIsolationLevel());
 		$pdo->exec('ALTER SESSION SET NLS_TIMESTAMP_FORMAT = ' . $pdo->quote('YYYY-MM-DD HH:MI:SS.FF'));
@@ -72,7 +71,7 @@ class OracleDialect extends DialectAdapter {
 	 */
 	public function quoteField(string $str): string {
 		return '"' . str_replace('"', '""', (string) $str) . '"';
-		return $str;
+//		return $str;
 	}
 
 	/**
