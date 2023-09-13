@@ -34,7 +34,7 @@ class SqliteQueryFragmentBuilder implements QueryFragmentBuilder {
 	const NAMED_PLACE_MARKER_PREFIX = ':';
 	const KEYWORD_OPERATOR_LIKE_ESCAPE = 'ESCAPE';
 	/**
-	 * @var \n2n\persistence\Pdo
+	 * @var Pdo
 	 */
 	private $dbh;
 	private $sql = '';

@@ -78,7 +78,7 @@ class SqliteDialect extends DialectAdapter {
 	 * @return SelectStatementBuilder
 	 */
 	public function createSelectStatementBuilder(Pdo $dbh): SelectStatementBuilder {
-		return new CommonSelectStatementBuilder($dbh, new SqliteQueryFragmentBuilderFactory($dbh));
+		return new CommonSelectStatementBuilder($dbh, new SqliteQueryFragmentBuilderFactory($dbh), null);
 	}
 	
 	/**

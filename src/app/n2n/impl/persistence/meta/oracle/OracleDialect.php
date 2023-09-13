@@ -38,6 +38,7 @@ use n2n\persistence\meta\data\DeleteStatementBuilder;
 use n2n\persistence\meta\OrmDialectConfig;
 use n2n\persistence\meta\data\Importer;
 use n2n\persistence\meta\MetaManager;
+use n2n\persistence\meta\data\common\CommonSelectLockBuilder;
 
 class OracleDialect extends DialectAdapter {
 	
@@ -80,7 +81,8 @@ class OracleDialect extends DialectAdapter {
 	 * @return SelectStatementBuilder
 	 */
 	public function createSelectStatementBuilder(Pdo $dbh): SelectStatementBuilder {
-		return new CommonSelectStatementBuilder($dbh, new OracleQueryFragmentBuilderFactory($dbh));
+		return new CommonSelectStatementBuilder($dbh, new OracleQueryFragmentBuilderFactory($dbh),
+				new CommonSelectLockBuilder());
 	}
 	
 	/**
