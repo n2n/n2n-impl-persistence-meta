@@ -36,7 +36,7 @@ class SqliteQueryFragmentBuilderFactory implements QueryFragmentBuilderFactory {
 		$this->dbh = $dbh;
 	}
 	
-	public function create() {
+	public function create(): \n2n\persistence\meta\data\QueryFragmentBuilder {
 		return new SqliteQueryFragmentBuilder($this->dbh);
 	}
 }
