@@ -81,7 +81,7 @@ class MssqlDialect extends DialectAdapter {
 	 * @return SelectStatementBuilder
 	 */
 	public function createSelectStatementBuilder(Pdo $dbh): SelectStatementBuilder {
-		return new CommonSelectStatementBuilder($dbh, new MssqlQueryFragmentBuilderFactory($dbh));
+		return new CommonSelectStatementBuilder($dbh, new MssqlQueryFragmentBuilderFactory($dbh), null);
 	}
 	
 	/**

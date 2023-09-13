@@ -39,6 +39,7 @@ use n2n\persistence\meta\data\InsertStatementBuilder;
 use n2n\persistence\meta\data\DeleteStatementBuilder;
 use n2n\persistence\meta\OrmDialectConfig;
 use n2n\persistence\meta\data\Importer;
+use n2n\persistence\meta\data\common\CommonSelectLockBuilder;
 
 class MysqlDialect extends DialectAdapter {
 	/* (non-PHPdoc)
@@ -82,7 +83,8 @@ class MysqlDialect extends DialectAdapter {
 	 * @return SelectStatementBuilder
 	 */
 	public function createSelectStatementBuilder(Pdo $dbh): SelectStatementBuilder {
-		return new CommonSelectStatementBuilder($dbh, new MysqlQueryFragmentBuilderFactory($dbh));
+		return new CommonSelectStatementBuilder($dbh, new MysqlQueryFragmentBuilderFactory($dbh),
+				new CommonSelectLockBuilder());
 	}
 	
 	/**

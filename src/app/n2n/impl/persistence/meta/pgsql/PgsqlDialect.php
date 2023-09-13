@@ -38,6 +38,7 @@ use n2n\persistence\meta\data\DeleteStatementBuilder;
 use n2n\persistence\meta\data\Importer;
 use n2n\persistence\meta\OrmDialectConfig;
 use n2n\persistence\meta\MetaManager;
+use n2n\persistence\meta\data\common\CommonSelectLockBuilder;
 
 class PgsqlDialect extends DialectAdapter {
 	public function __construct() {}
@@ -83,7 +84,8 @@ class PgsqlDialect extends DialectAdapter {
 	 * @return SelectStatementBuilder
 	 */
 	public function createSelectStatementBuilder(Pdo $dbh): SelectStatementBuilder {
-		return new CommonSelectStatementBuilder($dbh, new PgsqlQueryFragmentBuilderFactory($dbh));
+		return new CommonSelectStatementBuilder($dbh, new PgsqlQueryFragmentBuilderFactory($dbh),
+				new CommonSelectLockBuilder());
 	}
 
 	/**
