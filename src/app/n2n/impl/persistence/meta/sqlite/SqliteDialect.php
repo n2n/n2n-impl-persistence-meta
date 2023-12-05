@@ -96,7 +96,7 @@ class SqliteDialect extends DialectAdapter {
 	 * @return InsertStatementBuilder
 	 */
 	public function createInsertStatementBuilder(Pdo $dbh): InsertStatementBuilder {
-		return new CommonInsertStatementBuilder($dbh, new SqliteQueryFragmentBuilderFactory($dbh));
+		return new SqliteInsertStatementBuilder($dbh);
 	}
 	
 	/**
