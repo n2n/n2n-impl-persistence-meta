@@ -6,12 +6,15 @@ use PHPUnit\Framework\TestCase;
 use n2n\core\config\PersistenceUnitConfig;
 use PHPUnit\Framework\MockObject\MockObject;
 use n2n\persistence\Pdo;
+use n2n\persistence\meta\Dialect;
 
 class MetaTestEnv {
 
-	static function setUpPdoMockAssembly(TestCase $testCase, string $dialectClass, string $readOnlyTransactionIsolationLevel = null): PdoMockAssembly {
+	static function setUpPdoMockAssembly(TestCase $testCase, string $dialectClass, string $readOnlyTransactionIsolationLevel = null,
+				bool $persistent = false, bool $sslVerify = true, string $sslCaCertificatePath = null): PdoMockAssembly {
 		$config = new PersistenceUnitConfig('holeradio', 'mysql:..', 'user', null,
 				PersistenceUnitConfig::TIL_SERIALIZABLE, $dialectClass,
+				$sslVerify, $sslCaCertificatePath, $persistent,
 				readOnlyTransactionIsolationLevel: $readOnlyTransactionIsolationLevel);
 
 		$nativePdoMock = $testCase->getMockBuilder(\PDO::class)
@@ -20,16 +23,18 @@ class MetaTestEnv {
 		$dialectMock = $testCase->getMockBuilder($dialectClass)
 				->setConstructorArgs([$config])
 				->onlyMethods(['newPDO'])->getMock();
-		$dialectMock->expects(TestCase::once())->method('newPDO')->willReturn($nativePdoMock);
 
+		assert($dialectMock instanceof Dialect);
 		$pdo = new Pdo('holeradio', $dialectMock);
 
+		assert($dialectMock instanceof MockObject);
 		return new PdoMockAssembly($nativePdoMock, $dialectMock, $pdo);
 	}
 }
 
 
 class PdoMockAssembly {
+	public ?array $pdoOptions = null;
 
 	public bool $inTransaction = false;
 
@@ -38,6 +43,12 @@ class PdoMockAssembly {
 	public array $beginTransactionCalls = [];
 
 	function __construct(public MockObject $nativePdoMock, public MockObject $dialectMock, public Pdo $pdo) {
+		$dialectMock->expects(TestCase::once())->method('newPDO')
+				->willReturnCallback(function (string $dsnUri, string $user, ?string $password, array $options) {
+					$this->pdoOptions = $options;
+					return $this->nativePdoMock;
+				});
+
 		$nativePdoMock->method('exec')->will(
 				TestCase::returnCallback(function ($statment) use (&$execStatements) {
 					$this->execCalls[] = ['_nr' => ++$this->callCounter, 'statement' => $statment];

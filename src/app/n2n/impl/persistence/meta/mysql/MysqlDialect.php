@@ -47,6 +47,20 @@ class MysqlDialect extends DialectAdapter {
 		return 'Mysql';
 	}
 
+	protected function determinePdoOptions(): array {
+		$options = parent::determinePdoOptions();
+
+		if (!$this->persistenceUnitConfig->isSslVerify()) {
+			$options[\PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+		}
+
+		if (null !== ($caPath = $this->persistenceUnitConfig->getSslCaCertificatePath())) {
+			$options[\PDO::MYSQL_ATTR_SSL_CA] = $caPath;
+		}
+
+		return $options;
+	}
+
 	public function createPDO(): \PDO {
 		$pdo = parent::createPDO();
 		$pdo->exec('SET NAMES utf8mb4');

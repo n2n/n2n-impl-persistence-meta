@@ -30,7 +30,7 @@ abstract class DialectAdapter implements Dialect {
 	protected string $readWriteTransactionIsolationLevel;
 	protected string $readOnlyTransactionIsolationLevel;
 
-	public function __construct(private PersistenceUnitConfig $persistenceUnitConfig) {
+	public function __construct(protected PersistenceUnitConfig $persistenceUnitConfig) {
 		$this->readWriteTransactionIsolationLevel = $this->persistenceUnitConfig->getReadWriteTransactionIsolationLevel();
 		$this->readOnlyTransactionIsolationLevel = $this->persistenceUnitConfig->getReadOnlyTransactionIsolationLevel()
 				?? $this->readWriteTransactionIsolationLevel;
@@ -40,7 +40,11 @@ abstract class DialectAdapter implements Dialect {
 		return new \PDO($dsnUri, $user, $password, $options);
 	}
 
-	protected function specifySessionTransactionIsolationLevel(\PDO $pdo): void {
+	protected function determinePdoOptions(): array {
+		return [];
+	}
+
+	protected function specifySessionSettings(\PDO $pdo): void {
 		$pdo->exec('SET SESSION TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
 	}
 
@@ -80,25 +84,19 @@ abstract class DialectAdapter implements Dialect {
 	}
 
 	public function createPDO(): \PDO {
-		$options = [\PDO::ATTR_PERSISTENT => $this->persistenceUnitConfig->isPersistent()];
+		$options = $this->determinePdoOptions();
 
-		if (!$this->persistenceUnitConfig->isSslVerify()) {
-			$options[\PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
-		}
-
-		if (null !== ($caPath = $this->persistenceUnitConfig->getSslCaCertificatePath())) {
-			$options[\PDO::MYSQL_ATTR_SSL_CA] = $caPath;
+		if ($this->persistenceUnitConfig->isPersistent()) {
+			$options[\PDO::ATTR_PERSISTENT] = $this->persistenceUnitConfig->isPersistent();
 		}
 
 		$pdo = $this->newPDO($this->persistenceUnitConfig->getDsnUri(), $this->persistenceUnitConfig->getUser(),
 				$this->persistenceUnitConfig->getPassword(), $options);
 
-		$this->specifySessionTransactionIsolationLevel($pdo);
+		$this->specifySessionSettings($pdo);
 
 		return $pdo;
 	}
-
-
 
 	function beginTransaction(\PDO $pdo, bool $readOnly): void {
 		$this->specifyNextTransactionIsolationLevel($pdo, $readOnly);

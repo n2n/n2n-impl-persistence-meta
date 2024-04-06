@@ -53,7 +53,7 @@ class SqliteDialect extends DialectAdapter {
 		return $pdo;
 	}
 
-	protected function specifySessionTransactionIsolationLevel(\PDO $pdo): void {
+	protected function specifySessionSettings(\PDO $pdo): void {
 		// NOT SUPPORTED
 	}
 
