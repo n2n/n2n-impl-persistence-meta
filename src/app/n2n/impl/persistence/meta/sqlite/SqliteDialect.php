@@ -40,20 +40,31 @@ use n2n\persistence\meta\OrmDialectConfig;
 use n2n\persistence\meta\data\Importer;
 
 class SqliteDialect extends DialectAdapter {
-	public function __construct() {
-	}
-	
+
 	public function getName(): string {
 		return 'Sqlite';
 	}
-	public function createPDO(PersistenceUnitConfig $persistenceUnitConfig): \PDO {
-		$pdo = parent::createPDO($persistenceUnitConfig);
+
+	public function createPDO(): \PDO {
+		$pdo = parent::createPDO();
 
 		$pdo->exec('PRAGMA foreign_keys=ON');
 
 		return $pdo;
 	}
-	
+
+	protected function specifySessionSettings(\PDO $pdo): void {
+		// NOT SUPPORTED
+	}
+
+	protected function specifyNextTransactionIsolationLevel(\PDO $pdo, bool $readOnly): void{
+		// NOT SUPPORTED
+	}
+
+	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly): void {
+		// NOT SUPPORTED
+	}
+
 	/**
 	 * {@inheritDoc}
 	 * @see \n2n\persistence\meta\Dialect::createMetaManager()

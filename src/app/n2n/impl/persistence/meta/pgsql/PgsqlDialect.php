@@ -41,7 +41,7 @@ use n2n\persistence\meta\MetaManager;
 use n2n\persistence\meta\data\common\CommonSelectLockBuilder;
 
 class PgsqlDialect extends DialectAdapter {
-	public function __construct() {}
+
 	/**
 	 * @return string
 	 */
@@ -49,13 +49,11 @@ class PgsqlDialect extends DialectAdapter {
 		return 'Pgsql';
 	}
 
-	public function createPDO(PersistenceUnitConfig $persistenceUnitConfig): \PDO {
-		$pdo = parent::createPDO($persistenceUnitConfig);
-
-		$pdo->exec('SET SESSION TRANSACTION ISOLATION LEVEL ' . $persistenceUnitConfig->getTransactionIsolationLevel());
-
-		return $pdo;
-	}
+//	public function createPDO(PersistenceUnitConfig $persistenceUnitConfig): \PDO {
+//		$pdo = parent::createPDO($persistenceUnitConfig);
+//
+//		return $pdo;
+//	}
 
 	/**
 	 * {@inheritDoc}

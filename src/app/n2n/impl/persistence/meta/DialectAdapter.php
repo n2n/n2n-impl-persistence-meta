@@ -26,6 +26,44 @@ use n2n\persistence\meta\Dialect;
 use n2n\core\config\PersistenceUnitConfig;
 
 abstract class DialectAdapter implements Dialect {
+
+	protected string $readWriteTransactionIsolationLevel;
+	protected string $readOnlyTransactionIsolationLevel;
+
+	public function __construct(protected PersistenceUnitConfig $persistenceUnitConfig) {
+		$this->readWriteTransactionIsolationLevel = $this->persistenceUnitConfig->getReadWriteTransactionIsolationLevel();
+		$this->readOnlyTransactionIsolationLevel = $this->persistenceUnitConfig->getReadOnlyTransactionIsolationLevel()
+				?? $this->readWriteTransactionIsolationLevel;
+	}
+
+	protected function newPDO(string $dsnUri, string $user, ?string $password, array $options): \PDO {
+		return new \PDO($dsnUri, $user, $password, $options);
+	}
+
+	protected function determinePdoOptions(): array {
+		return [];
+	}
+
+	protected function specifySessionSettings(\PDO $pdo): void {
+		$pdo->exec('SET SESSION TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
+	}
+
+	protected function specifyNextTransactionIsolationLevel(\PDO $pdo, bool $readOnly): void {
+		if ($this->readWriteTransactionIsolationLevel === $this->readOnlyTransactionIsolationLevel) {
+			return;
+		}
+
+		$transactionIsolationLevel = ($readOnly ? $this->readOnlyTransactionIsolationLevel
+				: $this->readWriteTransactionIsolationLevel);
+		$pdo->exec('SET TRANSACTION ISOLATION LEVEL ' . $transactionIsolationLevel);
+	}
+
+	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly): void {
+		if ($readOnly) {
+			$pdo->exec('SET TRANSACTION READ ONLY');
+		}
+	}
+
 	/**
 	 * Quotes the like wildcard chars
 	 * @param string $pattern
@@ -45,20 +83,25 @@ abstract class DialectAdapter implements Dialect {
 		return self::DEFAULT_ESCAPING_CHARACTER;
 	}
 
-	public function createPDO(PersistenceUnitConfig $persistenceUnitConfig): \PDO {
-		$options = [\PDO::ATTR_PERSISTENT => $persistenceUnitConfig->isPersistent()];
+	public function createPDO(): \PDO {
+		$options = $this->determinePdoOptions();
 
-		if (!$persistenceUnitConfig->isSslVerify()) {
-			$options[\PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+		if ($this->persistenceUnitConfig->isPersistent()) {
+			$options[\PDO::ATTR_PERSISTENT] = $this->persistenceUnitConfig->isPersistent();
 		}
 
-		if (null !== ($caPath = $persistenceUnitConfig->getSslCaCertificatePath())) {
-			$options[\PDO::MYSQL_ATTR_SSL_CA] = $caPath;
-		}
+		$pdo = $this->newPDO($this->persistenceUnitConfig->getDsnUri(), $this->persistenceUnitConfig->getUser(),
+				$this->persistenceUnitConfig->getPassword(), $options);
 
-		return new \PDO($persistenceUnitConfig->getDsnUri(), $persistenceUnitConfig->getUser(),
-				$persistenceUnitConfig->getPassword(), $options);
+		$this->specifySessionSettings($pdo);
+
+		return $pdo;
 	}
 
+	function beginTransaction(\PDO $pdo, bool $readOnly): void {
+		$this->specifyNextTransactionIsolationLevel($pdo, $readOnly);
+		$this->specifyNextTransactionAccessMode($pdo, $readOnly);
 
+		$pdo->beginTransaction();
+	}
 }
