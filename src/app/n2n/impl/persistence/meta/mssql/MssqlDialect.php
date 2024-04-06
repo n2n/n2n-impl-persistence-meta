@@ -41,21 +41,25 @@ use n2n\persistence\meta\data\Importer;
 use n2n\persistence\meta\MetaManager;
 
 class MssqlDialect extends DialectAdapter {
-	
-	public function __construct() {
-	}
-	
+
 	public function getName(): string {
 		return 'Mssql';
 	}
 	
-	public function createPDO(PersistenceUnitConfig $persistenceUnitConfig): \PDO {
-		$pdo = parent::createPDO($persistenceUnitConfig);
+	public function createPDO(): \PDO {
+		$pdo = parent::createPDO();
 
-		//collation is set automatically
-		$pdo->exec('SET TRANSACTION ISOLATION LEVEL ' . $persistenceUnitConfig->getTransactionIsolationLevel());
+		// collation is set automatically
 
 		return $pdo;
+	}
+
+	protected function specifySessionTransactionIsolationLevel(\PDO $pdo): void {
+		$pdo->exec('SET TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
+	}
+
+	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly): void {
+		// ACCESS MODE (e. g. READ ONLY) not supported
 	}
 	
 	/**

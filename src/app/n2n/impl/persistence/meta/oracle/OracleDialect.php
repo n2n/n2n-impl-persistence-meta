@@ -41,21 +41,26 @@ use n2n\persistence\meta\MetaManager;
 use n2n\persistence\meta\data\common\CommonSelectLockBuilder;
 
 class OracleDialect extends DialectAdapter {
-	
-	public function __construct() {}
-	
+
 	public function getName(): string {
 		return 'Oracle';
 	}
-	public function createPDO(PersistenceUnitConfig $persistenceUnitConfig): \PDO {
-		$pdo = parent::createPDO($persistenceUnitConfig);
+	public function createPDO(): \PDO {
+		$pdo = parent::createPDO();
 
-		$pdo->exec('SET TRANSACTION ISOLATION LEVEL ' . $persistenceUnitConfig->getTransactionIsolationLevel());
 		$pdo->exec('ALTER SESSION SET NLS_TIMESTAMP_FORMAT = ' . $pdo->quote('YYYY-MM-DD HH:MI:SS.FF'));
 		$pdo->exec('ALTER SESSION SET NLS_DATE_FORMAT = ' . $pdo->quote('YYYY-MM-DD'));
 		$pdo->exec('ALTER SESSION SET NLS_TIMESTAMP_TZ_FORMAT = ' . $pdo->quote('YYYY-MM-DD HH:MI:SS.FF TZH:TZM'));
 
 		return $pdo;
+	}
+
+	protected function specifySessionTransactionIsolationLevel(\PDO $pdo): void {
+		$pdo->exec('SET TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
+	}
+
+	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly): void {
+		// ACCESS MODE (e. g. READ ONLY) not supported
 	}
 	
 	/**

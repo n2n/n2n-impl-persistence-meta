@@ -8,11 +8,13 @@ class PgsqlTest extends DbTestCase {
 	}
 	
 	public function testView() {
+		$this->markTestSkipped('requires mysql db');
 		$this->viewTest(true);
 		$this->viewTest(false);
 	}
 	
 	public function testTable() {
+		$this->markTestSkipped('requires mysql db');
 		$this->tableTest(true);
 		$this->tableTest(false);
 	}

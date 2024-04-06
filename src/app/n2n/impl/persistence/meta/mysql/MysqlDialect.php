@@ -42,19 +42,14 @@ use n2n\persistence\meta\data\Importer;
 use n2n\persistence\meta\data\common\CommonSelectLockBuilder;
 
 class MysqlDialect extends DialectAdapter {
-	/* (non-PHPdoc)
-	 * @see \n2n\persistence\meta\Dialect::__construct()
-	 */
-	public function __construct() {}
-	
+
 	public function getName(): string {
 		return 'Mysql';
 	}
 
-	public function createPDO(PersistenceUnitConfig $persistenceUnitConfig): \PDO {
-		$pdo = parent::createPDO($persistenceUnitConfig);
+	public function createPDO(): \PDO {
+		$pdo = parent::createPDO();
 		$pdo->exec('SET NAMES utf8mb4');
-		$pdo->exec('SET SESSION TRANSACTION ISOLATION LEVEL ' . $persistenceUnitConfig->getTransactionIsolationLevel());
 		$pdo->exec('SET SESSION sql_mode = \'STRICT_ALL_TABLES\'');
 
 		return $pdo;
