@@ -3,12 +3,11 @@
 namespace meta\mysql;
 
 use PHPUnit\Framework\TestCase;
-use n2n\persistence\Pdo;
 use n2n\core\config\PersistenceUnitConfig;
 use n2n\impl\persistence\meta\mysql\MysqlDialect;
 use meta\test\MetaTestEnv;
 
-class MysqlDialectTest extends TestCase {
+class MysqlDialectInitAndTransactionTest extends TestCase {
 
 	function testWithSameTransactionIsolationLevel() {
 		$ma = MetaTestEnv::setUpPdoMockAssembly($this, MysqlDialect::class);
@@ -60,6 +59,7 @@ class MysqlDialectTest extends TestCase {
 		$this->assertCount(1, $ma->beginTransactionCalls);
 		$this->assertCount(4, $ma->execCalls);
 		$this->assertEquals('SET TRANSACTION ISOLATION LEVEL SERIALIZABLE', $ma->execCalls[3]['statement']);
+		$this->assertTrue($ma->execCalls[3]['_nr'] < $ma->beginTransactionCalls[0]['_nr']);
 
 		$ma->pdo->commit();
 
@@ -72,6 +72,7 @@ class MysqlDialectTest extends TestCase {
 		$this->assertCount(6, $ma->execCalls);
 		$this->assertEquals('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ', $ma->execCalls[4]['statement']);
 		$this->assertEquals('SET TRANSACTION READ ONLY', $ma->execCalls[5]['statement']);
+		$this->assertTrue($ma->execCalls[4]['_nr'] < $ma->beginTransactionCalls[1]['_nr']);
 	}
 
 }

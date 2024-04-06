@@ -33,20 +33,20 @@ class PdoMockAssembly {
 
 	public bool $inTransaction = false;
 
+	private int $callCounter = 0;
 	public array $execCalls = [];
-
 	public array $beginTransactionCalls = [];
 
 	function __construct(public MockObject $nativePdoMock, public MockObject $dialectMock, public Pdo $pdo) {
 		$nativePdoMock->method('exec')->will(
 				TestCase::returnCallback(function ($statment) use (&$execStatements) {
-					$this->execCalls[]['statement'] = $statment;
+					$this->execCalls[] = ['_nr' => ++$this->callCounter, 'statement' => $statment];
 					return 0;
 				}));
 
 		$this->nativePdoMock->method('inTransaction')->willReturnCallback(fn () => $this->inTransaction);
 		$this->nativePdoMock->method('beginTransaction')->willReturnCallback(function () {
-			$this->beginTransactionCalls[] = [];
+			$this->beginTransactionCalls[] = ['_nr' => ++$this->callCounter];
 			$this->inTransaction = true;
 			return true;
 		});
