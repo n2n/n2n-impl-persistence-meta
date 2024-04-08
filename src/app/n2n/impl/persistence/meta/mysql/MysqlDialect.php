@@ -40,6 +40,8 @@ use n2n\persistence\meta\data\DeleteStatementBuilder;
 use n2n\persistence\meta\OrmDialectConfig;
 use n2n\persistence\meta\data\Importer;
 use n2n\persistence\meta\data\common\CommonSelectLockBuilder;
+use n2n\persistence\PDOOperations;
+use n2n\persistence\PdoLogger;
 
 class MysqlDialect extends DialectAdapter {
 
@@ -61,14 +63,12 @@ class MysqlDialect extends DialectAdapter {
 		return $options;
 	}
 
-	public function createPDO(): \PDO {
-		$pdo = parent::createPDO();
-		$pdo->exec('SET NAMES utf8mb4');
-		$pdo->exec('SET SESSION sql_mode = \'STRICT_ALL_TABLES\'');
-
-		return $pdo;
+	protected function specifySessionSettings(\PDO $pdo, PdoLogger $pdoLogger = null): void {
+		parent::specifySessionSettings($pdo, $pdoLogger);
+		PDOOperations::exec($pdoLogger, $pdo, 'SET NAMES utf8mb4');
+		PDOOperations::exec($pdoLogger, $pdo,'SET SESSION sql_mode = \'STRICT_ALL_TABLES\'');
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see \n2n\persistence\meta\Dialect::createMetaManager()

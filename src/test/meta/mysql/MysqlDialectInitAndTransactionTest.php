@@ -10,7 +10,8 @@ use meta\test\MetaTestEnv;
 class MysqlDialectInitAndTransactionTest extends TestCase {
 
 	function testWithSameTransactionIsolationLevel() {
-		$ma = MetaTestEnv::setUpPdoMockAssembly($this, MysqlDialect::class);
+		$ma = MetaTestEnv::setUpPdoMockAssembly($this, MysqlDialect::class,
+				readOnlyTransactionIsolationLevel: PersistenceUnitConfig::TIL_SERIALIZABLE);
 
 		$this->assertCount(0, $ma->execCalls);
 

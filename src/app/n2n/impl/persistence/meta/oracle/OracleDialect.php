@@ -39,27 +39,23 @@ use n2n\persistence\meta\OrmDialectConfig;
 use n2n\persistence\meta\data\Importer;
 use n2n\persistence\meta\MetaManager;
 use n2n\persistence\meta\data\common\CommonSelectLockBuilder;
+use n2n\persistence\PDOOperations;
+use n2n\persistence\PdoLogger;
 
 class OracleDialect extends DialectAdapter {
 
 	public function getName(): string {
 		return 'Oracle';
 	}
-	public function createPDO(): \PDO {
-		$pdo = parent::createPDO();
 
-		$pdo->exec('ALTER SESSION SET NLS_TIMESTAMP_FORMAT = ' . $pdo->quote('YYYY-MM-DD HH:MI:SS.FF'));
-		$pdo->exec('ALTER SESSION SET NLS_DATE_FORMAT = ' . $pdo->quote('YYYY-MM-DD'));
-		$pdo->exec('ALTER SESSION SET NLS_TIMESTAMP_TZ_FORMAT = ' . $pdo->quote('YYYY-MM-DD HH:MI:SS.FF TZH:TZM'));
-
-		return $pdo;
+	protected function specifySessionSettings(\PDO $pdo, PdoLogger $pdoLogger = null): void {
+		PDOOperations::exec($pdoLogger, $pdo, 'SET TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
+		PDOOperations::exec($pdoLogger, $pdo, 'ALTER SESSION SET NLS_TIMESTAMP_FORMAT = ' . $pdo->quote('YYYY-MM-DD HH:MI:SS.FF'));
+		PDOOperations::exec($pdoLogger, $pdo, 'ALTER SESSION SET NLS_DATE_FORMAT = ' . $pdo->quote('YYYY-MM-DD'));
+		PDOOperations::exec($pdoLogger, $pdo, 'ALTER SESSION SET NLS_TIMESTAMP_TZ_FORMAT = ' . $pdo->quote('YYYY-MM-DD HH:MI:SS.FF TZH:TZM'));
 	}
 
-	protected function specifySessionSettings(\PDO $pdo): void {
-		$pdo->exec('SET TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
-	}
-
-	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly): void {
+	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly, PdoLogger $pdoLogger = null): void {
 		// ACCESS MODE (e. g. READ ONLY) not supported
 	}
 	
@@ -71,10 +67,7 @@ class OracleDialect extends DialectAdapter {
 	public function createMetaManager(Pdo $dbh): MetaManager {
 		return new OracleMetaManager($dbh);
 	}
-	/**
-	 *
-	 * @param string $str
-	 */
+
 	public function quoteField(string $str): string {
 		return '"' . str_replace('"', '""', (string) $str) . '"';
 //		return $str;

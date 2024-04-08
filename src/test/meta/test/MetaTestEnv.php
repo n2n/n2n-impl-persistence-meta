@@ -10,8 +10,9 @@ use n2n\persistence\meta\Dialect;
 
 class MetaTestEnv {
 
-	static function setUpPdoMockAssembly(TestCase $testCase, string $dialectClass, string $readOnlyTransactionIsolationLevel = null,
-				bool $persistent = false, bool $sslVerify = true, string $sslCaCertificatePath = null): PdoMockAssembly {
+	static function setUpPdoMockAssembly(TestCase $testCase, string $dialectClass,
+			string $readOnlyTransactionIsolationLevel = PersistenceUnitConfig::TIL_REPEATABLE_READ,
+			bool $persistent = false, bool $sslVerify = true, string $sslCaCertificatePath = null): PdoMockAssembly {
 		$config = new PersistenceUnitConfig('holeradio', 'mysql:..', 'user', null,
 				PersistenceUnitConfig::TIL_SERIALIZABLE, $dialectClass,
 				$sslVerify, $sslCaCertificatePath, $persistent,
