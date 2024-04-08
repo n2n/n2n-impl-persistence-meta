@@ -12,7 +12,8 @@ use n2n\impl\persistence\meta\mssql\MssqlDialect;
 class MssqlDialectInitAndTransactionTest extends TestCase {
 
 	function testWithSameTransactionIsolationLevel() {
-		$ma = MetaTestEnv::setUpPdoMockAssembly($this, MssqlDialect::class);
+		$ma = MetaTestEnv::setUpPdoMockAssembly($this, MssqlDialect::class,
+				readOnlyTransactionIsolationLevel: PersistenceUnitConfig::TIL_SERIALIZABLE);
 
 		$this->assertCount(0, $ma->execCalls);
 

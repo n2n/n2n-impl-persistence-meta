@@ -39,26 +39,21 @@ use n2n\persistence\meta\data\DeleteStatementBuilder;
 use n2n\persistence\meta\OrmDialectConfig;
 use n2n\persistence\meta\data\Importer;
 use n2n\persistence\meta\MetaManager;
+use n2n\persistence\PdoLogger;
+use n2n\persistence\PDOOperations;
 
 class MssqlDialect extends DialectAdapter {
 
 	public function getName(): string {
 		return 'Mssql';
 	}
-	
-	public function createPDO(): \PDO {
-		$pdo = parent::createPDO();
 
-		// collation is set automatically
-
-		return $pdo;
+	protected function specifySessionSettings(\PDO $pdo, PdoLogger $pdoLogger = null): void {
+		PDOOperations::exec($pdoLogger, $pdo,
+				'SET TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
 	}
 
-	protected function specifySessionSettings(\PDO $pdo): void {
-		$pdo->exec('SET TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
-	}
-
-	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly): void {
+	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly, PdoLogger $pdoLogger = null): void {
 		// ACCESS MODE (e. g. READ ONLY) not supported
 	}
 	

@@ -11,7 +11,8 @@ use n2n\impl\persistence\meta\oracle\OracleDialect;
 class OracleDialectInitAndTransactionTest extends TestCase {
 
 	function testWithSameTransactionIsolationLevel() {
-		$ma = MetaTestEnv::setUpPdoMockAssembly($this, OracleDialect::class);
+		$ma = MetaTestEnv::setUpPdoMockAssembly($this, OracleDialect::class,
+				readOnlyTransactionIsolationLevel: PersistenceUnitConfig::TIL_SERIALIZABLE);
 
 		$this->assertCount(0, $ma->execCalls);
 

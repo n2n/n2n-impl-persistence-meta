@@ -38,6 +38,8 @@ use n2n\persistence\meta\data\InsertStatementBuilder;
 use n2n\persistence\meta\data\DeleteStatementBuilder;
 use n2n\persistence\meta\OrmDialectConfig;
 use n2n\persistence\meta\data\Importer;
+use n2n\persistence\PDOOperations;
+use n2n\persistence\PdoLogger;
 
 class SqliteDialect extends DialectAdapter {
 
@@ -45,23 +47,15 @@ class SqliteDialect extends DialectAdapter {
 		return 'Sqlite';
 	}
 
-	public function createPDO(): \PDO {
-		$pdo = parent::createPDO();
-
-		$pdo->exec('PRAGMA foreign_keys=ON');
-
-		return $pdo;
+	protected function specifySessionSettings(\PDO $pdo, PdoLogger $pdoLogger = null): void {
+		PDOOperations::exec($pdoLogger, $pdo, 'PRAGMA foreign_keys=ON');
 	}
 
-	protected function specifySessionSettings(\PDO $pdo): void {
+	protected function specifyNextTransactionIsolationLevel(\PDO $pdo, bool $readOnly, PdoLogger $pdoLogger = null): void{
 		// NOT SUPPORTED
 	}
 
-	protected function specifyNextTransactionIsolationLevel(\PDO $pdo, bool $readOnly): void{
-		// NOT SUPPORTED
-	}
-
-	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly): void {
+	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly, PdoLogger $pdoLogger = null): void {
 		// NOT SUPPORTED
 	}
 

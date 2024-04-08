@@ -5,6 +5,7 @@ namespace meta;
 use PHPUnit\Framework\TestCase;
 use n2n\core\config\PersistenceUnitConfig;
 use n2n\impl\persistence\meta\sqlite\SqliteDialect;
+use n2n\persistence\PdoLogger;
 
 class DialectAdapterTest extends TestCase {
 
@@ -18,13 +19,13 @@ class DialectAdapterTest extends TestCase {
 	function testPersistent() {
 		$config = $this->createPersistenceUnitConfig();
 		$dialect = new SqliteDialect($config);
-		$pdo = $dialect->createPDO();
+		$pdo = $dialect->createPDO($this->createMock(PdoLogger::class));
 
 		$this->assertFalse($pdo->getAttribute(\PDO::ATTR_PERSISTENT));
 
 		$config = $this->createPersistenceUnitConfig(persistent: true);
 		$dialect = new SqliteDialect($config);
-		$pdo = $dialect->createPDO();
+		$pdo = $dialect->createPDO($this->createMock(PdoLogger::class));
 
 		$this->assertTrue($pdo->getAttribute(\PDO::ATTR_PERSISTENT));
 	}

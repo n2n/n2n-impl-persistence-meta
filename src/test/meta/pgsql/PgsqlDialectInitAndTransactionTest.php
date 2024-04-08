@@ -11,7 +11,8 @@ use n2n\impl\persistence\meta\pgsql\PgsqlDialect;
 class PgsqlDialectInitAndTransactionTest extends TestCase {
 
 	function testWithSameTransactionIsolationLevel() {
-		$ma = MetaTestEnv::setUpPdoMockAssembly($this, PgsqlDialect::class);
+		$ma = MetaTestEnv::setUpPdoMockAssembly($this, PgsqlDialect::class,
+				readOnlyTransactionIsolationLevel: PersistenceUnitConfig::TIL_SERIALIZABLE);;
 
 		$this->assertCount(0, $ma->execCalls);
 

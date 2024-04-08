@@ -24,6 +24,8 @@ namespace n2n\impl\persistence\meta;
 use n2n\persistence\meta\data\QueryComparator;
 use n2n\persistence\meta\Dialect;
 use n2n\core\config\PersistenceUnitConfig;
+use n2n\persistence\PdoLogger;
+use n2n\persistence\PDOOperations;
 
 abstract class DialectAdapter implements Dialect {
 
@@ -44,23 +46,24 @@ abstract class DialectAdapter implements Dialect {
 		return [];
 	}
 
-	protected function specifySessionSettings(\PDO $pdo): void {
-		$pdo->exec('SET SESSION TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
+	protected function specifySessionSettings(\PDO $pdo, PdoLogger $pdoLogger = null): void {
+		PDOOperations::exec($pdoLogger, $pdo,
+				'SET SESSION TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
 	}
 
-	protected function specifyNextTransactionIsolationLevel(\PDO $pdo, bool $readOnly): void {
+	protected function specifyNextTransactionIsolationLevel(\PDO $pdo, bool $readOnly, PdoLogger $pdoLogger = null): void {
 		if ($this->readWriteTransactionIsolationLevel === $this->readOnlyTransactionIsolationLevel) {
 			return;
 		}
 
 		$transactionIsolationLevel = ($readOnly ? $this->readOnlyTransactionIsolationLevel
 				: $this->readWriteTransactionIsolationLevel);
-		$pdo->exec('SET TRANSACTION ISOLATION LEVEL ' . $transactionIsolationLevel);
+		PDOOperations::exec($pdoLogger, $pdo, 'SET TRANSACTION ISOLATION LEVEL ' . $transactionIsolationLevel);
 	}
 
-	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly): void {
+	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly, PdoLogger $pdoLogger = null): void {
 		if ($readOnly) {
-			$pdo->exec('SET TRANSACTION READ ONLY');
+			PDOOperations::exec($pdoLogger, $pdo, 'SET TRANSACTION READ ONLY');
 		}
 	}
 
@@ -75,6 +78,7 @@ abstract class DialectAdapter implements Dialect {
 				array($esc . $esc,  $esc . QueryComparator::LIKE_WILDCARD_MANY_CHARS, $esc .
 						QueryComparator::LIKE_WILDCARD_ONE_CHAR), $pattern);
 	}
+
 	/**
 	 * Returns the escape character used in {@link Dialect::escapeLikePattern()}.
 	 * @return string
@@ -83,7 +87,7 @@ abstract class DialectAdapter implements Dialect {
 		return self::DEFAULT_ESCAPING_CHARACTER;
 	}
 
-	public function createPDO(): \PDO {
+	public function createPDO(PdoLogger $pdoLogger = null): \PDO {
 		$options = $this->determinePdoOptions();
 
 		if ($this->persistenceUnitConfig->isPersistent()) {
@@ -93,15 +97,15 @@ abstract class DialectAdapter implements Dialect {
 		$pdo = $this->newPDO($this->persistenceUnitConfig->getDsnUri(), $this->persistenceUnitConfig->getUser(),
 				$this->persistenceUnitConfig->getPassword(), $options);
 
-		$this->specifySessionSettings($pdo);
+		$this->specifySessionSettings($pdo, $pdoLogger);
 
 		return $pdo;
 	}
 
-	function beginTransaction(\PDO $pdo, bool $readOnly): void {
-		$this->specifyNextTransactionIsolationLevel($pdo, $readOnly);
-		$this->specifyNextTransactionAccessMode($pdo, $readOnly);
+	function beginTransaction(\PDO $pdo, bool $readOnly, PdoLogger $pdoLogger = null): void {
+		$this->specifyNextTransactionIsolationLevel($pdo, $readOnly, $pdoLogger);
+		$this->specifyNextTransactionAccessMode($pdo, $readOnly, $pdoLogger);
 
-		$pdo->beginTransaction();
+		PdoOperations::beginTransaction($pdoLogger, $pdo);
 	}
 }
