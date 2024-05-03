@@ -21,10 +21,10 @@
  */
 namespace n2n\impl\persistence\meta\sqlite\management;
 
-use n2n\persistence\meta\structure\IndexType;
+use n2n\spec\dbo\meta\structure\IndexType;
 use n2n\impl\persistence\meta\sqlite\SqliteCreateStatementBuilder;
-use n2n\persistence\meta\structure\Table;
-use n2n\persistence\meta\structure\View;
+use n2n\spec\dbo\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\View;
 use n2n\impl\persistence\meta\sqlite\SqliteIndexStatementStringBuilder;
 use n2n\impl\persistence\meta\sqlite\SqliteMetaEntityBuilder;
 use n2n\persistence\Pdo;

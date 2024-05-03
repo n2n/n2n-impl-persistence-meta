@@ -22,8 +22,8 @@
 namespace n2n\impl\persistence\meta\mssql;
 
 use n2n\persistence\meta\structure\common\TableAdapter;
-use n2n\persistence\meta\structure\Table;
-use n2n\persistence\meta\structure\ColumnFactory;
+use n2n\spec\dbo\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\ColumnFactory;
 
 class MssqlTable extends TableAdapter {
 	const PREFIX_PRIMARY_KEY = 'PK_';
@@ -35,7 +35,7 @@ class MssqlTable extends TableAdapter {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\structure\Table::copy()
+	 * @see \n2n\spec\dbo\meta\structure\Table::copy()
 	 * @return Table
 	 */
 	public function copy(string $newTableName = null): Table {

@@ -21,8 +21,8 @@
  */
 namespace n2n\impl\persistence\meta\sqlite;
 
-use n2n\persistence\meta\structure\Index;
-use n2n\persistence\meta\structure\IndexType;
+use n2n\spec\dbo\meta\structure\Index;
+use n2n\spec\dbo\meta\structure\IndexType;
 use n2n\persistence\Pdo;
 
 class SqliteIndexStatementStringBuilder {

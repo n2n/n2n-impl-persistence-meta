@@ -22,8 +22,8 @@
 namespace n2n\impl\persistence\meta\oracle;
 
 use n2n\persistence\meta\structure\common\TableAdapter;
-use n2n\persistence\meta\structure\ColumnFactory;
-use n2n\persistence\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\ColumnFactory;
+use n2n\spec\dbo\meta\structure\Table;
 
 class OracleTable extends TableAdapter {
 	
@@ -33,7 +33,7 @@ class OracleTable extends TableAdapter {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\structure\Table::copy()
+	 * @see \n2n\spec\dbo\meta\structure\Table::copy()
 	 * @return Table
 	 */
 	public function copy(string $newTableName = null): Table {
@@ -49,7 +49,7 @@ class OracleTable extends TableAdapter {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\structure\Table::createColumnFactory()
+	 * @see \n2n\spec\dbo\meta\structure\Table::createColumnFactory()
 	 * @return ColumnFactory
 	 */
 	public function createColumnFactory(): ColumnFactory {

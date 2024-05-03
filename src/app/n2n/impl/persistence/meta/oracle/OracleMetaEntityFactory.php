@@ -23,16 +23,13 @@ namespace n2n\impl\persistence\meta\oracle;
 
 use n2n\persistence\meta\structure\common\CommonView;
 
-use n2n\persistence\meta\structure\MetaEntityFactory;
-use n2n\persistence\meta\Database;
-use n2n\persistence\meta\structure\Table;
-use n2n\persistence\meta\structure\View;
+use n2n\spec\dbo\meta\structure\MetaEntityFactory;
+use n2n\spec\dbo\meta\structure\Database;
+use n2n\spec\dbo\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\View;
 
 class OracleMetaEntityFactory implements MetaEntityFactory {
-	
-	/**
-	 * @var n2n\impl\persistence\meta\oracle\OracleDatabase;
-	 */
+
 	private $database;
 	
 	public function __construct(OracleDatabase $database) {
@@ -41,7 +38,7 @@ class OracleMetaEntityFactory implements MetaEntityFactory {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\structure\MetaEntityFactory::getDatabase()
+	 * @see \n2n\spec\dbo\meta\structure\MetaEntityFactory::getDatabase()
 	 * @return Database
 	 */
 	public function getDatabase(): Database {
@@ -50,7 +47,7 @@ class OracleMetaEntityFactory implements MetaEntityFactory {
 
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\structure\MetaEntityFactory::createTable()
+	 * @see \n2n\spec\dbo\meta\structure\MetaEntityFactory::createTable()
 	 * @return Table
 	 */
 	public function createTable(string $name): Table {
@@ -61,7 +58,7 @@ class OracleMetaEntityFactory implements MetaEntityFactory {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\structure\MetaEntityFactory::createView()
+	 * @see \n2n\spec\dbo\meta\structure\MetaEntityFactory::createView()
 	 * @return View
 	 */
 	public function createView(string $name, string $query): View {

@@ -21,11 +21,11 @@
  */
 namespace n2n\impl\persistence\meta\mssql;
 
-use n2n\persistence\meta\structure\MetaEntity;
-use n2n\persistence\meta\structure\Table;
-use n2n\persistence\meta\structure\View;
+use n2n\spec\dbo\meta\structure\MetaEntity;
+use n2n\spec\dbo\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\View;
 use n2n\persistence\meta\structure\UnknownMetaEntityException;
-use n2n\persistence\meta\structure\IndexType;
+use n2n\spec\dbo\meta\structure\IndexType;
 use n2n\persistence\Pdo;
 
 class MssqlCreateStatementBuilder {

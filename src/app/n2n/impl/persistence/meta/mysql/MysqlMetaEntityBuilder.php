@@ -23,7 +23,7 @@ namespace n2n\impl\persistence\meta\mysql;
 
 use n2n\persistence\meta\structure\Size;
 
-use n2n\persistence\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\Table;
 
 use n2n\persistence\meta\structure\common\CommonIndex;
 
@@ -41,11 +41,11 @@ use n2n\persistence\meta\structure\common\CommonEnumColumn;
 
 use n2n\persistence\meta\structure\common\CommonStringColumn;
 
-use n2n\persistence\meta\structure\IndexType;
+use n2n\spec\dbo\meta\structure\IndexType;
 
 use n2n\persistence\Pdo;
 use n2n\util\type\CastUtils;
-use n2n\persistence\meta\Database;
+use n2n\spec\dbo\meta\structure\Database;
 use n2n\persistence\meta\structure\common\MetaEntityAdapter;
 use n2n\persistence\meta\structure\common\ForeignIndex;
 use n2n\util\StringUtils;
@@ -81,7 +81,7 @@ class MysqlMetaEntityBuilder {
 	
 	/**
 	 * @param string $name
-	 * @return \n2n\persistence\meta\structure\MetaEntity
+	 * @return \n2n\spec\dbo\meta\structure\MetaEntity
 	 */
 	public function createMetaEntity(string $dbName, string $name, $applyIndexes = false) {
 		$metaEntity = null;

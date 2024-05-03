@@ -21,8 +21,8 @@
  */
 namespace n2n\impl\persistence\meta\mssql\management;
 
-use n2n\persistence\meta\structure\Table;
-use n2n\persistence\meta\structure\View;
+use n2n\spec\dbo\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\View;
 use n2n\persistence\Pdo;
 use n2n\persistence\meta\structure\common\DropMetaEntityRequestAdapter;
 

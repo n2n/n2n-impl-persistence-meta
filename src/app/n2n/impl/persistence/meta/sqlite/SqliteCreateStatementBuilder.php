@@ -21,14 +21,14 @@
  */
 namespace n2n\impl\persistence\meta\sqlite;
 
-use n2n\persistence\meta\structure\View;
-use n2n\persistence\meta\structure\Table;
-use n2n\persistence\meta\structure\MetaEntity;
-use n2n\persistence\meta\structure\IndexType;
+use n2n\spec\dbo\meta\structure\View;
+use n2n\spec\dbo\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\MetaEntity;
+use n2n\spec\dbo\meta\structure\IndexType;
 use n2n\persistence\Pdo;
-use n2n\persistence\meta\structure\Column;
+use n2n\spec\dbo\meta\structure\Column;
 use n2n\util\type\CastUtils;
-use n2n\persistence\meta\structure\Index;
+use n2n\spec\dbo\meta\structure\Index;
 
 class SqliteCreateStatementBuilder {
 	

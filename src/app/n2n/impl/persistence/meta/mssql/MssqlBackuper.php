@@ -23,7 +23,7 @@ namespace n2n\impl\persistence\meta\mssql;
 
 use n2n\spec\dbo\meta\data\impl\QueryTable;
 use n2n\persistence\meta\structure\common\BackuperAdapter;
-use n2n\persistence\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\Table;
 use n2n\spec\dbo\meta\data\impl\QueryConstant;
 use n2n\spec\dbo\meta\data\impl\QueryColumn;
 use n2n\util\ex\IllegalStateException;

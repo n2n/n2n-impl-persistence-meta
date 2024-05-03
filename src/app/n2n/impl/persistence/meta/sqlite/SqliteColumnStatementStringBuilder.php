@@ -22,7 +22,7 @@
 namespace n2n\impl\persistence\meta\sqlite;
 
 use n2n\persistence\meta\structure\UnavailableTypeException;
-use n2n\persistence\meta\structure\Column;
+use n2n\spec\dbo\meta\structure\Column;
 use n2n\persistence\Pdo;
 
 class SqliteColumnStatementStringBuilder {

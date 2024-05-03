@@ -21,7 +21,7 @@
  */
 namespace n2n\impl\persistence\meta\oracle;
 
-use n2n\persistence\meta\structure\FloatingPointColumn;
+use n2n\spec\dbo\meta\structure\FloatingPointColumn;
 
 use n2n\persistence\meta\structure\common\ColumnAdapter;
 

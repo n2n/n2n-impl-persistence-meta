@@ -23,15 +23,15 @@ namespace n2n\impl\persistence\meta\oracle;
 
 use n2n\persistence\meta\structure\Size;
 
-use n2n\persistence\meta\structure\FixedPointColumn;
+use n2n\spec\dbo\meta\structure\FixedPointColumn;;
 use n2n\persistence\meta\structure\UnavailableTypeException;
 use n2n\persistence\Pdo;
-use n2n\persistence\meta\structure\TextColumn;
-use n2n\persistence\meta\structure\StringColumn;
-use n2n\persistence\meta\structure\FloatingPointColumn;
-use n2n\persistence\meta\structure\BinaryColumn;
-use n2n\persistence\meta\structure\IntegerColumn;
-use n2n\persistence\meta\structure\Column;
+use n2n\spec\dbo\meta\structure\TextColumn;;
+use n2n\spec\dbo\meta\structure\StringColumn;
+use n2n\spec\dbo\meta\structure\FloatingPointColumn;
+use n2n\spec\dbo\meta\structure\BinaryColumn;
+use n2n\spec\dbo\meta\structure\IntegerColumn;
+use n2n\spec\dbo\meta\structure\Column;
 
 class OracleColumnStatementStringBuilder {
 	

@@ -23,15 +23,15 @@ namespace n2n\impl\persistence\meta\pgsql;
 
 use n2n\persistence\meta\structure\common\TableAdapter;
 use n2n\util\StringUtils;
-use n2n\persistence\meta\structure\ColumnFactory;
-use n2n\persistence\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\ColumnFactory;
+use n2n\spec\dbo\meta\structure\Table;
 
 class PgsqlTable extends TableAdapter {
 	private $columnFactory;
 
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\structure\Table::createColumnFactory()
+	 * @see \n2n\spec\dbo\meta\structure\Table::createColumnFactory()
 	 * @return ColumnFactory
 	 */
 	public function createColumnFactory(): ColumnFactory {
@@ -48,7 +48,7 @@ class PgsqlTable extends TableAdapter {
 
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\structure\Table::copy()
+	 * @see \n2n\spec\dbo\meta\structure\Table::copy()
 	 * @return Table
 	 */
 	public function copy(string $newTableName = null): Table {
