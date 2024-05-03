@@ -1,13 +1,10 @@
 <?php
 
-namespace meta\sqlite;
+namespace n2n\impl\persistence\meta\sqlite;
 
 use PHPUnit\Framework\TestCase;
 use n2n\core\config\PersistenceUnitConfig;
-use n2n\impl\persistence\meta\mysql\MysqlDialect;
-use meta\test\MetaTestEnv;
-use n2n\impl\persistence\meta\mssql\MssqlDialect;
-use n2n\impl\persistence\meta\sqlite\SqliteDialect;
+use n2n\impl\persistence\meta\test\MetaTestEnv;
 
 class SqliteLoggingTest extends TestCase {
 	

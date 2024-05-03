@@ -4,9 +4,9 @@ namespace n2n\impl\persistence\meta\sqlite;
 
 use PHPUnit\Framework\TestCase;
 use n2n\test\TestEnv;
-use n2n\persistence\meta\data\QueryColumn;
-use n2n\persistence\meta\data\QueryConstant;
-use n2n\persistence\meta\data\QueryPlaceMarker;
+use n2n\spec\dbo\meta\data\impl\QueryColumn;
+use n2n\spec\dbo\meta\data\impl\QueryConstant;
+use n2n\spec\dbo\meta\data\impl\QueryPlaceMarker;
 
 class SqliteInsertStatementBuilderTest extends TestCase {
 	function testEmptyInsertStatement() {

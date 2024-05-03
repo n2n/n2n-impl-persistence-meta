@@ -1,7 +1,7 @@
 <?php
 namespace n2n\impl\persistence\meta\pgsql;
 
-use n2n\persistence\meta\data\QueryFragmentBuilder;
+use n2n\spec\dbo\meta\data\QueryFragmentBuilder;
 use n2n\persistence\Pdo;
 
 class PgsqlQueryFragmentBuilder implements QueryFragmentBuilder {

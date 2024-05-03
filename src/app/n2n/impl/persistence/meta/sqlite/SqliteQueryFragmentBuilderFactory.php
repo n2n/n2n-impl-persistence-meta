@@ -24,6 +24,7 @@ namespace n2n\impl\persistence\meta\sqlite;
 use n2n\persistence\Pdo;
 
 use n2n\persistence\meta\data\common\QueryFragmentBuilderFactory;
+use n2n\spec\dbo\meta\data\QueryFragmentBuilder;
 
 class SqliteQueryFragmentBuilderFactory implements QueryFragmentBuilderFactory {
 	
@@ -36,7 +37,7 @@ class SqliteQueryFragmentBuilderFactory implements QueryFragmentBuilderFactory {
 		$this->dbh = $dbh;
 	}
 	
-	public function create(): \n2n\persistence\meta\data\QueryFragmentBuilder {
+	public function create(): QueryFragmentBuilder {
 		return new SqliteQueryFragmentBuilder($this->dbh);
 	}
 }

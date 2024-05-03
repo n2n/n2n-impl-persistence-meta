@@ -1,6 +1,6 @@
 <?php
 
-namespace meta;
+namespace n2n\impl\persistence\meta;
 
 use PHPUnit\Framework\TestCase;
 use n2n\core\config\PersistenceUnitConfig;
