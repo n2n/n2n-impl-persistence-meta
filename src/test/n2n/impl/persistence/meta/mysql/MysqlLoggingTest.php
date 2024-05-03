@@ -1,11 +1,10 @@
 <?php
 
-namespace meta\mysql;
+namespace n2n\impl\persistence\meta\mysql;
 
 use PHPUnit\Framework\TestCase;
 use n2n\core\config\PersistenceUnitConfig;
-use n2n\impl\persistence\meta\mysql\MysqlDialect;
-use meta\test\MetaTestEnv;
+use n2n\impl\persistence\meta\test\MetaTestEnv;
 
 class MysqlLoggingTest extends TestCase {
 

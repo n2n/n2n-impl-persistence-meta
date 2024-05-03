@@ -36,7 +36,7 @@ class MysqlQueryFragmentBuilderFactory implements QueryFragmentBuilderFactory {
 		$this->dbh = $dbh;
 	}
 	
-	public function create(): \n2n\persistence\meta\data\QueryFragmentBuilder {
+	public function create(): \n2n\spec\dbo\meta\data\QueryFragmentBuilder {
 		return new MysqlQueryFragmentBuilder($this->dbh);
 	}
 }

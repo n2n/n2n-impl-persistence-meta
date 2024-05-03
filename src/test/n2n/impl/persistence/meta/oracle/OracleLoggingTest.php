@@ -1,12 +1,10 @@
 <?php
 
-namespace meta\oracle;
+namespace n2n\impl\persistence\meta\oracle;
 
 use PHPUnit\Framework\TestCase;
 use n2n\core\config\PersistenceUnitConfig;
-use n2n\impl\persistence\meta\mysql\MysqlDialect;
-use meta\test\MetaTestEnv;
-use n2n\impl\persistence\meta\oracle\OracleDialect;
+use n2n\impl\persistence\meta\test\MetaTestEnv;
 
 class OracleLoggingTest extends TestCase {
 
