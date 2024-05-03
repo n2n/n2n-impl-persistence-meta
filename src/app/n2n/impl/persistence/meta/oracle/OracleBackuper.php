@@ -23,7 +23,7 @@ namespace n2n\impl\persistence\meta\oracle;
 
 use n2n\persistence\meta\structure\common\BackuperAdapter;
 use n2n\util\ex\IllegalStateException;
-use n2n\persistence\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\Table;
 use n2n\spec\dbo\meta\data\impl\QueryTable;
 use n2n\persistence\Pdo;
 use n2n\spec\dbo\meta\data\impl\QueryColumn;

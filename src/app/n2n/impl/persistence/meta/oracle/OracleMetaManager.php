@@ -22,11 +22,11 @@
 namespace n2n\impl\persistence\meta\oracle;
 
 use n2n\persistence\Pdo;
-use n2n\persistence\meta\structure\Backuper;
-use n2n\persistence\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\Backuper;
+use n2n\spec\dbo\meta\structure\Table;
 use n2n\persistence\meta\structure\common\MetaManagerAdapter;
 use n2n\persistence\meta\structure\common\DatabaseAdapter;
-use n2n\persistence\meta\structure\MetaEntity;
+use n2n\spec\dbo\meta\structure\MetaEntity;
 use n2n\impl\persistence\meta\oracle\management\OracleAlterMetaEntityRequest;
 use n2n\impl\persistence\meta\oracle\management\OracleCreateMetaEntityRequest;
 use n2n\impl\persistence\meta\oracle\management\OracleDropMetaEntityRequest;
@@ -42,7 +42,7 @@ class OracleMetaManager extends MetaManagerAdapter {
 
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\Database::createBackuper()
+	 * @see \n2n\spec\dbo\meta\structure\Database::createBackuper()
 	 * @return Backuper
 	 */
 	public function createBackuper(array $metaEnities = null): Backuper {

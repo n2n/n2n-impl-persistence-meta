@@ -23,7 +23,7 @@ namespace n2n\impl\persistence\meta\sqlite;
 
 use n2n\persistence\meta\structure\common\ColumnAdapter;
 
-use n2n\persistence\meta\structure\FixedPointColumn;
+use n2n\spec\dbo\meta\structure\FixedPointColumn;;
 
 class SqliteFixedPointColumn extends ColumnAdapter implements FixedPointColumn {
 

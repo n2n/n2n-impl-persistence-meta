@@ -29,11 +29,11 @@ use n2n\persistence\meta\structure\common\CommonView;
 use n2n\persistence\meta\structure\common\CommonTextColumn;
 use n2n\persistence\meta\structure\common\CommonStringColumn;
 use n2n\persistence\meta\structure\Size;
-use n2n\persistence\meta\structure\IndexType;
+use n2n\spec\dbo\meta\structure\IndexType;
 use n2n\persistence\Pdo;
-use n2n\persistence\meta\Database;
+use n2n\spec\dbo\meta\structure\Database;
 use n2n\util\type\CastUtils;
-use n2n\persistence\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\Table;
 use n2n\persistence\meta\structure\common\MetaEntityAdapter;
 
 class MssqlMetaEntityBuilder {
@@ -65,7 +65,7 @@ class MssqlMetaEntityBuilder {
 	
 	/**
 	 * @param string $name
-	 * @return \n2n\persistence\meta\structure\MetaEntity
+	 * @return \n2n\spec\dbo\meta\structure\MetaEntity
 	 */
 	public function createMetaEntity(string $dbName, string $name) {
 		

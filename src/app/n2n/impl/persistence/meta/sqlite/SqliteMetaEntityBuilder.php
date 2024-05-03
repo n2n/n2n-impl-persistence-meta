@@ -25,14 +25,14 @@ use n2n\persistence\meta\structure\common\CommonIndex;
 
 use n2n\persistence\meta\structure\common\CommonView;
 
-use n2n\persistence\meta\structure\IndexType;
+use n2n\spec\dbo\meta\structure\IndexType;
 
 use n2n\persistence\Pdo;
-use n2n\persistence\meta\Database;
+use n2n\spec\dbo\meta\structure\Database;
 use n2n\util\type\CastUtils;
 use n2n\persistence\meta\structure\common\MetaEntityAdapter;
-use n2n\persistence\meta\structure\Table;
-use n2n\persistence\meta\structure\MetaEntity;
+use n2n\spec\dbo\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\MetaEntity;
 use n2n\persistence\meta\structure\common\ForeignIndex;
 
 class SqliteMetaEntityBuilder {

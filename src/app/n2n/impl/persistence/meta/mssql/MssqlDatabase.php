@@ -22,7 +22,7 @@
 namespace n2n\impl\persistence\meta\mssql;
 
 use n2n\persistence\meta\structure\common\DatabaseAdapter;
-use n2n\persistence\meta\structure\MetaEntityFactory;
+use n2n\spec\dbo\meta\structure\MetaEntityFactory;
 
 class MssqlDatabase extends DatabaseAdapter {
 
@@ -34,7 +34,7 @@ class MssqlDatabase extends DatabaseAdapter {
 
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\Database::createMetaEntityFactory()
+	 * @see \n2n\spec\dbo\meta\structure\Database::createMetaEntityFactory()
 	 * @return MetaEntityFactory
 	 */
 	public function createMetaEntityFactory(): MetaEntityFactory {

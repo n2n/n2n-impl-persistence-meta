@@ -22,7 +22,7 @@
 namespace n2n\impl\persistence\meta\pgsql;
 
 use n2n\util\io\stream\InputStream;
-use n2n\persistence\meta\structure\Column;
+use n2n\spec\dbo\meta\structure\Column;
 use n2n\persistence\Pdo;
 use n2n\impl\persistence\meta\DialectAdapter;
 use n2n\persistence\meta\structure\InvalidColumnAttributesException;
@@ -37,7 +37,7 @@ use n2n\spec\dbo\meta\data\InsertStatementBuilder;
 use n2n\spec\dbo\meta\data\DeleteStatementBuilder;
 use n2n\persistence\meta\data\Importer;
 use n2n\persistence\meta\OrmDialectConfig;
-use n2n\persistence\meta\MetaManager;
+use n2n\spec\dbo\meta\structure\MetaManager;
 use n2n\persistence\meta\data\common\CommonSelectLockBuilder;
 
 class PgsqlDialect extends DialectAdapter {

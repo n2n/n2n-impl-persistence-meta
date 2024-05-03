@@ -23,15 +23,15 @@ namespace n2n\impl\persistence\meta\pgsql;
 
 use n2n\persistence\Pdo;
 use n2n\persistence\meta\structure\common\CommonView;
-use n2n\persistence\meta\structure\IndexType;
+use n2n\spec\dbo\meta\structure\IndexType;
 use n2n\persistence\meta\structure\common\CommonBinaryColumn;
 use n2n\persistence\meta\structure\common\CommonFixedPointColumn;
 use n2n\persistence\meta\structure\common\CommonFloatingPointColumn;
 use n2n\persistence\meta\structure\common\CommonStringColumn;
 use n2n\persistence\meta\structure\common\CommonTextColumn;
 use n2n\persistence\meta\structure\common\CommonEnumColumn;
-use n2n\persistence\meta\structure\Table;
-use n2n\persistence\meta\Database;
+use n2n\spec\dbo\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\Database;
 use n2n\util\type\CastUtils;
 use n2n\persistence\meta\structure\common\MetaEntityAdapter;
 

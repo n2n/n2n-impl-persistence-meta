@@ -22,11 +22,11 @@
 namespace n2n\impl\persistence\meta\mysql;
 
 use n2n\persistence\Pdo;
-use n2n\persistence\meta\structure\Backuper;
-use n2n\persistence\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\Backuper;
+use n2n\spec\dbo\meta\structure\Table;
 use n2n\persistence\meta\structure\common\MetaManagerAdapter;
 use n2n\persistence\meta\structure\common\DatabaseAdapter;
-use n2n\persistence\meta\structure\MetaEntity;
+use n2n\spec\dbo\meta\structure\MetaEntity;
 use n2n\impl\persistence\meta\mysql\management\MysqlAlterMetaEntityRequest;
 use n2n\impl\persistence\meta\mysql\management\MysqlCreateMetaEntityRequest;
 use n2n\impl\persistence\meta\mysql\management\MysqlDropMetaEntityRequest;
@@ -42,7 +42,7 @@ class MysqlMetaManager extends MetaManagerAdapter {
 
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\Database::createBackuper()
+	 * @see \n2n\spec\dbo\meta\structure\Database::createBackuper()
 	 * @return Backuper
 	 */
 	public function createBackuper(array $metaEnities = null): Backuper {

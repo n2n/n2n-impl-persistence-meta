@@ -3,9 +3,9 @@ namespace n2n\impl\persistence\meta\pgsql\management;
 
 use n2n\persistence\Pdo;
 use n2n\impl\persistence\meta\pgsql\PgsqlIndexStatementBuilder;
-use n2n\persistence\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\Table;
 use n2n\impl\persistence\meta\pgsql\PgsqlMetaEntityBuilder;
-use n2n\persistence\meta\structure\View;
+use n2n\spec\dbo\meta\structure\View;
 use n2n\impl\persistence\meta\pgsql\PgsqlColumnStatementFragmentBuilder;
 use n2n\persistence\meta\structure\common\AlterMetaEntityRequestAdapter;
 

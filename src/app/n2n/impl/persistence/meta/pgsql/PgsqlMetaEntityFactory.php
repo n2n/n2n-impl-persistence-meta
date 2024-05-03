@@ -21,11 +21,11 @@
  */
 namespace n2n\impl\persistence\meta\pgsql;
 
-use n2n\persistence\meta\structure\MetaEntityFactory;
+use n2n\spec\dbo\meta\structure\MetaEntityFactory;
 use n2n\persistence\meta\structure\common\CommonView;
-use n2n\persistence\meta\Database;
-use n2n\persistence\meta\structure\Table;
-use n2n\persistence\meta\structure\View;
+use n2n\spec\dbo\meta\structure\Database;
+use n2n\spec\dbo\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\View;
 
 class PgsqlMetaEntityFactory implements MetaEntityFactory {
 	private $database;
@@ -36,8 +36,8 @@ class PgsqlMetaEntityFactory implements MetaEntityFactory {
 
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\structure\MetaEntityFactory::getDatabase()
 	 * @return Database
+	 * @see MetaEntityFactory::getDatabase
 	 */
 	public function getDatabase(): Database {
 		return $this->database;
@@ -45,8 +45,8 @@ class PgsqlMetaEntityFactory implements MetaEntityFactory {
 
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\structure\MetaEntityFactory::createTable()
 	 * @return Table
+	 * @see MetaEntityFactory::createTable
 	 */
 	public function createTable(string $name): Table {
 		$newTable = new PgsqlTable($name);
@@ -56,8 +56,8 @@ class PgsqlMetaEntityFactory implements MetaEntityFactory {
 
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\persistence\meta\structure\MetaEntityFactory::createView()
 	 * @return View
+	 * @see MetaEntityFactory::createView
 	 */
 	public function createView(string $name, string $query): View {
 		$newView = new CommonView($name, $query);

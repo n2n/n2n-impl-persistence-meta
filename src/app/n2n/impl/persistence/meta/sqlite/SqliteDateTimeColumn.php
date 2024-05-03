@@ -23,7 +23,7 @@ namespace n2n\impl\persistence\meta\sqlite;
 
 use n2n\persistence\meta\structure\common\ColumnAdapter;
 
-use n2n\persistence\meta\structure\DateTimeColumn;
+use n2n\spec\dbo\meta\structure\DateTimeColumn;
 
 class SqliteDateTimeColumn extends ColumnAdapter implements DateTimeColumn {
 	

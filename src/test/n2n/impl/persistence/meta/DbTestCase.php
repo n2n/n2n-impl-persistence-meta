@@ -3,20 +3,20 @@ namespace n2n\impl\persistence\meta;
 
 use PHPUnit\Framework\TestCase;
 use n2n\test\TestEnv;
-use n2n\persistence\meta\structure\Table;
+use n2n\spec\dbo\meta\structure\Table;
 use n2n\persistence\meta\structure\Size;
-use n2n\persistence\meta\structure\IndexType;
+use n2n\spec\dbo\meta\structure\IndexType;
 use n2n\impl\persistence\meta\mysql\MysqlSize;
 use n2n\persistence\meta\structure\UnavailableTypeException;
-use n2n\persistence\meta\structure\IntegerColumn;
-use n2n\persistence\meta\structure\EnumColumn;
-use n2n\persistence\meta\structure\BinaryColumn;
-use n2n\persistence\meta\structure\TextColumn;
-use n2n\persistence\meta\structure\FixedPointColumn;
-use n2n\persistence\meta\structure\DateTimeColumn;
-use n2n\persistence\meta\structure\FloatingPointColumn;
-use n2n\persistence\meta\structure\StringColumn;
-use n2n\persistence\meta\structure\View;
+use n2n\spec\dbo\meta\structure\IntegerColumn;
+use n2n\spec\dbo\meta\structure\EnumColumn;
+use n2n\spec\dbo\meta\structure\BinaryColumn;
+use n2n\spec\dbo\meta\structure\TextColumn;;
+use n2n\spec\dbo\meta\structure\FixedPointColumn;;
+use n2n\spec\dbo\meta\structure\DateTimeColumn;
+use n2n\spec\dbo\meta\structure\FloatingPointColumn;
+use n2n\spec\dbo\meta\structure\StringColumn;
+use n2n\spec\dbo\meta\structure\View;
 
 abstract class DbTestCase extends TestCase {
 	
