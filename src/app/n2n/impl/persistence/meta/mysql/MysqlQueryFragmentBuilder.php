@@ -24,6 +24,7 @@ namespace n2n\impl\persistence\meta\mysql;
 use n2n\spec\dbo\meta\data\QueryFragmentBuilder;
 
 use n2n\persistence\Pdo;
+use n2n\spec\dbo\err\DboException;
 
 class MysqlQueryFragmentBuilder implements QueryFragmentBuilder {
 	const ALIAS_COLUMN_SEPARATOR = '.';
@@ -53,7 +54,7 @@ class MysqlQueryFragmentBuilder implements QueryFragmentBuilder {
 	public function addFieldAlias($fieldAlias): void {
 		$this->sql .= ' AS ' . $this->dbh->quoteField($fieldAlias); 
 	}
-	
+
 	public function addConstant($value): void {
 		if (null === $value) {
 			$this->sql .= ' NULL';
