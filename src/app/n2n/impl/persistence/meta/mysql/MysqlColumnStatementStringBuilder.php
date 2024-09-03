@@ -91,7 +91,7 @@ class MysqlColumnStatementStringBuilder {
 	
 	private function getTypeForCurrentState(Column $column) {
 		if ($column instanceof BinaryColumn) {
-			return 'VARBINARY(' . ceil($column->getSize() / 8) . ')';
+			return 'VARBINARY(' . ceil($column->getSize()) . ')';
 		}
 		if ($column instanceof DateTimeColumn) {
 			if ($column->isDateAvailable() && $column->isTimeAvailable()) {
