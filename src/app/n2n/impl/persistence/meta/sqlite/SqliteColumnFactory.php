@@ -32,6 +32,7 @@ use n2n\spec\dbo\meta\structure\DateTimeColumn;
 use n2n\spec\dbo\meta\structure\EnumColumn;
 use n2n\spec\dbo\meta\structure\FixedPointColumn;;
 use n2n\spec\dbo\meta\structure\FloatingPointColumn;
+use n2n\spec\dbo\meta\structure\BlobColumn;
 
 class SqliteColumnFactory implements ColumnFactory {
 	
@@ -94,6 +95,12 @@ class SqliteColumnFactory implements ColumnFactory {
 	 * @return BinaryColumn
 	 */
 	public function createBinaryColumn(string $name, int $size): BinaryColumn {
+		$column = new SqliteBinaryColumn($name);
+		$this->table->addColumn($column);
+		return $column;
+	}
+
+	public function createBlobColumn(string $name, int $size): BlobColumn {
 		$column = new SqliteBinaryColumn($name);
 		$this->table->addColumn($column);
 		return $column;

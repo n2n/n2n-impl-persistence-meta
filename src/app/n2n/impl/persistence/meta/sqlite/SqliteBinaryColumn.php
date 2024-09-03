@@ -24,8 +24,9 @@ namespace n2n\impl\persistence\meta\sqlite;
 use n2n\spec\dbo\meta\structure\BinaryColumn;
 
 use n2n\persistence\meta\structure\common\ColumnAdapter;
+use n2n\spec\dbo\meta\structure\BlobColumn;
 
-class SqliteBinaryColumn extends ColumnAdapter implements BinaryColumn {
+class SqliteBinaryColumn extends ColumnAdapter implements BinaryColumn, BlobColumn {
 	public function getSize() {
 		return null;
 	}

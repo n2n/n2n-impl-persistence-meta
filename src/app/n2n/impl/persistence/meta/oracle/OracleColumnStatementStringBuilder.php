@@ -32,6 +32,7 @@ use n2n\spec\dbo\meta\structure\FloatingPointColumn;
 use n2n\spec\dbo\meta\structure\BinaryColumn;
 use n2n\spec\dbo\meta\structure\IntegerColumn;
 use n2n\spec\dbo\meta\structure\Column;
+use n2n\spec\dbo\meta\structure\BlobColumn;
 
 class OracleColumnStatementStringBuilder {
 	
@@ -79,7 +80,7 @@ class OracleColumnStatementStringBuilder {
 	}
 	
 	private function getTypeForCurrentState(Column $column) {
-		if ($column instanceof BinaryColumn) {
+		if ($column instanceof BinaryColumn || $column instanceof BlobColumn) {
 			return 'BLOB';
 		}
 		if ($column instanceof OracleDateTimeColumn) {

@@ -33,6 +33,7 @@ use n2n\spec\dbo\meta\structure\DateTimeColumn;
 use n2n\spec\dbo\meta\structure\BinaryColumn;
 use n2n\spec\dbo\meta\structure\IntegerColumn;
 use n2n\spec\dbo\meta\structure\Column;
+use n2n\spec\dbo\meta\structure\BlobColumn;
 
 class MysqlColumnStatementStringBuilder {
 	
@@ -92,6 +93,18 @@ class MysqlColumnStatementStringBuilder {
 	private function getTypeForCurrentState(Column $column) {
 		if ($column instanceof BinaryColumn) {
 			return 'VARBINARY(' . ceil($column->getSize()) . ')';
+		}
+		if ($column instanceof BlobColumn) {
+			if ($column->getSize() <= MysqlSize::SIZE_TINY_TEXT) {
+				return 'TINYBLOB';
+			}
+			if ($column->getSize() <= MysqlSize::SIZE_TEXT) {
+				return 'BLOB';
+			}
+			if ($column->getSize() <= MysqlSize::SIZE_MEDIUM_TEXT) {
+				return 'MEDIUMBLOB';
+			}
+			return 'LONGBLOB';
 		}
 		if ($column instanceof DateTimeColumn) {
 			if ($column->isDateAvailable() && $column->isTimeAvailable()) {
