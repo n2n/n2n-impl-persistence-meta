@@ -37,6 +37,8 @@ use n2n\spec\dbo\meta\structure\DateTimeColumn;
 use n2n\spec\dbo\meta\structure\EnumColumn;
 use n2n\spec\dbo\meta\structure\FixedPointColumn;;
 use n2n\spec\dbo\meta\structure\FloatingPointColumn;
+use n2n\spec\dbo\meta\structure\BlobColumn;
+use n2n\persistence\meta\structure\common\CommonBlobColumn;
 
 class OracleColumnFactory implements ColumnFactory {
 	
@@ -98,6 +100,12 @@ class OracleColumnFactory implements ColumnFactory {
 	 */
 	public function createBinaryColumn(string $name, int $size): BinaryColumn {
 		$column = new CommonBinaryColumn($name, $size);
+		$this->table->addColumn($column);
+		return $column;
+	}
+
+	function createBlobColumn(string $name, int $size): BlobColumn {
+		$column = new CommonBlobColumn($name, $size);
 		$this->table->addColumn($column);
 		return $column;
 	}

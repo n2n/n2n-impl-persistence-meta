@@ -13,6 +13,7 @@ use n2n\spec\dbo\meta\structure\BinaryColumn;
 use n2n\spec\dbo\meta\structure\IntegerColumn;
 use n2n\spec\dbo\meta\structure\Column;
 use n2n\spec\dbo\meta\structure\EnumColumn;
+use n2n\spec\dbo\meta\structure\BlobColumn;
 
 class PgsqlColumnStatementFragmentBuilder {
 	private $pdo;
@@ -104,7 +105,7 @@ class PgsqlColumnStatementFragmentBuilder {
 	}
 	
 	private function getTypeForCurrentState(Column $column) {
-		if ($column instanceof BinaryColumn) {
+		if ($column instanceof BinaryColumn || $column instanceof BlobColumn) {
 			return 'BYTEA';
 		}
 		

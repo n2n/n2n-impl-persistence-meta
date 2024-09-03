@@ -34,6 +34,7 @@ use n2n\spec\dbo\meta\structure\BinaryColumn;
 use n2n\spec\dbo\meta\structure\IntegerColumn;
 use n2n\spec\dbo\meta\structure\Column;
 use n2n\persistence\meta\structure\Size;
+use n2n\spec\dbo\meta\structure\BlobColumn;
 
 class MssqlColumnStatementStringBuilder {
 	
@@ -94,7 +95,7 @@ class MssqlColumnStatementStringBuilder {
 	}
 	
 	private function getTypeForCurrentState(Column $column) {
-		if ($column instanceof BinaryColumn) {
+		if ($column instanceof BinaryColumn || $column instanceof BlobColumn) {
 			return 'varbinary(' . ceil($column->getSize() / 8) . ')';
 		}
 		if ($column instanceof MssqlDateTimeColumn) {
