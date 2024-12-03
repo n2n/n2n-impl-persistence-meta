@@ -186,7 +186,7 @@ class PgsqlMetaEntityBuilder {
 		return $columns;
 	}
 	
-	private function parseDefaultValue(string $default = null) {
+	private function parseDefaultValue(?string $default = null) {
 		$matches = [];
 		if (null === $default || !preg_match('/^\'(.*)\':.*/', $default, $matches)) return $default;
 		

@@ -46,12 +46,12 @@ abstract class DialectAdapter implements Dialect {
 		return [];
 	}
 
-	protected function specifySessionSettings(\PDO $pdo, PdoLogger $pdoLogger = null): void {
+	protected function specifySessionSettings(\PDO $pdo, ?PdoLogger $pdoLogger = null): void {
 		PDOOperations::exec($pdoLogger, $pdo,
 				'SET SESSION TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
 	}
 
-	protected function specifyNextTransactionIsolationLevel(\PDO $pdo, bool $readOnly, PdoLogger $pdoLogger = null): void {
+	protected function specifyNextTransactionIsolationLevel(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null): void {
 		if ($this->readWriteTransactionIsolationLevel === $this->readOnlyTransactionIsolationLevel) {
 			return;
 		}
@@ -61,7 +61,7 @@ abstract class DialectAdapter implements Dialect {
 		PDOOperations::exec($pdoLogger, $pdo, 'SET TRANSACTION ISOLATION LEVEL ' . $transactionIsolationLevel);
 	}
 
-	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly, PdoLogger $pdoLogger = null): void {
+	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null): void {
 		if ($readOnly) {
 			PDOOperations::exec($pdoLogger, $pdo, 'SET TRANSACTION READ ONLY');
 		}
@@ -87,7 +87,7 @@ abstract class DialectAdapter implements Dialect {
 		return self::DEFAULT_ESCAPING_CHARACTER;
 	}
 
-	public function createPDO(PdoLogger $pdoLogger = null): \PDO {
+	public function createPDO(?PdoLogger $pdoLogger = null): \PDO {
 		$options = $this->determinePdoOptions();
 
 		if ($this->persistenceUnitConfig->isPersistent()) {
@@ -102,7 +102,7 @@ abstract class DialectAdapter implements Dialect {
 		return $pdo;
 	}
 
-	function beginTransaction(\PDO $pdo, bool $readOnly, PdoLogger $pdoLogger = null): void {
+	function beginTransaction(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null): void {
 		$this->specifyNextTransactionIsolationLevel($pdo, $readOnly, $pdoLogger);
 		$this->specifyNextTransactionAccessMode($pdo, $readOnly, $pdoLogger);
 

@@ -48,12 +48,12 @@ class MssqlDialect extends DialectAdapter {
 		return 'Mssql';
 	}
 
-	protected function specifySessionSettings(\PDO $pdo, PdoLogger $pdoLogger = null): void {
+	protected function specifySessionSettings(\PDO $pdo, ?PdoLogger $pdoLogger = null): void {
 		PDOOperations::exec($pdoLogger, $pdo,
 				'SET TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
 	}
 
-	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly, PdoLogger $pdoLogger = null): void {
+	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null): void {
 		// ACCESS MODE (e. g. READ ONLY) not supported
 	}
 	
@@ -127,7 +127,7 @@ class MssqlDialect extends DialectAdapter {
 		return null;
 	}
 
-	public function applyIdentifierGeneratorToColumn(Pdo $dbh, Column $column, string $sequenceName = null) {
+	public function applyIdentifierGeneratorToColumn(Pdo $dbh, Column $column, ?string $sequenceName = null) {
 		if (!($column instanceof IntegerColumn)) {
 			throw new InvalidColumnAttributesException('Invalid generated identifier "' . $column->getName() 
 					. '" in table "' . $column->getTable()->getName() 

@@ -36,7 +36,7 @@ class OracleTable extends TableAdapter {
 	 * @see \n2n\spec\dbo\meta\structure\Table::copy()
 	 * @return Table
 	 */
-	public function copy(string $newTableName = null): Table {
+	public function copy(?string $newTableName = null): Table {
 		if (is_null($newTableName)) {
 			$newTableName = $this->getName();
 		}

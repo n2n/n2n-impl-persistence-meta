@@ -82,7 +82,7 @@ class MysqlColumnFactory implements ColumnFactory {
 	 * @see \n2n\spec\dbo\meta\structure\ColumnFactory::createStringColumn()
 	 * @return StringColumn
 	 */
-	public function createStringColumn(string $name, int $length, string $charset = null): StringColumn {
+	public function createStringColumn(string $name, int $length, ?string $charset = null): StringColumn {
 		$column = new CommonStringColumn($name, $length, $charset);
 		$this->table->addColumn($column);
 		return $column;
@@ -93,7 +93,7 @@ class MysqlColumnFactory implements ColumnFactory {
 	 * @see \n2n\spec\dbo\meta\structure\ColumnFactory::createTextColumn()
 	 * @return TextColumn
 	 */
-	public function createTextColumn(string $name, int $size, string $charset = null): TextColumn {
+	public function createTextColumn(string $name, int $size, ?string $charset = null): TextColumn {
 		$column = new CommonTextColumn($name, $size, $charset);
 		$this->table->addColumn($column);
 		return $column;

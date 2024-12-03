@@ -47,7 +47,7 @@ class MysqlOrmDialectConfig implements OrmDialectConfig {
 	/* (non-PHPdoc)
 	 * @see n2n\persistence\meta.OrmDialectConfig::buildRawValue()
 	 */
-	public function buildDateTimeRawValue(\DateTime $dateTime = null) {
+	public function buildDateTimeRawValue(?\DateTime $dateTime = null) {
 		if (null === $dateTime) {
 			return null;
 		}

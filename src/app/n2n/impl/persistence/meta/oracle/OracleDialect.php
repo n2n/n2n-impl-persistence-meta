@@ -48,14 +48,14 @@ class OracleDialect extends DialectAdapter {
 		return 'Oracle';
 	}
 
-	protected function specifySessionSettings(\PDO $pdo, PdoLogger $pdoLogger = null): void {
+	protected function specifySessionSettings(\PDO $pdo, ?PdoLogger $pdoLogger = null): void {
 		PDOOperations::exec($pdoLogger, $pdo, 'SET TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
 		PDOOperations::exec($pdoLogger, $pdo, 'ALTER SESSION SET NLS_TIMESTAMP_FORMAT = ' . $pdo->quote('YYYY-MM-DD HH:MI:SS.FF'));
 		PDOOperations::exec($pdoLogger, $pdo, 'ALTER SESSION SET NLS_DATE_FORMAT = ' . $pdo->quote('YYYY-MM-DD'));
 		PDOOperations::exec($pdoLogger, $pdo, 'ALTER SESSION SET NLS_TIMESTAMP_TZ_FORMAT = ' . $pdo->quote('YYYY-MM-DD HH:MI:SS.FF TZH:TZM'));
 	}
 
-	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly, PdoLogger $pdoLogger = null): void {
+	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null): void {
 		// ACCESS MODE (e. g. READ ONLY) not supported
 	}
 	

@@ -148,7 +148,7 @@ class PgsqlColumnFactory implements ColumnFactory {
 	 * @see \n2n\spec\dbo\meta\structure\ColumnFactory::createStringColumn()
 	 * @return StringColumn
 	 */
-	public function createStringColumn(string $name, int $length, string $charset = null): StringColumn {
+	public function createStringColumn(string $name, int $length, ?string $charset = null): StringColumn {
 		$stringColumn = new CommonStringColumn($name, $length, $charset);
 		$this->table->addColumn($stringColumn);
 		return $stringColumn;
@@ -159,7 +159,7 @@ class PgsqlColumnFactory implements ColumnFactory {
 	 * @see \n2n\spec\dbo\meta\structure\ColumnFactory::createTextColumn()
 	 * @return TextColumn
 	 */
-	public function createTextColumn(string $name, int $size, string $charset = null): TextColumn {
+	public function createTextColumn(string $name, int $size, ?string $charset = null): TextColumn {
 		$textColumn = new CommonTextColumn($name, $size, $charset);
 		$this->table->addColumn($textColumn);
 		return $textColumn;

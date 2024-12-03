@@ -46,7 +46,7 @@ class MssqlOrmDialectConfig implements OrmDialectConfig {
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\meta\OrmDialectConfig::buildDateTimeRawValue()
 	 */
-	public function buildDateTimeRawValue(\DateTime $dateTime = null) {
+	public function buildDateTimeRawValue(?\DateTime $dateTime = null) {
 		if (null === $dateTime) return null;
 		return DateUtils::formatDateTime($dateTime, MssqlDateTimeColumn::generateFormatBuildRawValue(
 				MssqlDateTimeColumn::FORMAT_BUILD_TYPE_RAW_VALUE, true, true, self::COLUMN_TYPE_PRECISION, false));

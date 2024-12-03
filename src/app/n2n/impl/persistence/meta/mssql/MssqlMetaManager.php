@@ -45,7 +45,7 @@ class MssqlMetaManager extends MetaManagerAdapter {
 	 * @see \n2n\spec\dbo\meta\structure\Database::createBackuper()
 	 * @return Backuper
 	 */
-	public function createBackuper(array $metaEnities = null): Backuper {
+	public function createBackuper(?array $metaEnities = null): Backuper {
 		return new MssqlBackuper($this->dbh, $this->createDatabase(), $metaEnities);
 	}
 	

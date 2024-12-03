@@ -46,15 +46,15 @@ class SqliteDialect extends DialectAdapter {
 		return 'Sqlite';
 	}
 
-	protected function specifySessionSettings(\PDO $pdo, PdoLogger $pdoLogger = null): void {
+	protected function specifySessionSettings(\PDO $pdo, ?PdoLogger $pdoLogger = null): void {
 		PDOOperations::exec($pdoLogger, $pdo, 'PRAGMA foreign_keys=ON');
 	}
 
-	protected function specifyNextTransactionIsolationLevel(\PDO $pdo, bool $readOnly, PdoLogger $pdoLogger = null): void{
+	protected function specifyNextTransactionIsolationLevel(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null): void{
 		// NOT SUPPORTED
 	}
 
-	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly, PdoLogger $pdoLogger = null): void {
+	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null): void {
 		// NOT SUPPORTED
 	}
 
@@ -129,7 +129,7 @@ class SqliteDialect extends DialectAdapter {
 		return null;
 	}
 	
-	public function applyIdentifierGeneratorToColumn(Pdo $dbh, Column $column, string $sequenceName = null) {
+	public function applyIdentifierGeneratorToColumn(Pdo $dbh, Column $column, ?string $sequenceName = null) {
 		
 		if (!($column instanceof SqliteIntegerColumn)) {
 			throw new InvalidColumnAttributesException('Invalid generated identifier column \"' . $column->getName()
