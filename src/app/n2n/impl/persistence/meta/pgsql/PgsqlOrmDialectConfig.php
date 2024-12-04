@@ -44,7 +44,7 @@ class PgsqlOrmDialectConfig implements OrmDialectConfig {
 	 * @param \DateTime $dateTime
 	 * @return string
 	 */
-	public function buildDateTimeRawValue(\DateTime $dateTime = null) {
+	public function buildDateTimeRawValue(?\DateTime $dateTime = null) {
 		if (null === $dateTime) return null;
 		return DateUtils::formatDateTime($dateTime, \DateTime::ISO8601);
 	}

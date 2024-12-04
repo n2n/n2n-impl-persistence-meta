@@ -27,7 +27,7 @@ abstract class DbTestCase extends TestCase {
 	private $dialect;
 	private $persistenceUnitName;
 	
-	public function setPersistenceUnitName(string $persistenceUnitName = null) {
+	public function setPersistenceUnitName(?string $persistenceUnitName = null) {
 		$this->persistenceUnitName = $persistenceUnitName;
 		$this->pdo = null;
 		$this->metaData = null;

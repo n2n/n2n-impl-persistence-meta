@@ -50,7 +50,7 @@ class SqliteDateTimeColumn extends ColumnAdapter implements DateTimeColumn {
 		return $dateTime;
 	}
 
-	public function buildRawValue(\DateTime $dateTime = null) {
+	public function buildRawValue(?\DateTime $dateTime = null) {
 		if (is_null($dateTime)) {
 			return null;
 		}

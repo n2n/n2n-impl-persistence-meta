@@ -41,7 +41,7 @@ class SqliteOrmDialectConfig implements OrmDialectConfig {
 	/* (non-PHPdoc)
 	 * @see n2n\persistence\meta.OrmDialectConfig::buildDateTimeRawValue()
 	 */
-	public function buildDateTimeRawValue(\DateTime $dateTime = null) {
+	public function buildDateTimeRawValue(?\DateTime $dateTime = null) {
 		if (null === $dateTime) return null;
 		return DateUtils::formatDateTime($dateTime, SqliteDateTimeColumn::FORMAT_DATE_TIME);
 	}

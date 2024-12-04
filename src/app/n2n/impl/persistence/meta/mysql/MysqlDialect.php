@@ -63,7 +63,7 @@ class MysqlDialect extends DialectAdapter {
 		return $options;
 	}
 
-	protected function specifySessionSettings(\PDO $pdo, PdoLogger $pdoLogger = null): void {
+	protected function specifySessionSettings(\PDO $pdo, ?PdoLogger $pdoLogger = null): void {
 		parent::specifySessionSettings($pdo, $pdoLogger);
 		PDOOperations::exec($pdoLogger, $pdo, 'SET NAMES utf8mb4');
 		PDOOperations::exec($pdoLogger, $pdo,'SET SESSION sql_mode = \'STRICT_ALL_TABLES\'');
@@ -140,7 +140,7 @@ class MysqlDialect extends DialectAdapter {
 		return null;
 	}
 	
-	public function applyIdentifierGeneratorToColumn(Pdo $dbh, Column $column, string $sequenceName = null) {
+	public function applyIdentifierGeneratorToColumn(Pdo $dbh, Column $column, ?string $sequenceName = null) {
 		if (!($column instanceof IntegerColumn)) {
 			throw new InvalidColumnAttributesException('Invalid generated identifier column \"' . $column->getName() 
 					. '\" for Table \"' . $column->getTable()->getName() 
