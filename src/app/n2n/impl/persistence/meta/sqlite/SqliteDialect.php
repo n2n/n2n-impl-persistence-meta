@@ -50,7 +50,7 @@ class SqliteDialect extends DialectAdapter {
 		PDOOperations::exec($pdoLogger, $pdo, 'PRAGMA foreign_keys=ON');
 	}
 
-	protected function specifyNextTransactionIsolationLevel(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null): void{
+	protected function specifyNextTransactionIsolationLevel(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null): void {
 		// NOT SUPPORTED
 	}
 
