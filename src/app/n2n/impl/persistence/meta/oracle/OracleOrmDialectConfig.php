@@ -29,7 +29,7 @@ class OracleOrmDialectConfig implements OrmDialectConfig {
 	/* (non-PHPdoc)
 	 * @see n2n\persistence\meta.OrmDialectConfig::parseDateTime()
 	*/
-	public function parseDateTime($rawValue) {
+	public function parseDateTime($rawValue): ?\DateTimeInterface {
 		if (null === $rawValue) return null;
 		
 		try {
@@ -43,7 +43,7 @@ class OracleOrmDialectConfig implements OrmDialectConfig {
 	/* (non-PHPdoc)
 	 * @see n2n\persistence\meta.OrmDialectConfig::buildRawValue()
 	 */
-	public function buildDateTimeRawValue(?\DateTime $dateTime = null) {
+	public function buildDateTimeRawValue(?\DateTimeInterface $dateTime = null): ?string {
 		if (null === $dateTime)	return null;
 		return DateUtils::formatDateTime($dateTime, OracleDateTimeColumn::generateFormatBuildRawValue(
 				OracleDateTimeColumn::FORMAT_BUILD_TYPE_RAW_VALUE, true, true));
@@ -52,7 +52,7 @@ class OracleOrmDialectConfig implements OrmDialectConfig {
 	/* (non-PHPdoc)
 	 * @see n2n\persistence\meta.OrmDialectConfig::getOrmDateTimeColumnTypeName()
 	 */
-	public function getOrmDateTimeColumnTypeName() {
+	public function getOrmDateTimeColumnTypeName(): string {
 		return 'TIMESTAMP';
 	}
 }

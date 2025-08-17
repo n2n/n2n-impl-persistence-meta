@@ -32,7 +32,7 @@ class MssqlOrmDialectConfig implements OrmDialectConfig {
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\meta\OrmDialectConfig::parseDateTime()
 	 */
-	public function parseDateTime($rawValue) {
+	public function parseDateTime($rawValue): ?\DateTimeInterface {
 		if (null === $rawValue) return null;
 		
 		try {
@@ -46,15 +46,14 @@ class MssqlOrmDialectConfig implements OrmDialectConfig {
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\meta\OrmDialectConfig::buildDateTimeRawValue()
 	 */
-	public function buildDateTimeRawValue(?\DateTime $dateTime = null) {
+	public function buildDateTimeRawValue(?\DateTimeInterface $dateTime = null): ?string {
 		if (null === $dateTime) return null;
-		return DateUtils::formatDateTime($dateTime, MssqlDateTimeColumn::generateFormatBuildRawValue(
-				MssqlDateTimeColumn::FORMAT_BUILD_TYPE_RAW_VALUE, true, true, self::COLUMN_TYPE_PRECISION, false));
+		return $dateTime->format(MssqlDateTimeColumn::FORMAT_BUILD_TYPE_PARSE);
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\meta\OrmDialectConfig::getOrmDateTimeColumnTypeName()
 	 */
-	public function getOrmDateTimeColumnTypeName() {
+	public function getOrmDateTimeColumnTypeName(): string {
 		return self::COLUMN_TYPE_NAME . '(' . self::COLUMN_TYPE_PRECISION . ')';
 	}
 }

@@ -27,10 +27,10 @@ use n2n\util\DateUtils;
 class PgsqlOrmDialectConfig implements OrmDialectConfig {
 	/**
 	 * @param string $rawValue
-	 * @return \DateTime
+	 * @return \DateTimeInterface|null
 	 * @throws \InvalidArgumentException
 	 */
-	public function parseDateTime($rawValue) {
+	public function parseDateTime($rawValue): ?\DateTimeInterface {
 		if (null === $rawValue) return null;
 		
 		try {
@@ -41,18 +41,18 @@ class PgsqlOrmDialectConfig implements OrmDialectConfig {
 	}
 	
 	/**
-	 * @param \DateTime $dateTime
-	 * @return string
+	 * @param \DateTimeInterface|null $dateTime
+	 * @return string|null
 	 */
-	public function buildDateTimeRawValue(?\DateTime $dateTime = null) {
+	public function buildDateTimeRawValue(?\DateTimeInterface $dateTime = null): ?string {
 		if (null === $dateTime) return null;
-		return DateUtils::formatDateTime($dateTime, \DateTime::ISO8601);
+		return $dateTime->format(\DateTime::ATOM);
 	}
 	
 	/**
 	 * @return string
 	 */
-	public function getOrmDateTimeColumnTypeName() {
+	public function getOrmDateTimeColumnTypeName(): string {
 		return 'datetime';
 	}
 }
