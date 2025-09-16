@@ -34,6 +34,15 @@ class SqliteDialectInitAndTransactionTest extends TestCase {
 
 		$this->assertCount(2, $ma->beginTransactionCalls);
 		$this->assertCount(1, $ma->execCalls);
+
+		$ma->pdo->commit();
+
+		$ma->pdo->beginTransaction(isolationLevel: PersistenceUnitConfig::TIL_READ_COMMITTED);
+
+		$this->assertCount(3, $ma->beginTransactionCalls);
+		$this->assertCount(1, $ma->execCalls);
+
+		$ma->pdo->commit();
 	}
 
 	function testWithDifferentTransactionIsolationLevel() {

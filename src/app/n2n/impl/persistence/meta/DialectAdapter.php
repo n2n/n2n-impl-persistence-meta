@@ -51,12 +51,14 @@ abstract class DialectAdapter implements Dialect {
 				'SET SESSION TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
 	}
 
-	protected function specifyNextTransactionIsolationLevel(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null): void {
-		if ($this->readWriteTransactionIsolationLevel === $this->readOnlyTransactionIsolationLevel) {
+	protected function specifyNextTransactionIsolationLevel(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null,
+			?string $transactionIsolationLevel = null): void {
+		if ($transactionIsolationLevel === null
+				&& $this->readWriteTransactionIsolationLevel === $this->readOnlyTransactionIsolationLevel) {
 			return;
 		}
 
-		$transactionIsolationLevel = ($readOnly ? $this->readOnlyTransactionIsolationLevel
+		$transactionIsolationLevel ??= ($readOnly ? $this->readOnlyTransactionIsolationLevel
 				: $this->readWriteTransactionIsolationLevel);
 		PDOOperations::exec($pdoLogger, $pdo, 'SET TRANSACTION ISOLATION LEVEL ' . $transactionIsolationLevel);
 	}
@@ -102,8 +104,9 @@ abstract class DialectAdapter implements Dialect {
 		return $pdo;
 	}
 
-	function beginTransaction(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null): void {
-		$this->specifyNextTransactionIsolationLevel($pdo, $readOnly, $pdoLogger);
+	function beginTransaction(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null,
+			?string $isolationLevel = null): void {
+		$this->specifyNextTransactionIsolationLevel($pdo, $readOnly, $pdoLogger, $isolationLevel);
 		$this->specifyNextTransactionAccessMode($pdo, $readOnly, $pdoLogger);
 
 		PdoOperations::beginTransaction($pdoLogger, $pdo);
