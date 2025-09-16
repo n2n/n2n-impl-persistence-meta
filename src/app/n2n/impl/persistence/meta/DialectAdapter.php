@@ -105,8 +105,8 @@ abstract class DialectAdapter implements Dialect {
 	}
 
 	function beginTransaction(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null,
-			?string $transactionIsolationLevel = null): void {
-		$this->specifyNextTransactionIsolationLevel($pdo, $readOnly, $pdoLogger, $transactionIsolationLevel);
+			?string $isolationLevel = null): void {
+		$this->specifyNextTransactionIsolationLevel($pdo, $readOnly, $pdoLogger, $isolationLevel);
 		$this->specifyNextTransactionAccessMode($pdo, $readOnly, $pdoLogger);
 
 		PdoOperations::beginTransaction($pdoLogger, $pdo);
