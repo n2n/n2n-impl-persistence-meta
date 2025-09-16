@@ -73,6 +73,10 @@ class MysqlDialectInitAndTransactionTest extends TestCase {
 		$this->assertEquals('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ', $ma->execCalls[4]['statement']);
 		$this->assertEquals('SET TRANSACTION READ ONLY', $ma->execCalls[5]['statement']);
 		$this->assertTrue($ma->execCalls[4]['_nr'] < $ma->beginTransactionCalls[1]['_nr']);
+
+		$ma->pdo->commit();
+
+		$ma->pdo->beginTransaction();
 	}
 
 }
