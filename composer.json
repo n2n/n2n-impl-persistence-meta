@@ -28,7 +28,7 @@
         "ext-pdo": "*",
 		"n2n/n2n-io" : "~7.4",
 		"n2n/n2n-l10n" : "~7.4",
-		"n2n/n2n-persistence" : "~7.4 || ~7.5",
+		"n2n/n2n-persistence" : "~7.5",
 		"n2n/n2n-reflection" : "~7.4",
 		"n2n/n2n-util" : "~7.4"
     },
@@ -45,6 +45,6 @@
 		"phpunit/phpunit" : "^9.6.19",
 		"n2n/n2n-test": "~7.4",
         "n2n/n2n": "~7.4",
-        "n2n/n2n-web": "~7.4.1"
+        "n2n/n2n-web": "~7.4"
 	}
 }

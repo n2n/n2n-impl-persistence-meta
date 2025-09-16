@@ -37,6 +37,16 @@ class OracleDialectInitAndTransactionTest extends TestCase {
 
 		$this->assertCount(2, $ma->beginTransactionCalls);
 		$this->assertCount(4, $ma->execCalls);
+
+		$ma->pdo->commit();
+
+		$ma->pdo->beginTransaction(isolationLevel: PersistenceUnitConfig::TIL_READ_COMMITTED);
+
+		$this->assertCount(3, $ma->beginTransactionCalls);
+		$this->assertCount(5, $ma->execCalls);
+		$this->assertEquals('SET TRANSACTION ISOLATION LEVEL READ COMMITTED', $ma->execCalls[4]['statement']);
+
+		$ma->pdo->commit();
 	}
 
 	function testWithDifferentTransactionIsolationLevel() {
@@ -71,6 +81,17 @@ class OracleDialectInitAndTransactionTest extends TestCase {
 		$this->assertCount(6, $ma->execCalls);
 		$this->assertEquals('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ', $ma->execCalls[5]['statement']);
 		$this->assertTrue($ma->execCalls[5]['_nr'] < $ma->beginTransactionCalls[1]['_nr']);
+
+		$ma->pdo->commit();
+
+		$ma->pdo->beginTransaction(isolationLevel: PersistenceUnitConfig::TIL_READ_COMMITTED);
+
+		$this->assertCount(3, $ma->beginTransactionCalls);
+		$this->assertCount(7, $ma->execCalls);
+		$this->assertEquals('SET TRANSACTION ISOLATION LEVEL READ COMMITTED', $ma->execCalls[6]['statement']);
+		$this->assertTrue($ma->execCalls[6]['_nr'] < $ma->beginTransactionCalls[2]['_nr']);
+
+		$ma->pdo->commit();
 	}
 
 }
