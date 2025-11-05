@@ -26,11 +26,12 @@ use n2n\persistence\meta\Dialect;
 use n2n\core\config\PersistenceUnitConfig;
 use n2n\persistence\PdoLogger;
 use n2n\persistence\PDOOperations;
+use n2n\spec\tx\TransactionIsolationLevel;
 
 abstract class DialectAdapter implements Dialect {
 
-	protected string $readWriteTransactionIsolationLevel;
-	protected string $readOnlyTransactionIsolationLevel;
+	protected TransactionIsolationLevel $readWriteTransactionIsolationLevel;
+	protected TransactionIsolationLevel $readOnlyTransactionIsolationLevel;
 
 	public function __construct(protected PersistenceUnitConfig $persistenceUnitConfig) {
 		$this->readWriteTransactionIsolationLevel = $this->persistenceUnitConfig->getReadWriteTransactionIsolationLevel();
@@ -48,11 +49,11 @@ abstract class DialectAdapter implements Dialect {
 
 	protected function specifySessionSettings(\PDO $pdo, ?PdoLogger $pdoLogger = null): void {
 		PDOOperations::exec($pdoLogger, $pdo,
-				'SET SESSION TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
+				'SET SESSION TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel->value);
 	}
 
 	protected function specifyNextTransactionIsolationLevel(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null,
-			?string $transactionIsolationLevel = null): void {
+			?TransactionIsolationLevel $transactionIsolationLevel = null): void {
 		if ($transactionIsolationLevel === null
 				&& $this->readWriteTransactionIsolationLevel === $this->readOnlyTransactionIsolationLevel) {
 			return;
@@ -60,7 +61,7 @@ abstract class DialectAdapter implements Dialect {
 
 		$transactionIsolationLevel ??= ($readOnly ? $this->readOnlyTransactionIsolationLevel
 				: $this->readWriteTransactionIsolationLevel);
-		PDOOperations::exec($pdoLogger, $pdo, 'SET TRANSACTION ISOLATION LEVEL ' . $transactionIsolationLevel);
+		PDOOperations::exec($pdoLogger, $pdo, 'SET TRANSACTION ISOLATION LEVEL ' . $transactionIsolationLevel->value);
 	}
 
 	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null): void {
@@ -72,6 +73,7 @@ abstract class DialectAdapter implements Dialect {
 	/**
 	 * Quotes the like wildcard chars
 	 * @param string $pattern
+	 * @return string
 	 */
 	public function escapeLikePattern(string $pattern): string {
 		$esc = $this->getLikeEscapeCharacter();
@@ -105,7 +107,7 @@ abstract class DialectAdapter implements Dialect {
 	}
 
 	function beginTransaction(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null,
-			?string $isolationLevel = null): void {
+			?TransactionIsolationLevel $isolationLevel = null): void {
 		$this->specifyNextTransactionIsolationLevel($pdo, $readOnly, $pdoLogger, $isolationLevel);
 		$this->specifyNextTransactionAccessMode($pdo, $readOnly, $pdoLogger);
 

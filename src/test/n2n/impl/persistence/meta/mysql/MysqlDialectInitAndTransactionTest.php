@@ -3,14 +3,18 @@
 namespace n2n\impl\persistence\meta\mysql;
 
 use PHPUnit\Framework\TestCase;
-use n2n\core\config\PersistenceUnitConfig;
 use n2n\impl\persistence\meta\test\MetaTestEnv;
+use n2n\spec\tx\TransactionIsolationLevel;
+use n2n\spec\dbo\err\DboException;
 
 class MysqlDialectInitAndTransactionTest extends TestCase {
 
+	/**
+	 * @throws DboException
+	 */
 	function testWithSameTransactionIsolationLevel() {
 		$ma = MetaTestEnv::setUpPdoMockAssembly($this, MysqlDialect::class,
-				readOnlyTransactionIsolationLevel: PersistenceUnitConfig::TIL_SERIALIZABLE);
+				readOnlyTransactionIsolationLevel: TransactionIsolationLevel::TIL_SERIALIZABLE);
 
 		$this->assertCount(0, $ma->execCalls);
 
@@ -41,7 +45,7 @@ class MysqlDialectInitAndTransactionTest extends TestCase {
 
 		$ma->pdo->commit();
 
-		$ma->pdo->beginTransaction(isolationLevel: PersistenceUnitConfig::TIL_READ_COMMITTED);
+		$ma->pdo->beginTransaction(isolationLevel: TransactionIsolationLevel::TIL_READ_COMMITTED);
 
 		$this->assertCount(3, $ma->beginTransactionCalls);
 		$this->assertCount(5, $ma->execCalls);
@@ -50,9 +54,12 @@ class MysqlDialectInitAndTransactionTest extends TestCase {
 		$ma->pdo->commit();
 	}
 
+	/**
+	 * @throws DboException
+	 */
 	function testWithDifferentTransactionIsolationLevel() {
 		$ma = MetaTestEnv::setUpPdoMockAssembly($this, MysqlDialect::class,
-				PersistenceUnitConfig::TIL_REPEATABLE_READ);
+				TransactionIsolationLevel::TIL_REPEATABLE_READ);
 
 		$this->assertCount(0, $ma->execCalls);
 
@@ -86,7 +93,7 @@ class MysqlDialectInitAndTransactionTest extends TestCase {
 
 		$ma->pdo->commit();
 
-		$ma->pdo->beginTransaction(isolationLevel: PersistenceUnitConfig::TIL_READ_COMMITTED);
+		$ma->pdo->beginTransaction(isolationLevel: TransactionIsolationLevel::TIL_READ_COMMITTED);
 
 		$this->assertCount(3, $ma->beginTransactionCalls);
 		$this->assertCount(7, $ma->execCalls);

@@ -6,13 +6,14 @@ use PHPUnit\Framework\TestCase;
 use n2n\core\config\PersistenceUnitConfig;
 use n2n\impl\persistence\meta\sqlite\SqliteDialect;
 use n2n\persistence\PdoLogger;
+use n2n\spec\tx\TransactionIsolationLevel;
 
 class DialectAdapterTest extends TestCase {
 
 
-	private function createPersistenceUnitConfig(bool $persistent = false, bool $sslVerify = true) {
+	private function createPersistenceUnitConfig(bool $persistent = false, bool $sslVerify = true): PersistenceUnitConfig {
 		return new PersistenceUnitConfig('holeradio', 'sqlite::memory:', '', '',
-				PersistenceUnitConfig::TIL_SERIALIZABLE, SqliteDialect::class,
+				TransactionIsolationLevel::TIL_SERIALIZABLE, SqliteDialect::class,
 				persistent: $persistent);
 	}
 
