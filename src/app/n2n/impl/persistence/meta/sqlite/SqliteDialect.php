@@ -38,6 +38,7 @@ use n2n\persistence\meta\OrmDialectConfig;
 use n2n\persistence\meta\data\Importer;
 use n2n\persistence\PDOOperations;
 use n2n\persistence\PdoLogger;
+use n2n\spec\tx\TransactionIsolationLevel;
 
 class SqliteDialect extends DialectAdapter {
 
@@ -50,7 +51,7 @@ class SqliteDialect extends DialectAdapter {
 	}
 
 	protected function specifyNextTransactionIsolationLevel(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null,
-			?string $transactionIsolationLevel = null): void {
+			?TransactionIsolationLevel $transactionIsolationLevel = null): void {
 		// NOT SUPPORTED
 	}
 

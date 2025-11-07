@@ -7,14 +7,15 @@ use n2n\core\config\PersistenceUnitConfig;
 use PHPUnit\Framework\MockObject\MockObject;
 use n2n\persistence\Pdo;
 use n2n\persistence\meta\Dialect;
+use n2n\spec\tx\TransactionIsolationLevel;
 
 class MetaTestEnv {
 
 	static function setUpPdoMockAssembly(TestCase $testCase, string $dialectClass,
-			string $readOnlyTransactionIsolationLevel = PersistenceUnitConfig::TIL_REPEATABLE_READ,
+			TransactionIsolationLevel $readOnlyTransactionIsolationLevel = TransactionIsolationLevel::TIL_REPEATABLE_READ,
 			bool $persistent = false, bool $sslVerify = true, ?string $sslCaCertificatePath = null): PdoMockAssembly {
 		$config = new PersistenceUnitConfig('holeradio', 'mysql:..', 'user', null,
-				PersistenceUnitConfig::TIL_SERIALIZABLE, $dialectClass,
+				TransactionIsolationLevel::TIL_SERIALIZABLE, $dialectClass,
 				$sslVerify, $sslCaCertificatePath, $persistent,
 				readOnlyTransactionIsolationLevel: $readOnlyTransactionIsolationLevel);
 

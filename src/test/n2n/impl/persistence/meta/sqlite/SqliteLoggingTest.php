@@ -3,14 +3,18 @@
 namespace n2n\impl\persistence\meta\sqlite;
 
 use PHPUnit\Framework\TestCase;
-use n2n\core\config\PersistenceUnitConfig;
 use n2n\impl\persistence\meta\test\MetaTestEnv;
+use n2n\spec\tx\TransactionIsolationLevel;
+use n2n\spec\dbo\err\DboException;
 
 class SqliteLoggingTest extends TestCase {
-	
+
+	/**
+	 * @throws DboException
+	 */
 	function testLogInitAndTransactions() {
 		$ma = MetaTestEnv::setUpPdoMockAssembly($this, SqliteDialect::class,
-				PersistenceUnitConfig::TIL_REPEATABLE_READ);
+				TransactionIsolationLevel::TIL_REPEATABLE_READ);
 
 		$ma->pdo->getLogger()->setCapturing(true);
 

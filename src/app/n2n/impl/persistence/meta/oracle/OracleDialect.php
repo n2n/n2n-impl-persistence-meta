@@ -30,7 +30,6 @@ use n2n\persistence\meta\data\common\CommonSelectStatementBuilder;
 use n2n\spec\dbo\meta\structure\Column;
 use n2n\persistence\Pdo;
 use n2n\impl\persistence\meta\DialectAdapter;
-use n2n\core\config\PersistenceUnitConfig;
 use n2n\spec\dbo\meta\data\SelectStatementBuilder;
 use n2n\spec\dbo\meta\data\UpdateStatementBuilder;
 use n2n\spec\dbo\meta\data\InsertStatementBuilder;
@@ -49,7 +48,7 @@ class OracleDialect extends DialectAdapter {
 	}
 
 	protected function specifySessionSettings(\PDO $pdo, ?PdoLogger $pdoLogger = null): void {
-		PDOOperations::exec($pdoLogger, $pdo, 'SET TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
+		PDOOperations::exec($pdoLogger, $pdo, 'SET TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel->value);
 		PDOOperations::exec($pdoLogger, $pdo, 'ALTER SESSION SET NLS_TIMESTAMP_FORMAT = ' . $pdo->quote('YYYY-MM-DD HH:MI:SS.FF'));
 		PDOOperations::exec($pdoLogger, $pdo, 'ALTER SESSION SET NLS_DATE_FORMAT = ' . $pdo->quote('YYYY-MM-DD'));
 		PDOOperations::exec($pdoLogger, $pdo, 'ALTER SESSION SET NLS_TIMESTAMP_TZ_FORMAT = ' . $pdo->quote('YYYY-MM-DD HH:MI:SS.FF TZH:TZM'));

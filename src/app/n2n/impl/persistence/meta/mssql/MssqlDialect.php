@@ -29,7 +29,6 @@ use n2n\persistence\meta\data\common\CommonDeleteStatementBuilder;
 use n2n\persistence\meta\data\common\CommonUpdateStatementBuilder;
 use n2n\persistence\meta\data\common\CommonSelectStatementBuilder;
 use n2n\spec\dbo\meta\structure\Column;
-use n2n\core\config\PersistenceUnitConfig;
 use n2n\persistence\Pdo;
 use n2n\impl\persistence\meta\DialectAdapter;
 use n2n\spec\dbo\meta\data\SelectStatementBuilder;
@@ -50,7 +49,7 @@ class MssqlDialect extends DialectAdapter {
 
 	protected function specifySessionSettings(\PDO $pdo, ?PdoLogger $pdoLogger = null): void {
 		PDOOperations::exec($pdoLogger, $pdo,
-				'SET TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel);
+				'SET TRANSACTION ISOLATION LEVEL ' . $this->readWriteTransactionIsolationLevel->value);
 	}
 
 	protected function specifyNextTransactionAccessMode(\PDO $pdo, bool $readOnly, ?PdoLogger $pdoLogger = null): void {
