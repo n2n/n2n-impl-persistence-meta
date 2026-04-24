@@ -30,7 +30,7 @@ class PgsqlOrmDialectConfig implements OrmDialectConfig {
 	 * @return \DateTimeInterface|null
 	 * @throws \InvalidArgumentException
 	 */
-	public function parseDateTime($rawValue): ?\DateTimeInterface {
+	public function parseDateTime(?string $rawValue): ?\DateTimeInterface {
 		if (null === $rawValue) return null;
 		
 		try {
