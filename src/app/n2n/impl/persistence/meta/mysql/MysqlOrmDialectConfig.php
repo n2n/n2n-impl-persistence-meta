@@ -29,7 +29,7 @@ class MysqlOrmDialectConfig implements OrmDialectConfig {
 	/* (non-PHPdoc)
 	 * @see n2n\persistence\meta.OrmDialectConfig::parseDateTime()
 	*/
-	public function parseDateTime($rawValue) {
+	public function parseDateTime($rawValue): ?\DateTimeInterface {
 		if (null === $rawValue) {
 			return null;
 		}
@@ -47,17 +47,16 @@ class MysqlOrmDialectConfig implements OrmDialectConfig {
 	/* (non-PHPdoc)
 	 * @see n2n\persistence\meta.OrmDialectConfig::buildRawValue()
 	 */
-	public function buildDateTimeRawValue(?\DateTime $dateTime = null) {
+	public function buildDateTimeRawValue(?\DateTimeInterface $dateTime = null): ?string {
 		if (null === $dateTime) {
 			return null;
 		}
-		
-		return DateUtils::formatDateTime($dateTime, MysqlDateTimeColumn::FORMAT_DATE_TIME);
+		return $dateTime->format(MysqlDateTimeColumn::FORMAT_DATE_TIME);
 	}
 	/* (non-PHPdoc)
 	 * @see n2n\persistence\meta.OrmDialectConfig::getOrmDateTimeColumnTypeName()
 	 */
-	public function getOrmDateTimeColumnTypeName() {
+	public function getOrmDateTimeColumnTypeName(): string {
 		return 'datetime';
 	}
 }
