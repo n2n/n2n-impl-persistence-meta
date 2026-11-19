@@ -25,6 +25,7 @@ use n2n\persistence\Pdo;
 use n2n\spec\dbo\meta\structure\Backuper;
 use n2n\spec\dbo\meta\structure\Table;
 use n2n\persistence\meta\structure\common\MetaManagerAdapter;
+use n2n\persistence\meta\structure\common\ChangeRequest;
 use n2n\persistence\meta\structure\common\DatabaseAdapter;
 use n2n\spec\dbo\meta\structure\MetaEntity;
 use n2n\impl\persistence\meta\mssql\management\MssqlAlterMetaEntityRequest;
@@ -49,19 +50,19 @@ class MssqlMetaManager extends MetaManagerAdapter {
 		return new MssqlBackuper($this->dbh, $this->createDatabase(), $metaEnities);
 	}
 	
-	protected function createAlterMetaEntityRequest(MetaEntity $metaEntity) {
+	protected function createAlterMetaEntityRequest(MetaEntity $metaEntity): ChangeRequest {
 		return new MssqlAlterMetaEntityRequest($metaEntity);
 	}
 	
-	protected function createCreateMetaEntityRequest(MetaEntity $metaEntity) {
+	protected function createCreateMetaEntityRequest(MetaEntity $metaEntity): ChangeRequest {
 		return new MssqlCreateMetaEntityRequest($metaEntity);
 	}
 	
-	protected function createDropMetaEntityRequest(MetaEntity $metaEntity) {
+	protected function createDropMetaEntityRequest(MetaEntity $metaEntity): ChangeRequest {
 		return new MssqlDropMetaEntityRequest($metaEntity);
 	}
 	
-	protected function createRenameMetaEntityRequest(MetaEntity $metaEntity, string $oldName, string $newName) {
+	protected function createRenameMetaEntityRequest(MetaEntity $metaEntity, string $oldName, string $newName): ChangeRequest {
 		return new MssqlRenameMetaEntityRequest($metaEntity, $oldName, $newName);
 	}
 	
