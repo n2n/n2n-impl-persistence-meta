@@ -44,6 +44,13 @@ use n2n\persistence\PDOOperations;
 use n2n\persistence\PdoLogger;
 
 class MysqlDialect extends DialectAdapter {
+	/**
+	 * PDO::MYSQL_ATTR_* constants are deprecated since PHP 8.5; Pdo\Mysql::ATTR_* only exists since PHP 8.4.
+	 */
+	const PDO_ATTR_SSL_CA = PHP_VERSION_ID >= 80400 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA;
+	const PDO_ATTR_SSL_VERIFY_SERVER_CERT = PHP_VERSION_ID >= 80400
+			? \Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT : \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT;
+
 
 	public function getName(): string {
 		return 'Mysql';
@@ -53,11 +60,11 @@ class MysqlDialect extends DialectAdapter {
 		$options = parent::determinePdoOptions();
 
 		if (!$this->persistenceUnitConfig->isSslVerify()) {
-			$options[\PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+			$options[self::PDO_ATTR_SSL_VERIFY_SERVER_CERT] = false;
 		}
 
 		if (null !== ($caPath = $this->persistenceUnitConfig->getSslCaCertificatePath())) {
-			$options[\PDO::MYSQL_ATTR_SSL_CA] = $caPath;
+			$options[self::PDO_ATTR_SSL_CA] = $caPath;
 		}
 
 		return $options;
