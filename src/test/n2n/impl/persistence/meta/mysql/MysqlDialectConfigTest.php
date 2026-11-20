@@ -25,12 +25,12 @@ class MysqlDialectConfigTest extends TestCase {
 		$ma = MetaTestEnv::setUpPdoMockAssembly($this, MysqlDialect::class, sslVerify: false);
 		$ma->pdo->reconnect();
 
-		$this->assertEquals([\PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false], $ma->pdoOptions);
+		$this->assertEquals([MysqlDialect::PDO_ATTR_SSL_VERIFY_SERVER_CERT => false], $ma->pdoOptions);
 
 		$ma = MetaTestEnv::setUpPdoMockAssembly($this, MysqlDialect::class, sslCaCertificatePath: '/holeradio');
 		$ma->pdo->reconnect();
 
-		$this->assertEquals([\PDO::MYSQL_ATTR_SSL_CA => '/holeradio'], $ma->pdoOptions);
+		$this->assertEquals([MysqlDialect::PDO_ATTR_SSL_CA => '/holeradio'], $ma->pdoOptions);
 	}
 
 	function testAllOptions() {
@@ -38,7 +38,7 @@ class MysqlDialectConfigTest extends TestCase {
 				sslVerify: false, sslCaCertificatePath: '/holeradio');
 		$ma->pdo->reconnect();
 
-		$this->assertEquals([\PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false, \PDO::MYSQL_ATTR_SSL_CA => '/holeradio',
+		$this->assertEquals([MysqlDialect::PDO_ATTR_SSL_VERIFY_SERVER_CERT => false, MysqlDialect::PDO_ATTR_SSL_CA => '/holeradio',
 				\PDO::ATTR_PERSISTENT => true], $ma->pdoOptions);
 	}
 

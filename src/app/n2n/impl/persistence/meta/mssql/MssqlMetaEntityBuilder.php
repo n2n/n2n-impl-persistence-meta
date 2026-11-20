@@ -128,7 +128,7 @@ class MssqlMetaEntityBuilder {
 				case 'nchar':
 				case 'nvarchar':
 				case 'ntext':
-					$characterMaximumLengthDoubleVal = doubleval($row['CHARACTER_MAXIMUM_LENGTH']);
+					$characterMaximumLengthDoubleVal = floatval($row['CHARACTER_MAXIMUM_LENGTH']);
 					if ($characterMaximumLengthDoubleVal > 0) {
 						$length = $characterMaximumLengthDoubleVal;
 					} else {
@@ -140,7 +140,7 @@ class MssqlMetaEntityBuilder {
 				case 'char':
 				case 'varchar':
 				case 'text':
-					$characterMaximumLengthDoubleVal = doubleval($row['CHARACTER_MAXIMUM_LENGTH']);
+					$characterMaximumLengthDoubleVal = floatval($row['CHARACTER_MAXIMUM_LENGTH']);
 					if ($characterMaximumLengthDoubleVal > 0) {
 						$size = $characterMaximumLengthDoubleVal * 8;
 					} else {
